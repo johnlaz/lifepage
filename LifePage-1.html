@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LifePage">
+    <meta name="theme-color" content="#050811">
+    <title>LifePage — A Letter to My Kids</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:#06080f; --surface:#0b0f1c; --surface2:#0f1525;
+            --border:rgba(255,255,255,0.07); --border-hi:rgba(99,210,255,0.4);
+            --cyan:#5bc8e8; --cyan-dim:rgba(91,200,232,0.12);
+            --emerald:#4ade80; --red:#f87171; --amber:#fbbf24; --violet:#a78bfa;
+            --text:#e2e8f0; --text-dim:#64748b; --text-muted:#334155;
+            --radius:16px; --radius-sm:10px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html{height:100%;}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.5;}
+        body::after{content:'';position:fixed;top:-30vh;left:50%;transform:translateX(-50%);width:80vw;height:60vh;background:radial-gradient(ellipse at center,rgba(91,200,232,0.05) 0%,transparent 70%);pointer-events:none;z-index:0;}
+
+        /* HEADER */
+        header{position:sticky;top:0;z-index:100;background:rgba(6,8,15,0.88);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;}
+        .header-inner{max-width:1280px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+        .wordmark{display:flex;align-items:baseline;gap:1px;user-select:none;}
+        .wordmark-life{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-0.02em;color:#fff;line-height:1;}
+        .wordmark-page{font-family:'DM Serif Display',serif;font-style:italic;font-size:22px;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--cyan) 0%,#7dd3fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+        .wordmark-sub{font-size:10px;color:var(--text-dim);letter-spacing:0.12em;text-transform:uppercase;font-weight:400;margin-top:3px;}
+        .header-controls{display:flex;align-items:center;gap:10px;}
+        .toggle-pill{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px;}
+        .toggle-pill button{padding:5px 14px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.04em;border:none;cursor:pointer;transition:all 0.2s;background:transparent;color:var(--text-dim);}
+        .toggle-pill button.active{background:var(--cyan);color:#000;}
+        .icon-btn{width:38px;height:38px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:16px;}
+        .icon-btn:hover{border-color:var(--border-hi);background:var(--surface);}
+
+        /* LAYOUT */
+        main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;display:grid;grid-template-columns:1fr;gap:16px;position:relative;z-index:1;}
+        @media(min-width:1024px){main{grid-template-columns:340px 1fr;}}
+
+        /* PANEL */
+        .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;}
+        .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(91,200,232,0.18),transparent);}
+        .panel-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);}
+        .panel-header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+
+        /* SIDEBAR */
+        .sidebar{display:flex;flex-direction:column;gap:14px;}
+        #chapter-list{display:flex;flex-direction:column;gap:4px;max-height:580px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+
+        /* CHAPTER ROW */
+        .chapter-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid transparent;cursor:pointer;transition:all 0.2s ease;gap:10px;}
+        .chapter-row:hover{background:var(--surface2);border-color:var(--border);}
+        .chapter-row.active{background:rgba(91,200,232,0.06);border-color:rgba(91,200,232,0.3);}
+        .chapter-row-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+
+        /* PROGRESS RING */
+        .prw{position:relative;width:34px;height:34px;flex-shrink:0;}
+        .prw svg{width:34px;height:34px;transform:rotate(-90deg);}
+        .pr-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:2.5;}
+        .pr-fill{fill:none;stroke:var(--cyan);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:81.68;stroke-dashoffset:81.68;transition:stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1),stroke 0.3s;}
+        .pr-fill.done{stroke:var(--emerald);}
+        .pr-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.2s;}
+
+        /* Active ring: glow + spinning shimmer halo */
+        .chapter-row.active .pr-fill{filter:drop-shadow(0 0 5px rgba(91,200,232,0.8));}
+        .chapter-row.active .prw::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(91,200,232,0.7);border-right-color:rgba(91,200,232,0.2);animation:ring-spin 1.6s linear infinite;}
+        @keyframes ring-spin{to{transform:rotate(360deg);}}
+        .chapter-row.active .pr-icon{animation:icon-pulse 2.2s ease-in-out infinite;}
+        @keyframes icon-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.82);}}
+
+        .chapter-info{flex:1;min-width:0;}
+        .chapter-title-text{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+        .chapter-row.active .chapter-title-text{color:var(--cyan);}
+        .chapter-status-text{font-size:10px;color:var(--text-muted);margin-top:1px;}
+        .chapter-status-text.logged{color:var(--emerald);}
+        .vault-badge{font-size:9px;font-weight:600;letter-spacing:0.06em;padding:2px 6px;border-radius:4px;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+        .vault-badge.pub{background:var(--surface2);color:var(--text-dim);border:1px solid var(--border);}
+        .vault-badge.priv{background:rgba(251,191,36,0.08);color:var(--amber);border:1px solid rgba(251,191,36,0.2);}
+        .completion-badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--cyan);}
+
+        /* SLIPS */
+        #slip-container{max-height:160px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+        .slip-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:6px;}
+        .slip-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+        .slip-target-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--cyan);}
+        .slip-delete-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:11px;padding:0;transition:color 0.15s;}
+        .slip-delete-btn:hover{color:var(--red);}
+        .slip-preview{font-size:11px;color:#94a3b8;font-style:italic;line-height:1.5;}
+        .slip-badge-pill{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(91,200,232,0.2);padding:2px 8px;border-radius:999px;}
+        .empty-slips{font-size:12px;color:var(--text-muted);font-style:italic;padding:6px 0;}
+
+        /* CONTENT COL */
+        .content-col{display:flex;flex-direction:column;gap:14px;}
+
+        /* WORKSPACE */
+        .workspace-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:18px;}
+        .context-eyebrow{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;}
+        .prompt-label{font-family:'DM Serif Display',serif;font-style:italic;font-size:16px;color:#cbd5e1;line-height:1.5;max-width:520px;}
+        .privacy-row{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;flex-shrink:0;}
+        .privacy-label{font-size:11px;color:var(--text-dim);white-space:nowrap;}
+        .ios-toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
+        .ios-toggle input{opacity:0;width:0;height:0;position:absolute;}
+        .ios-toggle-track{position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,0.1);cursor:pointer;transition:background 0.25s;}
+        .ios-toggle input:checked+.ios-toggle-track{background:var(--cyan);}
+        .ios-toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 1px 4px rgba(0,0,0,0.4);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);pointer-events:none;}
+        .ios-toggle input:checked~.ios-toggle-thumb{transform:translateX(16px);}
+
+        /* EDITOR */
+        .editor-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+        #journal-editor{width:100%;min-height:200px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:300;line-height:1.75;color:var(--text);outline:none;transition:border-color 0.2s,box-shadow 0.2s;resize:vertical;display:block;}
+        #journal-editor:focus{border-color:rgba(91,200,232,0.4);box-shadow:0 0 0 3px rgba(91,200,232,0.06);}
+        #journal-editor::placeholder{color:var(--text-muted);font-style:italic;font-weight:300;}
+        .editor-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px;margin-bottom:14px;}
+        .word-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);transition:color 0.2s;}
+        .word-count.has-words{color:var(--cyan);}
+
+        /* BUTTONS */
+        .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.18s;letter-spacing:0.02em;font-family:'DM Sans',sans-serif;}
+        .btn:disabled{opacity:0.35;cursor:not-allowed;}
+        .btn-rec{background:var(--cyan);color:#000;}
+        .btn-rec:hover:not(:disabled){background:#7dd3fc;}
+        .btn-rec.recording{background:var(--red);color:#fff;animation:pulse-rec 2s ease-in-out infinite;}
+        .btn-rec.paused{background:var(--amber);color:#000;}
+        @keyframes pulse-rec{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,0.4);}50%{box-shadow:0 0 0 8px rgba(248,113,113,0);}}
+        .btn-secondary{background:var(--surface);color:var(--text-dim);border:1px solid var(--border);}
+        .btn-secondary:hover:not(:disabled){border-color:var(--border-hi);color:var(--text);}
+        .btn-save{background:var(--emerald);color:#000;}
+        .btn-save:hover{opacity:0.88;}
+        .btn-compile{background:linear-gradient(135deg,var(--cyan),#7dd3fc);color:#000;}
+        .btn-compile:hover{opacity:0.88;}
+        .btn-ai{background:linear-gradient(135deg,var(--violet),#818cf8);color:#fff;}
+        .btn-ai:hover{opacity:0.88;}
+        .btn-ai.active{animation:ai-glow 2s ease-in-out infinite;}
+        @keyframes ai-glow{0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,0.4);}50%{box-shadow:0 0 0 8px rgba(167,139,250,0);}}
+
+        /* RECORDING STRIP */
+        .recording-strip{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
+        .rec-buttons{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+        .waveform-display{display:flex;align-items:center;gap:3px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+        .wave-status{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-right:8px;transition:color 0.2s;}
+
+        /* ROUTING */
+        .routing-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--border);}
+        .routing-label{font-size:11px;color:var(--text-dim);}
+        .routing-select{flex:1;min-width:180px;max-width:320px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;cursor:pointer;transition:border-color 0.2s;}
+        .routing-select:focus{border-color:var(--border-hi);}
+
+        /* AI INTERVIEW PANEL */
+        #ai-panel{display:none;flex-direction:column;margin-top:14px;background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.22);border-radius:var(--radius-sm);overflow:hidden;}
+        #ai-panel.open{display:flex;}
+        .ai-panel-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(167,139,250,0.15);background:rgba(167,139,250,0.06);}
+        .ai-panel-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--violet);}
+        .ai-close-btn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;transition:color 0.15s;}
+        .ai-close-btn:hover{color:var(--text);}
+        #ai-messages{padding:16px;display:flex;flex-direction:column;gap:12px;max-height:300px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(167,139,250,0.2) transparent;}
+        .ai-bubble{max-width:85%;padding:12px 15px;border-radius:14px;font-size:14px;line-height:1.65;font-weight:300;animation:bubble-in 0.25s cubic-bezier(0.34,1.3,0.64,1) forwards;}
+        @keyframes bubble-in{from{opacity:0;transform:translateY(8px) scale(0.97);}to{opacity:1;transform:none;}}
+        .ai-bubble.ai{background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.18);color:#c4b5fd;align-self:flex-start;border-bottom-left-radius:4px;}
+        .ai-bubble.user{background:rgba(91,200,232,0.08);border:1px solid rgba(91,200,232,0.18);color:var(--text);align-self:flex-end;border-bottom-right-radius:4px;}
+        .ai-bubble.typing{background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.15);align-self:flex-start;padding:14px 18px;}
+        .typing-dots{display:flex;gap:5px;align-items:center;}
+        .typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--violet);opacity:0.5;animation:tdot 1.2s ease-in-out infinite;}
+        .typing-dots span:nth-child(2){animation-delay:0.2s;}.typing-dots span:nth-child(3){animation-delay:0.4s;}
+        @keyframes tdot{0%,80%,100%{transform:scale(0.7);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+        .ai-input-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid rgba(167,139,250,0.15);background:rgba(167,139,250,0.03);}
+        #ai-user-input{flex:1;background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.2);border-radius:8px;padding:9px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color 0.2s;}
+        #ai-user-input:focus{border-color:rgba(167,139,250,0.5);}
+        #ai-user-input::placeholder{color:var(--text-muted);}
+        .ai-send-btn{padding:9px 14px;border-radius:8px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.25);color:var(--violet);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+        .ai-send-btn:hover{background:rgba(167,139,250,0.22);}
+        .ai-use-btn{padding:9px 14px;border-radius:8px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:var(--emerald);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+        .ai-use-btn:hover{background:rgba(74,222,128,0.18);}
+
+        /* COMPILE */
+        .compile-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+        #production-book-viewport{max-height:460px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;padding-right:4px;}
+        .book-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;gap:10px;}
+        .book-empty-icon{font-size:36px;opacity:0.3;}
+        .book-empty-text{font-family:'DM Serif Display',serif;font-style:italic;font-size:15px;color:var(--text-dim);line-height:1.6;}
+        .book-empty-sub{font-size:11px;color:var(--text-muted);}
+        #production-book-viewport h3{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin:28px 0 10px;letter-spacing:-0.01em;}
+        #production-book-viewport h3:first-child{margin-top:0;}
+        #production-book-viewport p{font-family:'DM Sans',sans-serif;font-weight:300;font-size:15px;line-height:1.8;color:#94a3b8;margin-bottom:16px;}
+        .compile-loader{display:flex;flex-direction:column;align-items:center;gap:16px;padding:48px 24px;}
+        .waveform-loader{display:flex;align-items:center;gap:4px;height:40px;}
+        .wl-bar{width:4px;border-radius:2px;background:var(--cyan);animation:wl-b 1s ease-in-out infinite alternate;}
+        .wl-bar:nth-child(1){animation-delay:0s;height:16px;}.wl-bar:nth-child(2){animation-delay:.12s;height:30px;}.wl-bar:nth-child(3){animation-delay:.24s;height:22px;}.wl-bar:nth-child(4){animation-delay:.36s;height:36px;}.wl-bar:nth-child(5){animation-delay:.48s;height:18px;}.wl-bar:nth-child(6){animation-delay:.6s;height:28px;}.wl-bar:nth-child(7){animation-delay:.72s;height:14px;}
+        @keyframes wl-b{0%{transform:scaleY(0.3);opacity:0.4;}100%{transform:scaleY(1);opacity:1;}}
+        .compile-status{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);animation:pulse-t 1.5s ease-in-out infinite;}
+        @keyframes pulse-t{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+        /* TOAST */
+        #toast-root{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
+        .toast{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid;animation:toast-in 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;max-width:360px;text-align:center;}
+        .toast.out{animation:toast-out 0.25s ease-in forwards;}
+        .toast-success{background:rgba(74,222,128,0.12);border-color:rgba(74,222,128,0.3);color:var(--emerald);}
+        .toast-info{background:rgba(91,200,232,0.12);border-color:rgba(91,200,232,0.3);color:var(--cyan);}
+        .toast-warn{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.3);color:var(--amber);}
+        .toast-error{background:rgba(248,113,113,0.12);border-color:rgba(248,113,113,0.3);color:var(--red);}
+        @keyframes toast-in{from{opacity:0;transform:translateY(16px) scale(0.9);}to{opacity:1;transform:translateY(0) scale(1);}}
+        @keyframes toast-out{from{opacity:1;}to{opacity:0;transform:translateY(8px);}}
+
+        /* MODALS */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+        .modal-overlay.show{opacity:1;pointer-events:all;}
+        .modal-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;transform:translateY(24px) scale(0.96);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);position:relative;}
+        .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(91,200,232,0.3),transparent);}
+        .modal-overlay.show .modal-box{transform:translateY(0) scale(1);}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--border);}
+        .modal-title{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);}
+        .modal-close{width:28px;height:28px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);font-size:14px;transition:all 0.15s;}
+        .modal-close:hover{border-color:var(--border-hi);color:var(--text);}
+        .modal-body{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:20px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+
+        /* SAVE REMINDER */
+        #save-reminder-modal .modal-box{max-width:400px;}
+        .save-reminder-body{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:32px 28px;}
+        .save-reminder-icon{font-size:48px;}
+        .save-reminder-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);line-height:1.3;}
+        .save-reminder-sub{font-size:13px;color:var(--text-dim);line-height:1.65;font-weight:300;max-width:300px;}
+        .save-reminder-buttons{display:flex;gap:10px;width:100%;margin-top:4px;}
+        .save-reminder-buttons .btn{flex:1;justify-content:center;}
+
+        /* SETTINGS */
+        .settings-section-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+        .field-group{display:flex;flex-direction:column;gap:5px;}
+        .field-label{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#94a3b8;font-weight:500;}
+        .key-status{font-family:'JetBrains Mono',monospace;font-size:10px;}
+        .key-status.ok{color:var(--emerald);}.key-status.fail{color:var(--red);}.key-status.testing{color:var(--amber);}
+        .field-row{display:flex;gap:8px;}
+        .text-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);outline:none;transition:border-color 0.2s;}
+        .text-input:focus{border-color:var(--border-hi);}.text-input::placeholder{color:var(--text-muted);}
+        .btn-test{padding:9px 14px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+        .btn-test:hover{border-color:var(--border-hi);color:var(--text);}
+        .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+        .data-btn{padding:10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;text-align:center;font-family:'DM Sans',sans-serif;}
+        .data-btn:hover{border-color:var(--border-hi);}
+        .settings-info-box{background:rgba(91,200,232,0.04);border:1px solid rgba(91,200,232,0.12);border-radius:10px;padding:14px 16px;}
+        .settings-info-box p{font-size:12px;color:var(--text-dim);line-height:1.65;margin-top:5px;}
+
+        /* ONBOARDING */
+        .onboarding-box{max-width:460px;}
+        .onboarding-card{padding:8px 0 16px;}
+        .onboarding-emoji{font-size:40px;margin-bottom:14px;}
+        .onboarding-card-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:10px;line-height:1.25;}
+        .onboarding-card-body{font-size:14px;font-weight:300;color:#94a3b8;line-height:1.72;}
+        .onboarding-card-body strong{color:var(--cyan);font-weight:600;}
+        .onboarding-footer{display:flex;justify-content:space-between;align-items:center;padding-top:18px;border-top:1px solid var(--border);margin-top:6px;}
+        .onboarding-dots{display:flex;gap:5px;}
+        .onboarding-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all 0.2s;}
+        .onboarding-dot.active{background:var(--cyan);width:18px;border-radius:3px;}
+
+        /* MISC */
+        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+        .fade-in{animation:fade-in 0.22s ease forwards;}
+        @keyframes fade-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+        /* PRINT */
+        @media print{
+            header,.sidebar,.recording-strip,.routing-row,.workspace-header .privacy-row,
+            .compile-header button,#toast-root,.modal-overlay,#ai-panel,#ai-interview-btn{display:none!important;}
+            body{background:white;color:#111;}main{display:block;padding:0;}
+            .content-col{gap:0;}.panel{border:none;padding:0;background:white;}.panel::before{display:none;}
+            #production-book-viewport{max-height:none;overflow:visible;}
+            #production-book-viewport h3{color:#111;page-break-after:avoid;}
+            #production-book-viewport p{color:#333;}.workspace-panel{display:none;}
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast-root"></div>
+
+<!-- HEADER -->
+<header>
+    <div class="header-inner">
+        <div>
+            <div class="wordmark"><span class="wordmark-life">Life</span><span class="wordmark-page">Page</span></div>
+            <div class="wordmark-sub">A Letter to My Kids</div>
+        </div>
+        <div class="header-controls">
+            <div class="toggle-pill">
+                <button id="toggle-full" onclick="changeGlobalFilter('full')" class="active">Full</button>
+                <button id="toggle-abbr" onclick="changeGlobalFilter('abbreviated')">Abbreviated</button>
+            </div>
+            <button class="icon-btn" onclick="triggerPrint()" title="Print / Save as PDF">🖨</button>
+            <button class="icon-btn" onclick="toggleModal('settings-modal',true)" title="Settings">⚙️</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="panel" style="overflow:hidden;display:flex;flex-direction:column;max-height:640px;">
+            <div class="panel-header-row">
+                <span class="panel-label">Chapters</span>
+                <span id="completion-ratio" class="completion-badge">0 / 12</span>
+            </div>
+            <div id="chapter-list" style="flex:1;overflow-y:auto;"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-header-row">
+                <span class="panel-label">Memory Slips</span>
+                <span id="slip-badge" class="slip-badge-pill">0 Cached</span>
+            </div>
+            <div id="slip-container"><p class="empty-slips">No out-of-order slips yet.</p></div>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="content-col">
+
+        <!-- WORKSPACE -->
+        <div class="panel workspace-panel">
+            <div class="workspace-header">
+                <div style="flex:1;min-width:0;">
+                    <div id="context-indicator" class="context-eyebrow">SELECT A CHAPTER</div>
+                    <div id="active-prompt-label" class="prompt-label">Choose a chapter on the left to begin telling your story.</div>
+                </div>
+                <div class="privacy-row">
+                    <span class="privacy-label">Public Build</span>
+                    <label class="ios-toggle">
+                        <input type="checkbox" id="privacy-switch" onchange="syncPrivacyState()">
+                        <span class="ios-toggle-track"></span>
+                        <span class="ios-toggle-thumb"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <div class="editor-label">Your Story</div>
+                <textarea id="journal-editor" placeholder="Type your thoughts freely here — there's no wrong way to start. Or tap ✦ AI Interview below and let it guide you with questions…" oninput="updateWordCount()"></textarea>
+                <div class="editor-footer">
+                    <span class="word-count" id="word-count">0 words</span>
+                    <span id="read-time" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);"></span>
+                </div>
+            </div>
+
+            <div class="recording-strip">
+                <div class="rec-buttons">
+                    <button id="record-action-btn" class="btn btn-rec" onclick="toggleAudioHarvest()">
+                        <span id="status-dot" style="width:8px;height:8px;border-radius:50%;background:#000;display:block;flex-shrink:0;"></span>
+                        <span id="record-action-label">Record</span>
+                    </button>
+                    <button id="pause-action-btn" class="btn btn-secondary" onclick="toggleAudioPause()" disabled>Pause</button>
+                    <button id="ai-interview-btn" class="btn btn-ai" onclick="toggleAiPanel()">✦ AI Interview</button>
+                </div>
+                <div class="waveform-display">
+                    <span class="wave-status" id="wave-label">Mic Inactive</span>
+                    <canvas id="wave-canvas" width="80" height="24" style="opacity:0.5;"></canvas>
+                </div>
+            </div>
+
+            <!-- AI PANEL -->
+            <div id="ai-panel">
+                <div class="ai-panel-header">
+                    <span class="ai-panel-title">✦ AI Interview — deepening your chapter</span>
+                    <button class="ai-close-btn" onclick="closeAiPanel()">✕ Close</button>
+                </div>
+                <div id="ai-messages"></div>
+                <div class="ai-input-row">
+                    <input type="text" id="ai-user-input" placeholder="Type your answer and press Enter…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiMessage();}">
+                    <button class="ai-send-btn" onclick="sendAiMessage()">Send</button>
+                    <button class="ai-use-btn" onclick="useAiConversation()">↑ Add to Chapter</button>
+                </div>
+            </div>
+
+            <div class="routing-row">
+                <span class="routing-label">Context Routing:</span>
+                <select id="routing-selector" class="routing-select"></select>
+                <button class="btn btn-save" onclick="commitActiveMemoryBlock()">Save Block</button>
+            </div>
+        </div>
+
+        <!-- COMPILED OUTPUT -->
+        <div class="panel">
+            <div class="compile-header">
+                <span class="panel-label">Compiled Autobiography</span>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary" onclick="triggerPrint()" style="padding:7px 12px;font-size:11px;">🖨 Print</button>
+                    <button class="btn btn-compile" onclick="compileBookDirectly()">⚡ Compile</button>
+                </div>
+            </div>
+            <div id="production-book-viewport">
+                <div class="book-empty">
+                    <div class="book-empty-icon">📖</div>
+                    <div class="book-empty-text">Your autobiography lives here.</div>
+                    <div class="book-empty-sub">Add your Gemini API key in ⚙️ Settings, then click Compile.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- SAVE REMINDER MODAL -->
+<div id="save-reminder-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width:400px;">
+        <div class="save-reminder-body">
+            <div class="save-reminder-icon">💾</div>
+            <div class="save-reminder-title">Download a backup?</div>
+            <div class="save-reminder-sub">Your story is saved in this browser, but a downloaded backup keeps it safe forever — even if you clear your browser or switch devices.</div>
+            <div class="save-reminder-buttons">
+                <button class="btn btn-secondary" onclick="toggleModal('save-reminder-modal',false)">Maybe Later</button>
+                <button class="btn btn-save" onclick="quickSaveAndClose()">📥 Download Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ONBOARDING MODAL -->
+<div id="onboarding-modal" class="modal-overlay">
+    <div class="modal-box onboarding-box">
+        <div class="modal-body">
+            <div id="onboarding-cards">
+                <div class="onboarding-card" id="ob-card-0">
+                    <div class="onboarding-emoji">✉️</div>
+                    <div class="onboarding-card-title">A living letter<br>to your kids.</div>
+                    <div class="onboarding-card-body">LifePage gives you <strong>12 chapters</strong> — from your family roots and childhood neighborhood, all the way to the wisdom and philosophy you want your children to carry into their own lives. You don't have to fill them all at once. Even a few words in each chapter is a gift they'll have forever.</div>
+                </div>
+                <div class="onboarding-card" id="ob-card-1" style="display:none;">
+                    <div class="onboarding-emoji">✦</div>
+                    <div class="onboarding-card-title">Stuck? Let AI ask<br>the questions.</div>
+                    <div class="onboarding-card-body">Every chapter has an <strong>AI Interview</strong> button. Tap it and the AI will start a warm, thoughtful conversation — asking you follow-up questions to pull out the details, stories, and feelings that make your chapter come alive. When you're done, your answers drop right into your chapter with one tap.</div>
+                </div>
+                <div class="onboarding-card" id="ob-card-2" style="display:none;">
+                    <div class="onboarding-emoji">🎙</div>
+                    <div class="onboarding-card-title">Talk it out,<br>don't type it out.</div>
+                    <div class="onboarding-card-body">Rather speak than type? Hit <strong>Record</strong> and narrate your memories out loud. With a Groq API key (free to get), your voice is transcribed automatically into the chapter. On mobile, your keyboard's built-in dictation works great too — just tap the mic on your keyboard.</div>
+                </div>
+                <div class="onboarding-card" id="ob-card-3" style="display:none;">
+                    <div class="onboarding-emoji">🔄</div>
+                    <div class="onboarding-card-title">Memory doesn't move<br>in straight lines.</div>
+                    <div class="onboarding-card-body">Writing about your career and suddenly remember a childhood story? Just change the <strong>Context Routing</strong> selector to the right chapter before saving. LifePage parks that memory safely and the AI will weave it into the right place at compile time.</div>
+                </div>
+                <div class="onboarding-card" id="ob-card-4" style="display:none;">
+                    <div class="onboarding-emoji">🔐</div>
+                    <div class="onboarding-card-title">Keep some chapters<br>just for you.</div>
+                    <div class="onboarding-card-body">Toggle any chapter to <strong>🔒 Vault</strong> mode to keep it private. When you compile in Abbreviated mode, those chapters are completely hidden from the output — but still preserved here for whenever you're ready to share them.</div>
+                </div>
+                <div class="onboarding-card" id="ob-card-5" style="display:none;">
+                    <div class="onboarding-emoji">💾</div>
+                    <div class="onboarding-card-title">Back up your story<br>regularly.</div>
+                    <div class="onboarding-card-body">Your story is saved automatically in this browser, but browsers can be cleared. Use <strong>⚙️ Settings → Download Backup</strong> to save a file to your computer or cloud storage. LifePage will also remind you to download a backup as you add content.</div>
+                </div>
+            </div>
+            <div class="onboarding-footer">
+                <div class="onboarding-dots" id="ob-dots">
+                    <div class="onboarding-dot active"></div>
+                    <div class="onboarding-dot"></div>
+                    <div class="onboarding-dot"></div>
+                    <div class="onboarding-dot"></div>
+                    <div class="onboarding-dot"></div>
+                    <div class="onboarding-dot"></div>
+                </div>
+                <button class="btn btn-rec" id="onboarding-next-btn" onclick="advanceOnboardingDeck()">Next →</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settings-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width:560px;">
+        <div class="modal-header">
+            <span class="modal-title">Settings</span>
+            <button class="modal-close" onclick="toggleModal('settings-modal',false)">✕</button>
+        </div>
+        <div class="modal-body">
+            <div>
+                <div class="settings-section-title">AI Credentials</div>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                    <div class="field-group">
+                        <div class="field-label">
+                            <span>Google Gemini API Key <span style="font-size:10px;color:var(--text-muted);">(Compile Autobiography)</span></span>
+                            <span id="gemini-test-status" class="key-status">Not Tested</span>
+                        </div>
+                        <div class="field-row">
+                            <input type="password" id="input-key-gemini" class="text-input" placeholder="AIzaSy…">
+                            <button class="btn-test" onclick="testKeyConnection('gemini')">Test</button>
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Get a free key at aistudio.google.com</div>
+                    </div>
+                    <div class="field-group">
+                        <div class="field-label">
+                            <span>Groq API Key <span style="font-size:10px;color:var(--text-muted);">(AI Interview + Audio Transcription)</span></span>
+                            <span id="groq-test-status" class="key-status">Not Tested</span>
+                        </div>
+                        <div class="field-row">
+                            <input type="password" id="input-key-groq" class="text-input" placeholder="gsk_…">
+                            <button class="btn-test" onclick="testKeyConnection('groq')">Test</button>
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Get a free key at console.groq.com</div>
+                    </div>
+                    <button class="btn btn-rec" style="width:100%;justify-content:center;" onclick="saveApiKeys()">Save Credentials</button>
+                </div>
+            </div>
+            <div>
+                <div class="settings-section-title">Data & Backup</div>
+                <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.65;">Everything is stored privately in your browser. Download a backup file regularly to keep your story safe.</div>
+                <div class="data-grid">
+                    <button class="data-btn" onclick="triggerMasterBackupDownload()">📥 Download Backup</button>
+                    <div class="data-btn" style="position:relative;overflow:hidden;">
+                        <input type="file" id="restore-file-input" accept=".json" onchange="restoreMasterBackupFromFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;">
+                        📤 Restore Backup
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="settings-section-title">Quick Tips</div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <p style="font-size:12px;color:var(--text-dim);line-height:1.65;"><strong style="color:#94a3b8;">No chapter needs to be complete.</strong> A few sentences is more than most people's kids will ever have. Come back and add more whenever you feel like it.</p>
+                    <p style="font-size:12px;color:var(--text-dim);line-height:1.65;"><strong style="color:#94a3b8;">The AI Interview</strong> is the easiest way to fill a chapter — just answer questions naturally and let it pull the story out of you.</p>
+                    <p style="font-size:12px;color:var(--text-dim);line-height:1.65;"><strong style="color:#94a3b8;">Compile</strong> turns all your chapters into a beautifully written first-person autobiography, ready to print or share.</p>
+                </div>
+            </div>
+            <div class="settings-info-box">
+                <div class="settings-section-title" style="border:none;padding:0;margin:0 0 4px;">About LifePage</div>
+                <p>Built to preserve your story, your voice, and your values — for the people who will carry them forward. Everything runs privately in your own browser. Nothing is sent anywhere without your action.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════ */
+let appData = {
+    keys: { gemini:'', groq:'' },
+    viewFilter: 'full',
+    activeEra: 'roots',
+    audioState: 'idle',
+    slips: [],
+    saveReminderCount: 0,
+    chapters: {
+        roots:    {id:'roots',    title:'1. Roots & Where We Come From',         prompt:'What are the oldest family stories you were told? Where did your family originally come from, and what shaped the generations before you? Are there names, places, or traditions you never want forgotten?',                                                                                                isPublic:true,  text:''},
+        childhood:{id:'childhood',title:'2. The Neighborhood I Grew Up In',      prompt:'Paint me a picture of your childhood neighborhood. Who were the people on your street? What did summer afternoons look like, smell like, feel like? What did you do when school was out?',                                                                                                              isPublic:true,  text:''},
+        school:   {id:'school',   title:'3. School Years & Real Lessons',        prompt:'What did your school years actually teach you — not the textbook stuff, but the life stuff? What was a big mistake, a wild phase, or a fork in the road that shaped who you became?',                                                                                                                   isPublic:true,  text:''},
+        leap:     {id:'leap',     title:'4. The Leap — Standing on My Own',      prompt:'Tell me about the first time you were truly on your own. What did your first place look like? What were you afraid of? What did real freedom feel like — and what surprised you about it?',                                                                                                             isPublic:true,  text:''},
+        career:   {id:'career',   title:'5. Career & The Grind',                 prompt:'Walk me through your working life. What was your first real job or business? What drove you — money, survival, passion, or something else? What would you do differently if you were starting your career over today?',                                                                                  isPublic:false, text:''},
+        love:     {id:'love',     title:'6. Love, Marriage & Family',            prompt:'How did you meet the people you love most? What does real partnership actually look like from the inside — the unglamorous everyday parts? What do you wish you had understood about love before you found it?',                                                                                         isPublic:true,  text:''},
+        places:   {id:'places',   title:'7. Places That Shaped Me',              prompt:'Which cities, homes, trips, or landscapes left a permanent mark on you? Not events that happened there, but the places themselves — as characters in your story. Where did you feel most alive? Where did something shift in you?',                                                                      isPublic:true,  text:''},
+        hard:     {id:'hard',     title:'8. The Hard Years',                     prompt:'What were the losses, struggles, or quiet crises that broke something open in you? You don\'t have to share everything here. But what from the hard years do you want your kids to understand about resilience, grief, or starting over?',                                                              isPublic:false, text:''},
+        made:     {id:'made',     title:'9. Things I Made & Left Behind',        prompt:'What have you built, created, or started — businesses, recipes, habits, art, traditions, community? What have you actually put into the world? If there\'s a family recipe with a story behind it, tell me about it here.',                                                                             isPublic:true,  text:''},
+        people:   {id:'people',   title:'10. People Who Changed Everything',     prompt:'Name the people — family, friends, mentors, even strangers — who said something or did something that permanently changed your direction. What did they say? What did they model for you that you\'ve never forgotten?',                                                                                isPublic:true,  text:''},
+        doover:   {id:'doover',   title:'11. If I Were Doing It Over',           prompt:'Honest question: what would you do differently? What advice would you give yourself at 20? At 30? At 40? What do you know now that you wish someone had told you before you had to learn it the hard way?',                                                                                           isPublic:true,  text:''},
+        wisdom:   {id:'wisdom',   title:'12. What I Want You to Know',           prompt:'If you had one hour with your kids or grandkids — your philosophy, your faith, your core non-negotiables, the guiding truths you\'ve earned. What do you want them to carry into their own lives? What would you say if you only had one more chance to say it?',                                      isPublic:true,  text:''}
+    }
+};
+
+const WORD_TARGET = 150;
+let currentOnboardingIndex = 0;
+let mediaRecorder = null, audioChunks = [], analyserNode = null, animFrameId = null, audioCtx = null;
+let aiHistory = [];
+let saveReminderTimer = null, wordsSinceReminder = 0;
+
+/* ── TOAST ── */
+function toast(msg, type='info', dur=3000) {
+    const root=document.getElementById('toast-root');
+    const el=document.createElement('div');
+    el.className=`toast toast-${type}`;el.textContent=msg;root.appendChild(el);
+    setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),300);},dur);
+}
+
+/* ── MODAL ── */
+function toggleModal(id,show){document.getElementById(id).classList[show?'add':'remove']('show');}
+
+/* ── WORD COUNT + SAVE REMINDER ── */
+function updateWordCount(){
+    const val=document.getElementById('journal-editor').value.trim();
+    const words=val?val.split(/\s+/).length:0;
+    const wc=document.getElementById('word-count'),rt=document.getElementById('read-time');
+    wc.textContent=words===1?'1 word':`${words} words`;
+    wc.className='word-count'+(words>0?' has-words':'');
+    rt.textContent=words>20?`~${Math.ceil(words/200)} min read`:'';
+    wordsSinceReminder++;
+    if(wordsSinceReminder>=100&&words>30){
+        wordsSinceReminder=0;
+        clearTimeout(saveReminderTimer);
+        saveReminderTimer=setTimeout(()=>toggleModal('save-reminder-modal',true),800);
+    }
+}
+
+function quickSaveAndClose(){triggerMasterBackupDownload();toggleModal('save-reminder-modal',false);}
+
+/* ── SIDEBAR ── */
+function renderSidebar(){
+    const container=document.getElementById('chapter-list');
+    container.innerHTML='';let pop=0;
+    const circ=2*Math.PI*13;
+    Object.values(appData.chapters).forEach(ch=>{
+        const isActive=appData.activeEra===ch.id;
+        const wc=ch.text?ch.text.trim().split(/\s+/).filter(Boolean).length:0;
+        const prog=Math.min(wc/WORD_TARGET,1);
+        if(wc>0)pop++;
+        const offset=(circ*(1-prog)).toFixed(1);
+        const done=prog>=1;
+        const row=document.createElement('div');
+        row.className='chapter-row'+(isActive?' active':'');
+        row.onclick=()=>loadActiveChapter(ch.id);
+        row.innerHTML=`
+          <div class="chapter-row-left">
+            <div class="prw">
+              <svg viewBox="0 0 34 34">
+                <circle class="pr-bg" cx="17" cy="17" r="13"/>
+                <circle class="pr-fill${done?' done':''}" cx="17" cy="17" r="13"
+                  stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset}"/>
+              </svg>
+              <div class="pr-icon">${done?'✓':(wc>0?'✦':'')}</div>
+            </div>
+            <div class="chapter-info">
+              <div class="chapter-title-text">${ch.title}</div>
+              <div class="chapter-status-text${wc>0?' logged':''}">${wc>0?`${wc} words`:'Empty — tap to start'}</div>
+            </div>
+          </div>
+          <span class="vault-badge ${ch.isPublic?'pub':'priv'}">${ch.isPublic?'Public':'🔒 Vault'}</span>`;
+        container.appendChild(row);
+    });
+    document.getElementById('completion-ratio').textContent=`${pop} / 12`;
+}
+
+/* ── ROUTING DROPDOWN ── */
+function initDropdownSelectors(){
+    const sel=document.getElementById('routing-selector');
+    sel.innerHTML='<option value="none">📍 Append to Active Chapter</option>';
+    Object.values(appData.chapters).forEach(ch=>{
+        const opt=document.createElement('option');opt.value=ch.id;
+        opt.textContent=`🔄 Route → ${ch.title}`;sel.appendChild(opt);
+    });
+}
+
+/* ── CHAPTER LOAD ── */
+function loadActiveChapter(id){
+    appData.activeEra=id;const ch=appData.chapters[id];
+    document.getElementById('context-indicator').textContent=`Chapter ${ch.title.split('.')[0].trim()} of 12`;
+    document.getElementById('active-prompt-label').textContent=`"${ch.prompt}"`;
+    const ed=document.getElementById('journal-editor');
+    ed.value=ch.text||'';ed.classList.add('fade-in');setTimeout(()=>ed.classList.remove('fade-in'),300);
+    document.getElementById('privacy-switch').checked=ch.isPublic;
+    updateWordCount();wordsSinceReminder=0;
+    if(appData.audioState!=='idle')resetAudioEngine();
+    closeAiPanel();renderSidebar();
+}
+
+/* ── PRIVACY ── */
+function syncPrivacyState(){appData.chapters[appData.activeEra].isPublic=document.getElementById('privacy-switch').checked;saveState();renderSidebar();}
+
+/* ── SAVE BLOCK ── */
+function commitActiveMemoryBlock(){
+    const tv=document.getElementById('journal-editor').value;
+    const route=document.getElementById('routing-selector').value;
+    if(!tv.trim()){toast('Write something first.','warn');return;}
+    if(route!=='none'&&route!==appData.activeEra){
+        appData.slips.push({id:Date.now(),targetEra:route,dataText:tv});
+        document.getElementById('journal-editor').value=appData.chapters[appData.activeEra].text||'';
+        updateWordCount();toast(`Memory slip routed to: ${appData.chapters[route].title}`,'info');
+    } else {
+        appData.chapters[appData.activeEra].text=tv;toast('Chapter saved ✓','success');
+    }
+    document.getElementById('routing-selector').value='none';
+    saveState();updateSlipsUI();renderSidebar();
+    appData.saveReminderCount=(appData.saveReminderCount||0)+1;
+    if(appData.saveReminderCount%3===0)setTimeout(()=>toggleModal('save-reminder-modal',true),600);
+}
+
+/* ── SLIPS ── */
+function updateSlipsUI(){
+    const c=document.getElementById('slip-container'),b=document.getElementById('slip-badge');
+    b.textContent=`${appData.slips.length} Cached`;
+    if(!appData.slips.length){c.innerHTML='<p class="empty-slips">No out-of-order slips yet.</p>';return;}
+    c.innerHTML='';
+    appData.slips.forEach(s=>{
+        const card=document.createElement('div');card.className='slip-card';
+        card.innerHTML=`<div class="slip-card-header"><span class="slip-target-label">→ ${appData.chapters[s.targetEra]?.title||s.targetEra}</span><button class="slip-delete-btn" onclick="removeSlip(${s.id})">✕</button></div><div class="slip-preview">"${s.dataText.substring(0,80)}${s.dataText.length>80?'…':''}"</div>`;
+        c.appendChild(card);
+    });
+}
+function removeSlip(id){appData.slips=appData.slips.filter(s=>s.id!==id);saveState();updateSlipsUI();toast('Slip removed.','info');}
+
+/* ── FILTER ── */
+function changeGlobalFilter(mode){
+    appData.viewFilter=mode;
+    document.getElementById('toggle-full').classList.toggle('active',mode==='full');
+    document.getElementById('toggle-abbr').classList.toggle('active',mode==='abbreviated');
+}
+
+/* ══════════════════════════════════════════════════════
+   AI INTERVIEW
+══════════════════════════════════════════════════════ */
+function toggleAiPanel(){
+    const panel=document.getElementById('ai-panel');
+    if(panel.classList.contains('open')){closeAiPanel();return;}
+    if(!appData.keys.groq){toast('Add your Groq API key in ⚙️ Settings to use AI Interview.','warn',4000);toggleModal('settings-modal',true);return;}
+    panel.classList.add('open');
+    document.getElementById('ai-interview-btn').classList.add('active');
+    aiHistory=[];document.getElementById('ai-messages').innerHTML='';
+    startAiInterview();
+}
+function closeAiPanel(){
+    document.getElementById('ai-panel').classList.remove('open');
+    document.getElementById('ai-interview-btn').classList.remove('active');
+}
+async function startAiInterview(){
+    const ch=appData.chapters[appData.activeEra];
+    const existing=document.getElementById('journal-editor').value.trim();
+    const sys=`You are a warm, empathetic biographer helping someone write their life story as a letter to their children. You're working on the chapter called "${ch.title}".
+
+Ask one thoughtful, conversational question at a time to help the person go deeper. Keep your responses to 1-3 sentences. Be warm, curious, and specific — like a close friend who genuinely wants to hear the story. Reference what they've already shared when possible.
+
+Never ask multiple questions at once. Never be clinical or formal. If they get emotional, acknowledge it gently before moving on.`;
+    const userMsg=existing
+        ?`I've already written this for this chapter:\n\n"${existing}"\n\nPlease ask me a thoughtful follow-up question to help me go deeper.`
+        :`I haven't written anything yet. Please start our conversation with a warm opening question based on this chapter prompt: "${ch.prompt}"`;
+    aiHistory=[{role:'user',content:userMsg}];
+    await callGroqChat(sys);
+}
+async function sendAiMessage(){
+    const input=document.getElementById('ai-user-input');
+    const txt=input.value.trim();if(!txt)return;input.value='';
+    addBubble(txt,'user');aiHistory.push({role:'user',content:txt});
+    const ch=appData.chapters[appData.activeEra];
+    const sys=`You are a warm biographer helping someone write their life story for their children. Current chapter: "${ch.title}". Ask one thoughtful follow-up question based on what they just shared. 1-3 sentences max. Warm, specific, personal.`;
+    await callGroqChat(sys);
+}
+async function callGroqChat(sys){
+    const typing=addTyping();
+    try{
+        const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+            method:'POST',
+            headers:{'Authorization':`Bearer ${appData.keys.groq}`,'Content-Type':'application/json'},
+            body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:sys},...aiHistory],max_tokens:220,temperature:0.72})
+        });
+        if(!res.ok)throw new Error();
+        const data=await res.json();
+        const reply=data.choices[0].message.content.trim();
+        typing.remove();addBubble(reply,'ai');aiHistory.push({role:'assistant',content:reply});
+    }catch(e){typing.remove();addBubble('I had trouble connecting. Check your Groq key in Settings.','ai');}
+}
+function addBubble(text,role){
+    const msgs=document.getElementById('ai-messages');
+    const el=document.createElement('div');el.className=`ai-bubble ${role}`;el.textContent=text;
+    msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;
+}
+function addTyping(){
+    const msgs=document.getElementById('ai-messages');
+    const el=document.createElement('div');el.className='ai-bubble typing';
+    el.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
+    msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;
+}
+function useAiConversation(){
+    const userTurns=aiHistory.filter(m=>m.role==='user'&&!m.content.startsWith("I've already")&&!m.content.startsWith("I haven't")).map(m=>m.content).join('\n\n');
+    if(!userTurns.trim()){toast('Share some answers first.','warn');return;}
+    const ed=document.getElementById('journal-editor');
+    const existing=ed.value.trim();
+    ed.value=existing?existing+'\n\n'+userTurns:userTurns;
+    updateWordCount();closeAiPanel();
+    toast('Your answers have been added. Save when ready.','success',4000);
+}
+
+/* ══════════════════════════════════════════════════════
+   AUDIO — Real MediaRecorder + Groq Whisper
+══════════════════════════════════════════════════════ */
+async function toggleAudioHarvest(){
+    if(appData.audioState==='idle'){
+        try{
+            const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+            audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+            const src=audioCtx.createMediaStreamSource(stream);
+            analyserNode=audioCtx.createAnalyser();analyserNode.fftSize=64;
+            src.connect(analyserNode);drawWaveform();
+            audioChunks=[];mediaRecorder=new MediaRecorder(stream);
+            mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+            mediaRecorder.onstop=async()=>{
+                cancelAnimationFrame(animFrameId);
+                if(appData.keys.groq)await transcribeWithWhisper();
+                else toast('Add a Groq key in Settings to enable transcription.','warn',4000);
+                resetAudioEngine();
+            };
+            mediaRecorder.start();appData.audioState='recording';setRecUi('recording');
+        }catch(e){toast('Microphone access denied or unavailable.','error');}
+    }else{if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();}
+}
+async function transcribeWithWhisper(){
+    toast('Transcribing…','info',5000);
+    const blob=new Blob(audioChunks,{type:'audio/webm'});
+    const fd=new FormData();fd.append('file',blob,'rec.webm');fd.append('model','whisper-large-v3');
+    try{
+        const res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{'Authorization':`Bearer ${appData.keys.groq}`},body:fd});
+        if(!res.ok)throw new Error();
+        const data=await res.json();const t=data.text?.trim();
+        if(t){const ed=document.getElementById('journal-editor');ed.value=ed.value.trim()?ed.value+'\n\n'+t:t;updateWordCount();toast('Transcription complete.','success');}
+    }catch(e){toast('Transcription failed. Check your Groq key.','error');}
+}
+function toggleAudioPause(){
+    if(!mediaRecorder)return;
+    if(appData.audioState==='recording'){mediaRecorder.pause();appData.audioState='paused';setRecUi('paused');}
+    else if(appData.audioState==='paused'){mediaRecorder.resume();appData.audioState='recording';setRecUi('recording');}
+}
+function setRecUi(s){
+    const btn=document.getElementById('record-action-btn'),lbl=document.getElementById('record-action-label'),
+          dot=document.getElementById('status-dot'),pause=document.getElementById('pause-action-btn'),
+          wl=document.getElementById('wave-label');
+    if(s==='recording'){btn.className='btn btn-rec recording';lbl.textContent='Stop';dot.style.background='#fff';pause.disabled=false;pause.textContent='Pause';wl.textContent='Mic Live';wl.style.color='var(--cyan)';}
+    else if(s==='paused'){btn.className='btn btn-rec paused';lbl.textContent='Stop';dot.style.background='#000';pause.textContent='Resume';wl.textContent='Paused';wl.style.color='var(--amber)';}
+    else{btn.className='btn btn-rec';lbl.textContent='Record';dot.style.background='#000';pause.disabled=true;pause.textContent='Pause';wl.textContent='Mic Inactive';wl.style.color='';}
+}
+function resetAudioEngine(){appData.audioState='idle';if(audioCtx){audioCtx.close();audioCtx=null;}if(animFrameId)cancelAnimationFrame(animFrameId);analyserNode=null;setRecUi('idle');clearWaveCanvas();}
+function drawWaveform(){
+    const canvas=document.getElementById('wave-canvas'),ctx=canvas.getContext('2d');
+    const bc=12,W=canvas.width,H=canvas.height;
+    function loop(){animFrameId=requestAnimationFrame(loop);ctx.clearRect(0,0,W,H);if(!analyserNode)return;
+        const d=new Uint8Array(analyserNode.frequencyBinCount);analyserNode.getByteFrequencyData(d);
+        const bw=(W/bc)-2;
+        for(let i=0;i<bc;i++){const v=d[Math.floor(i*d.length/bc)]/255,h=Math.max(3,v*H),x=i*(bw+2),y=(H-h)/2;
+            ctx.fillStyle=appData.audioState==='paused'?'#fbbf24':'#5bc8e8';
+            ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,bw,h,2);else ctx.rect(x,y,bw,h);ctx.fill();}
+    }loop();
+}
+function clearWaveCanvas(){const c=document.getElementById('wave-canvas');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height);}
+
+/* ══════════════════════════════════════════════════════
+   COMPILE
+══════════════════════════════════════════════════════ */
+async function compileBookDirectly(){
+    const vp=document.getElementById('production-book-viewport');
+    if(!appData.keys.gemini){toast('Add your Gemini API key in ⚙️ Settings first.','warn',4000);toggleModal('settings-modal',true);return;}
+    vp.innerHTML=`<div class="compile-loader"><div class="waveform-loader"><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div></div><div class="compile-status">Weaving your story together…</div></div>`;
+    const ep=`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${appData.keys.gemini}`;
+    const si=`You are a master creative biographer. Synthesize these life chapter entries into a fluidly written first-person autobiography, framed as a heartfelt letter from a parent to their children.
+
+Rules:
+1. Write in the author's own voice — warm, personal, honest. Do not over-polish or sanitize.
+2. Integrate Memory Slips naturally into the correct chapter arc.
+3. Pull natural quotes as blockquotes. Highlight family traditions, turning points, and philosophical insights.
+4. Begin with a brief, warm salutation like "To my children —" or similar.
+5. If viewFilter is 'abbreviated', completely omit chapters marked isPublic: false.
+6. Output structured HTML only. No markdown. No backticks. Use exactly:
+   <h3 style="font-family:'DM Serif Display',serif;font-size:20px;color:#e2e8f0;margin:32px 0 10px;letter-spacing:-0.01em;">[title]</h3>
+   <p style="font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.85;color:#94a3b8;margin-bottom:18px;font-weight:300;">[text]</p>
+   <blockquote style="border-left:2px solid #5bc8e8;padding:10px 18px;margin:20px 0;font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;color:#cbd5e1;">[quote]</blockquote>`;
+    try{
+        const r=await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:`View Filter: ${appData.viewFilter}\n\nChapters:\n${JSON.stringify(appData.chapters,null,2)}\n\nMemory Slips:\n${JSON.stringify(appData.slips,null,2)}`}]}],systemInstruction:{parts:[{text:si}]},generationConfig:{temperature:0.28}})});
+        if(!r.ok)throw new Error('API '+r.status);
+        const result=await r.json();
+        const raw=result.candidates?.[0]?.content?.parts?.[0]?.text||'';
+        const clean=raw.replace(/```html?/gi,'').replace(/```/g,'').trim();
+        vp.innerHTML=`<div style="user-select:text;">${clean}</div>`;
+        toast('Autobiography compiled!','success',4000);
+    }catch(e){
+        vp.innerHTML=`<div class="book-empty"><div class="book-empty-icon">⚠️</div><div class="book-empty-text">Compilation failed.</div><div class="book-empty-sub">Check your Gemini API key and try again.</div></div>`;
+        toast('Compilation failed — check your Gemini key.','error');
+    }
+}
+
+/* ── API KEYS ── */
+function saveApiKeys(){appData.keys.gemini=document.getElementById('input-key-gemini').value.trim();appData.keys.groq=document.getElementById('input-key-groq').value.trim();saveState();toast('Credentials saved.','success');toggleModal('settings-modal',false);}
+async function testKeyConnection(t){
+    const el=document.getElementById(`${t}-test-status`);el.textContent='Testing…';el.className='key-status testing';
+    const val=document.getElementById(`input-key-${t}`).value.trim();
+    if(!val){el.textContent='Empty key';el.className='key-status fail';return;}
+    try{
+        let ok=false;
+        if(t==='gemini'){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${val}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})});ok=r.ok;}
+        else{const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{'Authorization':`Bearer ${val}`}});ok=r.ok;}
+        el.textContent=ok?'✓ Active':'✕ Failed';el.className='key-status '+(ok?'ok':'fail');
+    }catch(e){el.textContent='✕ Failed';el.className='key-status fail';}
+}
+
+/* ── BACKUP / RESTORE ── */
+function triggerMasterBackupDownload(){
+    const ds='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(appData,null,2));
+    const a=document.createElement('a');a.href=ds;a.download=`lifepage_backup_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);a.click();a.remove();toast('Backup downloaded.','success');
+}
+function restoreMasterBackupFromFile(input){
+    if(!input.files?.[0])return;
+    const r=new FileReader();
+    r.onload=e=>{try{const p=JSON.parse(e.target.result);if(p.chapters&&p.keys){appData=p;saveState();loadStateFromStorage();initDropdownSelectors();loadActiveChapter(Object.keys(appData.chapters)[0]);updateSlipsUI();toast('Backup restored.','success',4000);toggleModal('settings-modal',false);}else toast('Invalid backup file.','error');}catch{toast('Could not read backup file.','error');}};
+    r.readAsText(input.files[0]);
+}
+
+/* ── PRINT ── */
+function triggerPrint(){const vp=document.getElementById('production-book-viewport');if(!vp.querySelector('p,h3')){toast('Compile your autobiography first, then print.','warn',4000);return;}window.print();}
+
+/* ── PERSIST ── */
+function saveState(){localStorage.setItem('lifepage_v3',JSON.stringify(appData));}
+function loadStateFromStorage(){
+    const c=localStorage.getItem('lifepage_v3');
+    if(c){try{const p=JSON.parse(c);if(p.chapters&&p.keys)appData=p;}catch(e){}}
+    document.getElementById('input-key-gemini').value=appData.keys.gemini||'';
+    document.getElementById('input-key-groq').value=appData.keys.groq||'';
+}
+
+/* ── ONBOARDING ── */
+function checkOnboarding(){if(!localStorage.getItem('lifepage_ob_v3'))toggleModal('onboarding-modal',true);}
+function advanceOnboardingDeck(){
+    const cards=document.querySelectorAll('#onboarding-cards .onboarding-card');
+    const dots=document.querySelectorAll('#ob-dots .onboarding-dot');
+    const btn=document.getElementById('onboarding-next-btn');
+    cards[currentOnboardingIndex].style.display='none';dots[currentOnboardingIndex].classList.remove('active');
+    currentOnboardingIndex++;
+    if(currentOnboardingIndex<cards.length){cards[currentOnboardingIndex].style.display='block';dots[currentOnboardingIndex].classList.add('active');if(currentOnboardingIndex===cards.length-1)btn.textContent='Get Started ✓';}
+    else{localStorage.setItem('lifepage_ob_v3','true');toggleModal('onboarding-modal',false);}
+}
+
+/* ── UNSAVED GUARD ── */
+window.addEventListener('beforeunload',e=>{
+    const v=document.getElementById('journal-editor').value.trim();
+    const s=appData.chapters[appData.activeEra].text||'';
+    if(v&&v!==s){e.preventDefault();e.returnValue='Unsaved changes — leave?';}
+});
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded',()=>{
+    loadStateFromStorage();initDropdownSelectors();updateSlipsUI();
+    loadActiveChapter(appData.activeEra||'roots');renderSidebar();checkOnboarding();
+});
+</script>
+</body>
+</html>
