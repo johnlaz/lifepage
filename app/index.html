@@ -6,32 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LifePage">
-<meta name="theme-color" content="#060a0e">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="LifePage">
-<meta name="msapplication-TileColor" content="#060a0e">
-<meta name="msapplication-TileImage" content="../icons/icon-144x144.png">
-
-<!-- Favicon -->
-<link rel="icon" type="image/x-icon" href="../favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="../icons/icon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32x32.png">
-
-<!-- Apple Touch Icons -->
-<link rel="apple-touch-icon" href="../icons/icon-180x180.png">
-<link rel="apple-touch-icon" sizes="152x152" href="../icons/icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180x180.png">
-
-<!-- Apple Splash Screens -->
-<link rel="apple-touch-startup-image" href="../icons/apple-splash-750x1334.jpg"   media="(device-width:375px) and (device-height:667px) and (-webkit-device-pixel-ratio:2)">
-<link rel="apple-touch-startup-image" href="../icons/apple-splash-1125x2436.jpg"  media="(device-width:375px) and (device-height:812px) and (-webkit-device-pixel-ratio:3)">
-<link rel="apple-touch-startup-image" href="../icons/apple-splash-1179x2556.jpg"  media="(device-width:393px) and (device-height:852px) and (-webkit-device-pixel-ratio:3)">
-<link rel="apple-touch-startup-image" href="../icons/apple-splash-1284x2778.jpg"  media="(device-width:428px) and (device-height:926px) and (-webkit-device-pixel-ratio:3)">
-<link rel="apple-touch-startup-image" href="../icons/apple-splash-1668x2388.jpg"  media="(device-width:834px) and (device-height:1194px) and (-webkit-device-pixel-ratio:2)">
-<link rel="apple-touch-startup-image" href="../icons/apple-splash-2048x2732.jpg"  media="(device-width:1024px) and (device-height:1366px) and (-webkit-device-pixel-ratio:2)">
-
-<!-- PWA Manifest — lives with the app -->
-<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#050811">
 <title>LifePage — A Letter to My Kids</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1160,7 +1135,7 @@ Write in the first person, in the author's natural voice. Be warm, specific, and
 Output only the chapter text. No headings, no preamble, no explanation. Plain prose.`;
   const userPrompt=`Chapter: ${ch.title}\n\nMy notes:\n${ch.text}${aiNotesText}`;
   try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${appData.keys.gemini}`,{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${appData.keys.gemini}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:[{parts:[{text:userPrompt}]}],systemInstruction:{parts:[{text:si}]},generationConfig:{temperature:0.3}})
     });
@@ -1210,7 +1185,7 @@ Output Format: Return structured HTML only. No markdown. No backticks. Use:
 <p style="font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.85;color:#94a3b8;margin-bottom:18px;font-weight:300;">[text]</p>
 <blockquote style="border-left:2px solid #5bc8e8;padding:10px 18px;margin:20px 0;font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;color:#cbd5e1;">[quote]</blockquote>`;
   try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${appData.keys.gemini}`,{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${appData.keys.gemini}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:[{parts:[{text:chapterContent}]}],systemInstruction:{parts:[{text:si}]},generationConfig:{temperature:0.25}})
     });
@@ -1353,7 +1328,7 @@ async function testKeyConnection(t){
   if(!val){el.textContent='Empty key';el.className='key-status fail';return;}
   try{
     let ok=false;
-    if(t==='gemini'){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${val}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})});ok=r.ok;}
+    if(t==='gemini'){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${val}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})});ok=r.ok;}
     else{const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{'Authorization':`Bearer ${val}`}});ok=r.ok;}
     el.textContent=ok?'✓ Active':'✕ Failed';el.className='key-status '+(ok?'ok':'fail');
   }catch(e){el.textContent='✕ Failed';el.className='key-status fail';}
@@ -1458,16 +1433,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   renderSidebar();
   checkOnboarding();
 });
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('LifePage SW registered, scope:', reg.scope))
-        .catch(err => console.warn('SW registration failed:', err));
-    });
-  }
 </script>
 </body>
 </html>
