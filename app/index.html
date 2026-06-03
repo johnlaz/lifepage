@@ -601,6 +601,7 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
         <div class="onboarding-dots" id="ob-dots"></div>
         <div class="onboarding-nav">
           <button class="ob-nav-btn" id="ob-back-btn" onclick="obNav(-1)" title="Back" disabled>←</button>
+          <button class="btn btn-secondary" onclick="skipOnboarding()" style="padding:7px 14px;font-size:11px;">Skip</button>
           <button class="btn btn-rec" id="onboarding-next-btn" onclick="obNav(1)">Next →</button>
         </div>
       </div>
@@ -1135,20 +1136,29 @@ Write in the first person, in the author's natural voice. Be warm, specific, and
 Output only the chapter text. No headings, no preamble, no explanation. Plain prose.`;
   const userPrompt=`Chapter: ${ch.title}\n\nMy notes:\n${ch.text}${aiNotesText}`;
   try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${appData.keys.gemini}`,{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appData.keys.gemini}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:userPrompt}]}],systemInstruction:{parts:[{text:si}]},generationConfig:{temperature:0.3}})
+      body:JSON.stringify({
+        contents:[{role:'user',parts:[{text:userPrompt}]}],
+        systemInstruction:{role:'model',parts:[{text:si}]},
+        generationConfig:{temperature:0.3,thinkingConfig:{thinkingBudget:0}}
+      })
     });
-    if(!r.ok)throw new Error();
+    if(!r.ok){
+      const errData=await r.json().catch(()=>({}));
+      const errMsg=errData?.error?.message||`HTTP ${r.status}`;
+      throw new Error(errMsg);
+    }
     const result=await r.json();
     const text=result.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    if(!text)throw new Error('Empty response from Gemini');
     if(slot==='a'){ch.draftA=text;ch.draftALocked=true;ch.finalDraft='a';activeDraftView='a';}
     else{ch.draftB=text;ch.finalDraft=ch.finalDraft||'b';activeDraftView='b';}
     saveState();renderLockedState();renderDraftSelector();updateChapterCompileStatus();renderSidebar();
     toast(`Draft ${slot.toUpperCase()} saved and locked ✓`,'success',4000);
   }catch(e){
-    out.innerHTML='<span style="color:var(--red);font-size:13px;">Writing failed — check your Gemini key and try again.</span>';
-    toast('Chapter compile failed.','error');
+    out.innerHTML=`<span style="color:var(--red);font-size:13px;">Writing failed: ${e.message}</span>`;
+    toast(`Chapter compile failed: ${e.message}`,'error',6000);
   }
 }
 
@@ -1185,19 +1195,28 @@ Output Format: Return structured HTML only. No markdown. No backticks. Use:
 <p style="font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.85;color:#94a3b8;margin-bottom:18px;font-weight:300;">[text]</p>
 <blockquote style="border-left:2px solid #5bc8e8;padding:10px 18px;margin:20px 0;font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;color:#cbd5e1;">[quote]</blockquote>`;
   try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${appData.keys.gemini}`,{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appData.keys.gemini}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:chapterContent}]}],systemInstruction:{parts:[{text:si}]},generationConfig:{temperature:0.25}})
+      body:JSON.stringify({
+        contents:[{role:'user',parts:[{text:chapterContent}]}],
+        systemInstruction:{role:'model',parts:[{text:si}]},
+        generationConfig:{temperature:0.25,thinkingConfig:{thinkingBudget:0}}
+      })
     });
-    if(!r.ok)throw new Error('API '+r.status);
+    if(!r.ok){
+      const errData=await r.json().catch(()=>({}));
+      const errMsg=errData?.error?.message||`HTTP ${r.status}`;
+      throw new Error(errMsg);
+    }
     const result=await r.json();
     const raw=result.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    if(!raw)throw new Error('Empty response from Gemini');
     const clean=raw.replace(/```html?/gi,'').replace(/```/g,'').trim();
     vp.innerHTML=`<div style="user-select:text;">${clean}</div>`;
     toast('Your autobiography is ready!','success',5000);
   }catch(e){
-    vp.innerHTML=`<div class="book-empty"><div class="book-empty-icon">⚠️</div><div class="book-empty-text">Compilation failed.</div><div class="book-empty-sub">Check your Gemini API key and try again.</div></div>`;
-    toast('Full book compile failed.','error');
+    vp.innerHTML=`<div class="book-empty"><div class="book-empty-icon">⚠️</div><div class="book-empty-text">Compilation failed.</div><div class="book-empty-sub">${e.message}</div></div>`;
+    toast(`Full book compile failed: ${e.message}`,'error',6000);
   }
 }
 
@@ -1327,11 +1346,22 @@ async function testKeyConnection(t){
   const val=document.getElementById(`input-key-${t}`).value.trim();
   if(!val){el.textContent='Empty key';el.className='key-status fail';return;}
   try{
-    let ok=false;
-    if(t==='gemini'){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${val}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})});ok=r.ok;}
-    else{const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{'Authorization':`Bearer ${val}`}});ok=r.ok;}
-    el.textContent=ok?'✓ Active':'✕ Failed';el.className='key-status '+(ok?'ok':'fail');
-  }catch(e){el.textContent='✕ Failed';el.className='key-status fail';}
+    if(t==='gemini'){
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${val}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{role:'user',parts:[{text:'Hi'}]}],generationConfig:{maxOutputTokens:5,thinkingConfig:{thinkingBudget:0}}})
+      });
+      if(r.ok){el.textContent='✓ Active';el.className='key-status ok';}
+      else{
+        const errData=await r.json().catch(()=>({}));
+        const msg=errData?.error?.message||`HTTP ${r.status}`;
+        el.textContent=`✕ ${msg.substring(0,40)}`;el.className='key-status fail';
+      }
+    } else {
+      const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{'Authorization':`Bearer ${val}`}});
+      el.textContent=r.ok?'✓ Active':'✕ Failed';el.className='key-status '+(r.ok?'ok':'fail');
+    }
+  }catch(e){el.textContent='✕ Network error';el.className='key-status fail';}
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1412,6 +1442,7 @@ function obJumpTo(idx){
   else{btn.textContent='Next →';btn.onclick=()=>obNav(1);}
 }
 function checkOnboarding(){if(!localStorage.getItem('lifepage_ob_v4')){buildOnboarding();toggleModal('onboarding-modal',true);}}
+function skipOnboarding(){localStorage.setItem('lifepage_ob_v4','true');toggleModal('onboarding-modal',false);}
 function replayOnboarding(){buildOnboarding();currentOnboardingIndex=0;toggleModal('settings-modal',false);toggleModal('onboarding-modal',true);}
 
 /* ══════════════════════════════════════════════════════
