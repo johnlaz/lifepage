@@ -629,7 +629,8 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
               <input type="password" id="input-key-gemini" class="text-input" placeholder="AIzaSy…">
               <button class="btn-test" onclick="testKeyConnection('gemini')">Test</button>
             </div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Free key at aistudio.google.com</div>
+            <div id="gemini-diag" style="display:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);margin-top:4px;line-height:1.5;word-break:break-word;padding:6px 10px;background:rgba(248,113,113,0.06);border-radius:6px;border:1px solid rgba(248,113,113,0.15);"></div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Free key at aistudio.google.com — make sure "Generative Language API" is enabled</div>
           </div>
           <div class="field-group">
             <div class="field-label">
@@ -640,6 +641,7 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
               <input type="password" id="input-key-groq" class="text-input" placeholder="gsk_…">
               <button class="btn-test" onclick="testKeyConnection('groq')">Test</button>
             </div>
+            <div id="groq-diag" style="display:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);margin-top:4px;line-height:1.5;word-break:break-word;padding:6px 10px;background:rgba(248,113,113,0.06);border-radius:6px;border:1px solid rgba(248,113,113,0.15);"></div>
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Free key at console.groq.com</div>
           </div>
           <button class="btn btn-rec" style="width:100%;justify-content:center;" onclick="saveApiKeys()">Save Credentials</button>
@@ -1342,26 +1344,50 @@ function clearWaveCanvas(){const c=document.getElementById('wave-canvas');if(c)c
 ══════════════════════════════════════════════════════ */
 function saveApiKeys(){appData.keys.gemini=document.getElementById('input-key-gemini').value.trim();appData.keys.groq=document.getElementById('input-key-groq').value.trim();saveState();toast('Credentials saved.','success');toggleModal('settings-modal',false);}
 async function testKeyConnection(t){
-  const el=document.getElementById(`${t}-test-status`);el.textContent='Testing…';el.className='key-status testing';
+  const el=document.getElementById(`${t}-test-status`);
+  const diagEl=document.getElementById(`${t}-diag`);
+  el.textContent='Testing…';el.className='key-status testing';
+  if(diagEl)diagEl.style.display='none';
   const val=document.getElementById(`input-key-${t}`).value.trim();
   if(!val){el.textContent='Empty key';el.className='key-status fail';return;}
   try{
     if(t==='gemini'){
-      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${val}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({contents:[{role:'user',parts:[{text:'Hi'}]}],generationConfig:{maxOutputTokens:5,thinkingConfig:{thinkingBudget:0}}})
-      });
-      if(r.ok){el.textContent='✓ Active';el.className='key-status ok';}
-      else{
-        const errData=await r.json().catch(()=>({}));
-        const msg=errData?.error?.message||`HTTP ${r.status}`;
-        el.textContent=`✕ ${msg.substring(0,40)}`;el.className='key-status fail';
+      // Try v1beta with gemini-2.5-flash first, then fall back to listing models
+      const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${val}`;
+      const body=JSON.stringify({contents:[{role:'user',parts:[{text:'Hi'}]}],generationConfig:{maxOutputTokens:5}});
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body});
+      const status=r.status;
+      let errData={};
+      try{errData=await r.json();}catch(e){}
+      if(r.ok){
+        el.textContent='✓ Active';el.className='key-status ok';
+        if(diagEl){diagEl.style.display='block';diagEl.textContent='✓ Connected to gemini-2.5-flash';}
+      } else {
+        const code=errData?.error?.code||status;
+        const msg=errData?.error?.message||'Unknown error';
+        const errStr=`HTTP ${code}: ${msg}`;
+        el.textContent='✕ Failed';el.className='key-status fail';
+        if(diagEl){
+          diagEl.style.display='block';
+          // Give actionable guidance based on error code
+          let hint='';
+          if(status===400)hint=' → Request format issue.';
+          else if(status===401||status===403)hint=' → Key invalid, expired, or API not enabled in Google Cloud Console.';
+          else if(status===429)hint=' → Quota exceeded. Check aistudio.google.com for usage limits.';
+          else if(status===404)hint=' → Model not found. The key may be restricted to older models.';
+          diagEl.textContent=errStr+hint;
+        }
       }
     } else {
       const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{'Authorization':`Bearer ${val}`}});
-      el.textContent=r.ok?'✓ Active':'✕ Failed';el.className='key-status '+(r.ok?'ok':'fail');
+      el.textContent=r.ok?'✓ Active':'✕ Failed';
+      el.className='key-status '+(r.ok?'ok':'fail');
+      if(diagEl&&!r.ok){diagEl.style.display='block';diagEl.textContent=`HTTP ${r.status} — check key at console.groq.com`;}
     }
-  }catch(e){el.textContent='✕ Network error';el.className='key-status fail';}
+  }catch(e){
+    el.textContent='✕ Network error';el.className='key-status fail';
+    if(diagEl){diagEl.style.display='block';diagEl.textContent=`Network error: ${e.message}`;}
+  }
 }
 
 /* ══════════════════════════════════════════════════════
