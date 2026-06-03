@@ -20,6 +20,57 @@
   --text:#e2e8f0;--text-dim:#64748b;--text-muted:#334155;
   --radius:16px;--radius-sm:10px;
 }
+
+/* ── PALETTE: Parchment (warm light) ── */
+[data-theme="parchment"]{
+  --bg:#faf6f0;--surface:#ffffff;--surface2:#f3ede4;
+  --border:rgba(0,0,0,0.09);--border-hi:rgba(180,120,60,0.45);
+  --cyan:#b4652a;--cyan-dim:rgba(180,101,42,0.1);
+  --emerald:#2d7a4f;--red:#c0392b;--amber:#c17f24;--violet:#6d4fa0;--rose:#b5406e;
+  --text:#2c1f0e;--text-dim:#7a6652;--text-muted:#c4b09a;
+}
+[data-theme="parchment"] body::before{opacity:0.15;}
+[data-theme="parchment"] body::after{background:radial-gradient(ellipse at center,rgba(180,101,42,0.06) 0%,transparent 70%);}
+[data-theme="parchment"] header{background:rgba(250,246,240,0.92);}
+
+/* ── PALETTE: Slate (cool light) ── */
+[data-theme="slate"]{
+  --bg:#f0f4f8;--surface:#ffffff;--surface2:#e4ecf4;
+  --border:rgba(0,0,0,0.08);--border-hi:rgba(37,99,235,0.4);
+  --cyan:#2563eb;--cyan-dim:rgba(37,99,235,0.1);
+  --emerald:#16a34a;--red:#dc2626;--amber:#d97706;--violet:#7c3aed;--rose:#db2777;
+  --text:#0f1e35;--text-dim:#4a6080;--text-muted:#a8bdd0;
+}
+[data-theme="slate"] body::before{opacity:0.1;}
+[data-theme="slate"] body::after{background:radial-gradient(ellipse at center,rgba(37,99,235,0.05) 0%,transparent 70%);}
+[data-theme="slate"] header{background:rgba(240,244,248,0.92);}
+
+/* ── PALETTE: Dusk (warm dark — softer than midnight) ── */
+[data-theme="dusk"]{
+  --bg:#1a1218;--surface:#251b22;--surface2:#2e2229;
+  --border:rgba(255,255,255,0.07);--border-hi:rgba(240,160,120,0.45);
+  --cyan:#e8906a;--cyan-dim:rgba(232,144,106,0.12);
+  --emerald:#6dbd8a;--red:#f47373;--amber:#f0c060;--violet:#c49ae8;--rose:#f083a8;
+  --text:#f0e8e0;--text-dim:#907870;--text-muted:#4a3830;
+}
+[data-theme="dusk"] body::after{background:radial-gradient(ellipse at center,rgba(232,144,106,0.06) 0%,transparent 70%);}
+[data-theme="dusk"] header{background:rgba(26,18,24,0.9);}
+
+/* ── THEME PICKER MODAL ── */
+.theme-picker-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;}
+.theme-card{border-radius:12px;border:2px solid transparent;cursor:pointer;overflow:hidden;transition:border-color 0.2s,transform 0.15s,box-shadow 0.2s;position:relative;}
+.theme-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.18);}
+.theme-card.selected{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim);}
+.theme-card-preview{height:72px;display:flex;flex-direction:column;gap:5px;padding:10px 12px;position:relative;}
+.theme-card-bar{height:7px;border-radius:3px;width:70%;}
+.theme-card-bar.short{width:45%;}
+.theme-card-dot-row{display:flex;gap:4px;margin-top:2px;}
+.theme-card-dot{width:18px;height:5px;border-radius:3px;}
+.theme-card-check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--cyan);display:none;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;}
+.theme-card.selected .theme-card-check{display:flex;}
+.theme-card-footer{padding:8px 12px 10px;display:flex;align-items:center;justify-content:space-between;}
+.theme-card-name{font-family:'DM Serif Display',serif;font-size:13px;font-weight:400;}
+.theme-card-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{height:100%;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
@@ -37,7 +88,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(6,8,15,0.88);backdrop-f
 .toggle-pill{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px;}
 .toggle-pill button{padding:5px 14px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.04em;border:none;cursor:pointer;transition:all 0.2s;background:transparent;color:var(--text-dim);}
 .toggle-pill button.active{background:var(--cyan);color:#000;}
-.icon-btn{width:38px;height:38px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:16px;}
+.icon-btn{width:38px;height:38px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:16px;color:var(--text-dim);}
 .icon-btn:hover{border-color:var(--border-hi);background:var(--surface);}
 
 /* ── LAYOUT ── */
@@ -68,11 +119,10 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
 .pr-fill.done{stroke:var(--emerald);}
 .pr-fill.locked-ring{stroke:var(--amber);}
 .pr-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.2s;}
-.chapter-row.active .pr-fill{filter:drop-shadow(0 0 5px rgba(91,200,232,0.8));}
-.chapter-row.active .prw::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(91,200,232,0.7);border-right-color:rgba(91,200,232,0.2);animation:ring-spin 1.6s linear infinite;}
-@keyframes ring-spin{to{transform:rotate(360deg);}}
-.chapter-row.active .pr-icon{animation:icon-pulse 2.2s ease-in-out infinite;}
-@keyframes icon-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.82);}}
+/* Active chapter: soft ambient glow pulse inside the ring — no spin */
+.chapter-row.active .pr-fill{filter:drop-shadow(0 0 4px rgba(91,200,232,0.6));}
+.chapter-row.active .prw::after{content:'';position:absolute;inset:4px;border-radius:50%;background:radial-gradient(circle,rgba(91,200,232,0.22) 0%,transparent 70%);animation:ring-ambient 3s ease-in-out infinite;}
+@keyframes ring-ambient{0%,100%{opacity:0.4;transform:scale(0.85);}50%{opacity:1;transform:scale(1.08);}}
 
 .chapter-info{flex:1;min-width:0;}
 .chapter-title-text{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
@@ -263,6 +313,34 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
 #production-book-viewport h3{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin:28px 0 10px;letter-spacing:-0.01em;}
 #production-book-viewport h3:first-child{margin-top:0;}
 #production-book-viewport p{font-family:'DM Sans',sans-serif;font-weight:300;font-size:15px;line-height:1.8;color:#94a3b8;margin-bottom:16px;}
+
+/* ── BOOK COVER ── */
+.book-cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 32px 56px;border-bottom:1px solid var(--border);margin-bottom:8px;position:relative;background:linear-gradient(160deg,rgba(91,200,232,0.04) 0%,transparent 60%);}
+.book-cover::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(91,200,232,0.5),transparent);}
+.book-cover-eyebrow{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:20px;opacity:0.7;}
+.book-cover-title{font-family:'DM Serif Display',serif;font-size:clamp(28px,5vw,44px);color:#f1f5f9;letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;}
+.book-cover-subtitle{font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(15px,2.2vw,20px);color:var(--cyan);margin-bottom:32px;opacity:0.85;}
+.book-cover-divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(91,200,232,0.5),transparent);margin:0 auto 28px;}
+.book-cover-author{font-family:'DM Serif Display',serif;font-size:clamp(14px,2vw,18px);color:#94a3b8;letter-spacing:0.04em;}
+.book-cover-author-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+
+/* ── CHAPTER EYEBROW LABELS ── */
+.chapter-eyebrow-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--cyan);display:block;margin-bottom:6px;opacity:0.75;}
+
+/* ── INLINE PHOTO ── */
+.chapter-photo-wrap{margin:22px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.chapter-photo-wrap img{width:100%;display:block;object-fit:cover;max-height:340px;}
+.chapter-photo-caption{font-family:'DM Serif Display',serif;font-style:italic;font-size:13px;color:var(--text-dim);text-align:center;padding:10px 16px 12px;background:rgba(255,255,255,0.02);border-top:1px solid var(--border);line-height:1.55;}
+
+/* ── PHOTO UPLOADER (workspace) ── */
+.photo-upload-strip{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:14px;}
+.photo-upload-thumb{width:36px;height:36px;border-radius:6px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;}
+.photo-upload-label{font-size:12px;color:var(--text-dim);flex:1;line-height:1.4;}
+.photo-upload-label strong{color:var(--text);font-weight:500;}
+.photo-upload-btn{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.photo-upload-btn:hover{border-color:var(--border-hi);color:var(--text);}
+.photo-remove-btn{padding:4px 9px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid rgba(248,113,113,0.25);background:rgba(248,113,113,0.06);color:var(--red);cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.photo-remove-btn:hover{background:rgba(248,113,113,0.14);}
 .compile-loader{display:flex;flex-direction:column;align-items:center;gap:16px;padding:48px 24px;}
 .waveform-loader{display:flex;align-items:center;gap:4px;height:40px;}
 .wl-bar{width:4px;border-radius:2px;background:var(--cyan);animation:wl-b 1s ease-in-out infinite alternate;}
@@ -358,12 +436,114 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
 @media print{
   header,.sidebar,.recording-strip,.save-row,.workspace-header .privacy-row,
   .compile-header button,#toast-root,.modal-overlay,#ai-panel,#ai-interview-btn,
-  #pin-section,#connections-summary,#locked-banner,#draft-selector-bar,#draft-compare-view{display:none!important;}
+  #pin-section,#connections-summary,#locked-banner,#draft-selector-bar,#draft-compare-view,
+  .photo-upload-strip{display:none!important;}
   body{background:white;color:#111;}main{display:block;padding:0;}
   .content-col{gap:0;}.panel{border:none;padding:0;background:white;}.panel::before{display:none;}
   #production-book-viewport{max-height:none;overflow:visible;}
   #production-book-viewport h3{color:#111;page-break-after:avoid;}
   #production-book-viewport p{color:#333;}.workspace-panel{display:none;}
+  .book-cover{background:none;border-bottom:1px solid #ccc;}
+  .book-cover-title{color:#111;}.book-cover-subtitle{color:#555;}.book-cover-author{color:#333;}
+  .book-cover-eyebrow,.book-cover-author-label{color:#888;}
+  .chapter-eyebrow-label{color:#888;}
+  .chapter-photo-wrap img{max-height:280px;}
+  .chapter-photo-caption{color:#555;border-top:1px solid #ddd;}
+}
+/* ══════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — 7 BREAKPOINTS
+══════════════════════════════════════════════════════ */
+
+/* BP1 — ≤640px: base small-phone layout */
+@media(max-width:640px){
+  /* Prevent any child from blowing out the viewport */
+  body{overflow-x:hidden;}
+  main{padding:12px 12px 60px;gap:12px;}
+  .panel{padding:14px;}
+
+  /* Header: compress toggle pill labels */
+  .toggle-pill button{padding:5px 10px;font-size:10px;}
+  .wordmark-life,.wordmark-page{font-size:18px;}
+  .wordmark-sub{font-size:9px;}
+}
+
+/* BP2 — ≤600px: workspace header stacks vertically */
+@media(max-width:600px){
+  .workspace-header{flex-direction:column;align-items:stretch;gap:12px;}
+  .privacy-row{align-self:flex-start;}
+  .prompt-label{font-size:14px;max-width:100%;}
+}
+
+/* BP3 — ≤560px: compile header stacks + full-width compile btn */
+@media(max-width:560px){
+  .compile-header{flex-direction:column;align-items:stretch;gap:10px;}
+  .compile-header>div{display:flex;gap:8px;}
+  .compile-header .btn-compile{flex:1;justify-content:center;}
+  .compile-header .btn-secondary{flex:1;justify-content:center;}
+  .chapter-compile-header{flex-direction:column;align-items:stretch;gap:8px;}
+  .chapter-compile-header>div{flex-wrap:wrap;}
+}
+
+/* BP4 — ≤520px: draft selector bar wraps cleanly */
+@media(max-width:520px){
+  #draft-selector-bar.show{flex-wrap:wrap;gap:6px;}
+  .draft-compare-toggle{margin-left:0;width:100%;}
+  .draft-compare-toggle button{flex:1;text-align:center;}
+  /* Draft compare side-by-side becomes single column */
+  #draft-compare-view.show{grid-template-columns:1fr;}
+}
+
+/* BP5 — ≤480px: recording strip stacks, waveform below buttons */
+@media(max-width:480px){
+  .recording-strip{flex-direction:column;align-items:stretch;gap:10px;}
+  .rec-buttons{flex-wrap:wrap;}
+  .rec-buttons .btn{flex:1;justify-content:center;min-width:0;}
+  .waveform-display{width:100%;justify-content:center;}
+
+  /* Save row: full-width button */
+  .save-row{flex-direction:column;}
+  .save-row .btn{width:100%;justify-content:center;}
+
+  /* Photo upload strip stacks */
+  .photo-upload-strip{flex-wrap:wrap;gap:8px;}
+  .photo-upload-strip>div:last-child{width:100%;display:flex;gap:6px;}
+  .photo-upload-btn{flex:1;text-align:center;}
+}
+
+/* BP6 — ≤440px: AI interview input row wraps */
+@media(max-width:440px){
+  .ai-input-row{flex-wrap:wrap;gap:8px;}
+  #ai-user-input{width:100%;min-width:0;}
+  .ai-send-btn{flex:1;text-align:center;}
+  .ai-use-btn{flex:1;text-align:center;}
+
+  /* Locked banner stacks */
+  #locked-banner.show{flex-direction:column;align-items:flex-start;gap:10px;}
+  .btn-unlock{align-self:stretch;text-align:center;}
+
+  /* Connections summary */
+  .connection-line{flex-wrap:wrap;gap:6px;}
+  .connection-undo{align-self:flex-end;}
+}
+
+/* BP7 — ≤380px: ultra-narrow cleanup */
+@media(max-width:380px){
+  header{padding:0 12px;}
+  .header-inner{gap:8px;}
+  .toggle-pill{gap:1px;}
+  .toggle-pill button{padding:4px 8px;font-size:9px;}
+
+  /* Chapter sidebar rows: hide vault badge to save space */
+  .vault-badge{display:none;}
+  .chapter-title-text{font-size:11px;}
+
+  /* Onboarding modal padding */
+  .modal-body{padding:16px;}
+  .onboarding-card-title{font-size:18px;}
+
+  /* Book cover scales down */
+  .book-cover{padding:40px 16px 36px;}
+  .book-cover-title{font-size:22px;}
 }
 </style>
 </head>
@@ -382,7 +562,7 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
         <button id="toggle-full" onclick="changeGlobalFilter('full')" class="active">Full</button>
         <button id="toggle-abbr" onclick="changeGlobalFilter('abbreviated')">Abbreviated</button>
       </div>
-      <button class="icon-btn" onclick="triggerPrint()" title="Print / Save as PDF">🖨</button>
+      <button class="icon-btn" onclick="triggerPrint()" title="Print / Save as PDF"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="1" width="10" height="5" rx="1" fill="currentColor" opacity="0.7"/><rect x="1" y="6" width="14" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="4" y="10" width="8" height="5" rx="1" fill="currentColor" opacity="0.7"/><circle cx="12.5" cy="9.5" r="1" fill="currentColor"/></svg></button>
       <button class="icon-btn" onclick="toggleModal('settings-modal',true)" title="Settings">⚙️</button>
     </div>
   </div>
@@ -525,6 +705,21 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
         <div id="connections-list"></div>
       </div>
 
+      <!-- PHOTO FOR THIS CHAPTER -->
+      <div id="chapter-photo-strip" class="photo-upload-strip">
+        <div id="photo-thumb-wrap" style="display:none;">
+          <img id="photo-thumb" class="photo-upload-thumb" src="" alt="Chapter photo">
+        </div>
+        <div class="photo-upload-label" id="photo-strip-label"><strong>Chapter Photo</strong> — Add a photo to appear in the compiled book after the first paragraph.</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <label class="photo-upload-btn" style="cursor:pointer;">
+            📷 Upload
+            <input type="file" accept="image/*" style="display:none;" onchange="handleChapterPhotoUpload(this)">
+          </label>
+          <button id="photo-remove-btn" class="photo-remove-btn" style="display:none;" onclick="removeChapterPhoto()">✕</button>
+        </div>
+      </div>
+
       <!-- SAVE ROW -->
       <div class="save-row">
         <button class="btn btn-save" onclick="commitActiveMemoryBlock()">Save Chapter Notes</button>
@@ -553,10 +748,10 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
           <span class="chapter-compile-title">Compile This Chapter</span>
           <div style="display:flex;gap:8px;align-items:center;">
             <span id="chapter-draft-status" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);">No drafts yet</span>
-            <button class="btn btn-compile" style="padding:7px 14px;font-size:11px;" onclick="compileChapter()">⚡ Write Draft</button>
+            <button class="btn btn-compile" style="padding:7px 14px;font-size:11px;" onclick="compileChapter()">⚡ Write Chapter Draft</button>
           </div>
         </div>
-        <div id="chapter-compile-output" style="font-size:13px;color:var(--text-dim);font-style:italic;">Select a chapter and click Write Draft to generate a polished version of your notes.</div>
+        <div id="chapter-compile-output" style="font-size:13px;color:var(--text-dim);font-style:italic;">Select a chapter and click Write Chapter Draft to generate a polished version of your notes.</div>
       </div>
     </div>
   </div>
@@ -568,7 +763,7 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
     <div class="confirm-body">
       <div class="confirm-icon">🔓</div>
       <div class="confirm-title">Unlock this chapter?</div>
-      <div class="confirm-sub">Your existing drafts will be kept safe. Unlocking just means the next time you click Write Draft, a new version will be generated. You can always keep both.</div>
+      <div class="confirm-sub">Your existing drafts will be kept safe. Unlocking just means the next time you click Write Chapter Draft, a new version will be generated. You can always keep both.</div>
       <div class="confirm-buttons">
         <button class="btn btn-secondary" onclick="toggleModal('unlock-modal',false)">Cancel</button>
         <button class="btn btn-save" onclick="confirmUnlock()">Yes, Unlock It</button>
@@ -618,7 +813,20 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
     </div>
     <div class="modal-body">
       <div>
-        <div class="settings-section-title">AI Credentials</div>
+        <div class="settings-section-title">Book Identity</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="field-group">
+            <div class="field-label"><span>Book Title</span></div>
+            <input type="text" id="input-book-title" class="text-input" placeholder="A Letter to My Kids" style="font-family:'DM Sans',sans-serif;">
+          </div>
+          <div class="field-group">
+            <div class="field-label"><span>Your Name (Author)</span></div>
+            <input type="text" id="input-author-name" class="text-input" placeholder="Your Name" style="font-family:'DM Sans',sans-serif;">
+          </div>
+          <button class="btn btn-secondary" style="align-self:flex-start;padding:7px 14px;font-size:11px;" onclick="saveBookIdentity()">Save</button>
+        </div>
+      </div>
+      <div>
         <div style="display:flex;flex-direction:column;gap:14px;">
           <div class="field-group">
             <div class="field-label">
@@ -649,14 +857,32 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
       </div>
       <div>
         <div class="settings-section-title">Data &amp; Backup</div>
-        <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.65;">Everything stays privately in your browser. Download a backup file regularly.</div>
-        <div class="data-grid">
-          <button class="data-btn" onclick="triggerMasterBackupDownload()">📥 Download Backup</button>
-          <div class="data-btn" style="position:relative;overflow:hidden;">
-            <input type="file" id="restore-file-input" accept=".json" onchange="restoreMasterBackupFromFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;">
-            📤 Restore Backup
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.65;">Your story and photos are saved separately. Download both regularly to keep a full backup.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="data-grid">
+            <button class="data-btn" onclick="triggerMasterBackupDownload()">📥 Download Book</button>
+            <div class="data-btn" style="position:relative;overflow:hidden;">
+              <input type="file" id="restore-file-input" accept=".json" onchange="restoreMasterBackupFromFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;">
+              📤 Restore Book
+            </div>
           </div>
+          <div class="data-grid">
+            <button class="data-btn" onclick="triggerPhotosBackupDownload()" id="photos-backup-btn">🖼 Download Photos</button>
+            <div class="data-btn" style="position:relative;overflow:hidden;">
+              <input type="file" id="restore-photos-input" accept=".json" onchange="restorePhotosFromFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;">
+              🖼 Restore Photos
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--text-muted);line-height:1.6;font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;">Both files share the same date stamp — restore the matching pair together.</div>
         </div>
+      </div>
+      <div>
+        <div class="settings-section-title">Appearance</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.65;">Choose a color palette that suits your writing mood.</div>
+        <button class="data-btn" onclick="toggleModal('theme-picker-modal',true);toggleModal('settings-modal',false);" style="width:100%;display:flex;align-items:center;justify-content:space-between;">
+          <span>🎨 Choose Color Palette</span>
+          <span id="active-theme-label" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6;">Midnight</span>
+        </button>
       </div>
       <div>
         <div class="settings-section-title">Guided Tour</div>
@@ -666,6 +892,94 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
       <div class="settings-info-box">
         <div class="settings-section-title" style="border:none;padding:0;margin:0 0 4px;">About LifePage</div>
         <p>Built to preserve your story, your voice, and your values — for the people who will carry them forward. Everything runs privately in your own browser. Nothing is ever sent anywhere without your action.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- THEME PICKER MODAL -->
+<div id="theme-picker-modal" class="modal-overlay">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-header">
+      <span class="modal-title">Color Palette</span>
+      <button class="modal-close" onclick="toggleModal('theme-picker-modal',false);toggleModal('settings-modal',true);">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:4px;">Pick the palette that fits your mood. Your choice is saved automatically.</div>
+      <div class="theme-picker-grid">
+
+        <!-- Midnight (default dark) -->
+        <div class="theme-card" id="theme-card-midnight" onclick="applyTheme('midnight')">
+          <div class="theme-card-preview" style="background:#06080f;">
+            <div class="theme-card-bar" style="background:#5bc8e8;opacity:0.9;"></div>
+            <div class="theme-card-bar short" style="background:#e2e8f0;opacity:0.4;"></div>
+            <div class="theme-card-dot-row">
+              <div class="theme-card-dot" style="background:#4ade80;opacity:0.8;"></div>
+              <div class="theme-card-dot" style="background:#a78bfa;opacity:0.8;"></div>
+              <div class="theme-card-dot" style="background:#fbbf24;opacity:0.8;"></div>
+            </div>
+            <div class="theme-card-check">✓</div>
+          </div>
+          <div class="theme-card-footer" style="background:#0b0f1c;border-top:1px solid rgba(255,255,255,0.07);">
+            <span class="theme-card-name" style="color:#e2e8f0;">Midnight</span>
+            <span class="theme-card-tag" style="color:#5bc8e8;">Dark</span>
+          </div>
+        </div>
+
+        <!-- Dusk (warm dark) -->
+        <div class="theme-card" id="theme-card-dusk" onclick="applyTheme('dusk')">
+          <div class="theme-card-preview" style="background:#1a1218;">
+            <div class="theme-card-bar" style="background:#e8906a;opacity:0.9;"></div>
+            <div class="theme-card-bar short" style="background:#f0e8e0;opacity:0.4;"></div>
+            <div class="theme-card-dot-row">
+              <div class="theme-card-dot" style="background:#6dbd8a;opacity:0.8;"></div>
+              <div class="theme-card-dot" style="background:#c49ae8;opacity:0.8;"></div>
+              <div class="theme-card-dot" style="background:#f0c060;opacity:0.8;"></div>
+            </div>
+            <div class="theme-card-check">✓</div>
+          </div>
+          <div class="theme-card-footer" style="background:#251b22;border-top:1px solid rgba(255,255,255,0.07);">
+            <span class="theme-card-name" style="color:#f0e8e0;">Dusk</span>
+            <span class="theme-card-tag" style="color:#e8906a;">Warm Dark</span>
+          </div>
+        </div>
+
+        <!-- Parchment (warm light) -->
+        <div class="theme-card" id="theme-card-parchment" onclick="applyTheme('parchment')">
+          <div class="theme-card-preview" style="background:#faf6f0;">
+            <div class="theme-card-bar" style="background:#b4652a;opacity:0.85;"></div>
+            <div class="theme-card-bar short" style="background:#2c1f0e;opacity:0.3;"></div>
+            <div class="theme-card-dot-row">
+              <div class="theme-card-dot" style="background:#2d7a4f;opacity:0.8;"></div>
+              <div class="theme-card-dot" style="background:#6d4fa0;opacity:0.8;"></div>
+              <div class="theme-card-dot" style="background:#c17f24;opacity:0.8;"></div>
+            </div>
+            <div class="theme-card-check" style="background:#b4652a;">✓</div>
+          </div>
+          <div class="theme-card-footer" style="background:#ffffff;border-top:1px solid rgba(0,0,0,0.08);">
+            <span class="theme-card-name" style="color:#2c1f0e;">Parchment</span>
+            <span class="theme-card-tag" style="color:#b4652a;">Warm Light</span>
+          </div>
+        </div>
+
+        <!-- Slate (cool light) -->
+        <div class="theme-card" id="theme-card-slate" onclick="applyTheme('slate')">
+          <div class="theme-card-preview" style="background:#f0f4f8;">
+            <div class="theme-card-bar" style="background:#2563eb;opacity:0.85;"></div>
+            <div class="theme-card-bar short" style="background:#0f1e35;opacity:0.3;"></div>
+            <div class="theme-card-dot-row">
+              <div class="theme-card-dot" style="background:#16a34a;opacity:0.8;"></div>
+              <div class="theme-card-dot" style="background:#7c3aed;opacity:0.8;"></div>
+              <div class="theme-card-dot" style="background:#d97706;opacity:0.8;"></div>
+            </div>
+            <div class="theme-card-check" style="background:#2563eb;">✓</div>
+          </div>
+          <div class="theme-card-footer" style="background:#ffffff;border-top:1px solid rgba(0,0,0,0.08);">
+            <span class="theme-card-name" style="color:#0f1e35;">Slate</span>
+            <span class="theme-card-tag" style="color:#2563eb;">Cool Light</span>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -709,6 +1023,7 @@ function buildFreshChapters() {
     chs[d.id] = {
       id: d.id, title: d.title, prompt: d.prompt, isPublic: d.isPublic,
       text: '',          // raw notes
+      hasPhoto: false,   // true when a photo exists in photoStore for this chapter
       aiNotes: [],       // [{id, fromChapterId, text, timestamp}]
       draftA: null,      // compiled text
       draftB: null,      // compiled text
@@ -728,8 +1043,40 @@ let appData = {
   audioState: 'idle',
   slips: [],
   saveReminderCount: 0,
+  bookTitle: 'A Letter to My Kids',
+  authorName: '',
+  theme: 'midnight',
   chapters: buildFreshChapters()
 };
+
+/* ══════════════════════════════════════════════════════
+   THEME ENGINE
+══════════════════════════════════════════════════════ */
+const THEMES = {
+  midnight: { label:'Midnight',   tag:'Dark'       },
+  dusk:     { label:'Dusk',       tag:'Warm Dark'  },
+  parchment:{ label:'Parchment',  tag:'Warm Light' },
+  slate:    { label:'Slate',      tag:'Cool Light' },
+};
+
+function applyTheme(id, save=true) {
+  const theme = THEMES[id] ? id : 'midnight';
+  // Set data-theme on <html> — CSS selectors do the rest
+  document.documentElement.setAttribute('data-theme', theme === 'midnight' ? '' : theme);
+  if(theme === 'midnight') document.documentElement.removeAttribute('data-theme');
+  // Update checkmarks on picker cards
+  Object.keys(THEMES).forEach(t => {
+    document.getElementById(`theme-card-${t}`)?.classList.toggle('selected', t === theme);
+  });
+  // Update label in settings button
+  const lbl = document.getElementById('active-theme-label');
+  if(lbl) lbl.textContent = THEMES[theme].label;
+  if(save){ appData.theme = theme; saveState(); }
+}
+
+function loadSavedTheme() {
+  applyTheme(appData.theme || 'midnight', false);
+}
 
 const WORD_TARGET = 150;
 let currentOnboardingIndex = 0;
@@ -880,6 +1227,7 @@ function loadActiveChapter(id) {
   renderDraftSelector();
   renderAiNotes();
   updateChapterCompileStatus();
+  renderChapterPhotoStrip();
   renderSidebar();
 }
 
@@ -959,7 +1307,7 @@ function confirmUnlock(){
   const ch=appData.chapters[appData.activeEra];
   ch.draftALocked=false;saveState();toggleModal('unlock-modal',false);
   renderLockedState();renderSidebar();
-  toast('Chapter unlocked. Write your notes and click Write Draft to create a new version.','info',5000);
+  toast('Chapter unlocked. Write your notes and click Write Chapter Draft to create a new version.','info',5000);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1111,7 +1459,7 @@ function updateChapterCompileStatus() {
     if(compareMode==='side'&&ch.draftB)renderSideBySize();
     else renderFlipView(activeDraftView);
   }else{
-    out.innerHTML='<span style="font-style:italic;color:var(--text-muted);">Select a chapter and click Write Draft to generate a polished version of your notes.</span>';
+    out.innerHTML='<span style="font-style:italic;color:var(--text-muted);">Select a chapter and click Write Chapter Draft to generate a polished version of your notes.</span>';
   }
 }
 
@@ -1133,9 +1481,9 @@ async function compileChapter() {
   const aiNotesText=ch.aiNotes&&ch.aiNotes.length?'\n\nRelated notes from other chapters:\n'+ch.aiNotes.map(n=>`- ${n.text}`).join('\n'):'';
   const si=`You are a warm, gifted creative biographer. Your job is to turn someone's raw personal notes into a beautifully written section of their autobiography — written as a loving letter to their children.
 
-Write in the first person, in the author's natural voice. Be warm, specific, and honest. Do not over-polish or sanitize. Pull out one meaningful quote as a blockquote if there's a natural one. Keep it to 3-5 paragraphs.
+Write in the first person, in the author's natural voice. Be warm, specific, and honest. Do not over-polish or sanitize. If there is a meaningful quote, reflection, or piece of advice that stands out, mark it as a blockquote by starting the line with > (e.g. > "The most important thing I ever learned…"). Keep it to 3-5 paragraphs.
 
-Output only the chapter text. No headings, no preamble, no explanation. Plain prose.`;
+Output only the chapter text. No headings, no preamble, no explanation. Plain prose with optional > blockquote lines.`;
   const userPrompt=`Chapter: ${ch.title}\n\nMy notes:\n${ch.text}${aiNotesText}`;
   try{
     const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appData.keys.gemini}`,{
@@ -1176,6 +1524,7 @@ async function compileFullBook() {
   });
   if(!chaptersWithDrafts.length){toast('Write notes in at least one chapter first.','warn');return;}
   vp.innerHTML=`<div class="compile-loader"><div class="waveform-loader"><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div></div><div class="compile-status">Weaving your story together…</div></div>`;
+
   // Use finalDraft if set, else draftA, else raw text
   const chapterContent=chaptersWithDrafts.map(ch=>{
     let content='';
@@ -1184,18 +1533,39 @@ async function compileFullBook() {
     else content=ch.text;
     return `## ${ch.title}\n\n${content}`;
   }).join('\n\n---\n\n');
+
+  const authorName=appData.authorName||'Your Author';
+  const bookTitle=appData.bookTitle||'A Letter to My Kids';
+
   const si=`You are a master creative biographer compiling a complete autobiography written as a heartfelt letter from a parent to their children.
 
 Each chapter has already been polished individually. Your job is to:
-1. Write a warm, brief opening salutation ("To my children —" or similar)
-2. Weave the chapters together with light transitional sentences between them so it reads as one cohesive memoir, not disconnected sections
-3. Add a warm closing paragraph at the end
-4. Keep each chapter's text largely intact — do not rewrite them, just connect them
+1. Write a warm, personal opening salutation paragraph addressed to the author's children (2-3 sentences, e.g. "To my dear children —"). This goes BEFORE any chapter heading.
+2. Weave the chapters together with brief transitional sentences between them so it reads as one cohesive memoir, not disconnected sections.
+3. Preserve any lines that begin with > as blockquotes.
+4. Add a warm, personal closing paragraph at the very end — signed lovingly from the author.
+5. Keep each chapter's text largely intact — do not rewrite them, just connect them.
 
-Output Format: Return structured HTML only. No markdown. No backticks. Use:
-<h2 style="font-family:'DM Serif Display',serif;font-size:24px;color:#e2e8f0;margin:40px 0 14px;letter-spacing:-0.01em;">[Chapter Title]</h2>
+Output Format: Return structured HTML only. No markdown. No backticks. Use exactly these elements:
+
+For the opening salutation (before first chapter):
+<p class="book-salutation" style="font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;line-height:1.9;color:#cbd5e1;margin-bottom:36px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.07);">[salutation text]</p>
+
+For chapter eyebrow + heading:
+<span class="chapter-eyebrow-label">[e.g. Chapter One]</span>
+<h2 style="font-family:'DM Serif Display',serif;font-size:26px;color:#e2e8f0;margin:0 0 18px;letter-spacing:-0.01em;line-height:1.2;">[Chapter Title]</h2>
+
+For body paragraphs:
 <p style="font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.85;color:#94a3b8;margin-bottom:18px;font-weight:300;">[text]</p>
-<blockquote style="border-left:2px solid #5bc8e8;padding:10px 18px;margin:20px 0;font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;color:#cbd5e1;">[quote]</blockquote>`;
+
+For blockquotes (use when the author wrote a meaningful quote or reflection):
+<blockquote style="border-left:2px solid #5bc8e8;padding:12px 20px;margin:24px 0;font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;color:#cbd5e1;background:rgba(91,200,232,0.04);border-radius:0 8px 8px 0;">[quote]</blockquote>
+
+For the closing paragraph (at the very end):
+<p class="book-closing" style="font-family:'DM Serif Display',serif;font-style:italic;font-size:16px;line-height:1.9;color:#cbd5e1;margin-top:40px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.07);">[closing text, signed from ${authorName}]</p>
+
+Do NOT include a wrapper div. Just the raw sequence of HTML elements.`;
+
   try{
     const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appData.keys.gemini}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
@@ -1214,12 +1584,87 @@ Output Format: Return structured HTML only. No markdown. No backticks. Use:
     const raw=result.candidates?.[0]?.content?.parts?.[0]?.text||'';
     if(!raw)throw new Error('Empty response from Gemini');
     const clean=raw.replace(/```html?/gi,'').replace(/```/g,'').trim();
-    vp.innerHTML=`<div style="user-select:text;">${clean}</div>`;
+
+    // Build book cover HTML
+    const coverHtml=`<div class="book-cover">
+      <div class="book-cover-eyebrow">A Personal Memoir</div>
+      <div class="book-cover-title">${escHtml(bookTitle)}</div>
+      <div class="book-cover-subtitle">A Letter to My Kids</div>
+      <div class="book-cover-divider"></div>
+      <div class="book-cover-author-label">Written by</div>
+      <div class="book-cover-author">${escHtml(authorName||'The Author')}</div>
+    </div>`;
+
+    // Inject photos after first <p> in each chapter
+    let bodyHtml=clean;
+    if(appData.keys.gemini){
+      toast('Adding chapter photos…','info',3000);
+      bodyHtml=await injectChapterPhotos(clean, chaptersWithDrafts);
+    }
+
+    vp.innerHTML=`<div style="user-select:text;">${coverHtml}${bodyHtml}</div>`;
     toast('Your autobiography is ready!','success',5000);
   }catch(e){
     vp.innerHTML=`<div class="book-empty"><div class="book-empty-icon">⚠️</div><div class="book-empty-text">Compilation failed.</div><div class="book-empty-sub">${e.message}</div></div>`;
     toast(`Full book compile failed: ${e.message}`,'error',6000);
   }
+}
+
+function escHtml(str){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* Inject chapter photos with AI captions after first <p> of each chapter */
+async function injectChapterPhotos(html, chapters) {
+  // Work on a DOM fragment for safe manipulation
+  const wrap=document.createElement('div');
+  wrap.innerHTML=html;
+
+  // Find all h2 elements to identify chapter boundaries
+  const h2s=Array.from(wrap.querySelectorAll('h2'));
+  for(const h2 of h2s){
+    // Match to a chapter by title substring
+    const titleRaw=h2.textContent.trim();
+    const matchedCh=chapters.find(ch=>{
+      const stripped=ch.title.replace(/^\d+\.\s*/,'').toLowerCase();
+      return titleRaw.toLowerCase().includes(stripped.substring(0,20));
+    });
+    if(!matchedCh||!photoStore[matchedCh.id])continue;
+
+    // Find the first <p> after this h2
+    let firstP=null;
+    let node=h2.nextElementSibling;
+    while(node){
+      if(node.tagName==='P'){firstP=node;break;}
+      if(node.tagName==='H2')break;
+      node=node.nextElementSibling;
+    }
+    if(!firstP)continue;
+
+    // Generate AI caption
+    let caption='';
+    try{
+      const chapterText=(matchedCh.draftA||matchedCh.text||'').substring(0,600);
+      const captionPrompt=`You are writing a warm, literary photo caption for a personal memoir. Based on this chapter excerpt, write a single evocative sentence (15-25 words) that could caption a personal photo in this chapter. Be specific and tender, not generic.\n\nChapter: ${matchedCh.title}\n\nExcerpt: ${chapterText}`;
+      const cr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appData.keys.gemini}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          contents:[{role:'user',parts:[{text:captionPrompt}]}],
+          generationConfig:{temperature:0.5,maxOutputTokens:60,thinkingConfig:{thinkingBudget:0}}
+        })
+      });
+      if(cr.ok){
+        const cd=await cr.json();
+        caption=cd.candidates?.[0]?.content?.parts?.[0]?.text?.trim()||'';
+        caption=caption.replace(/^["']|["']$/g,'');
+      }
+    }catch(e){caption='';}
+
+    // Build photo element and insert after firstP
+    const photoDiv=document.createElement('div');
+    photoDiv.className='chapter-photo-wrap';
+    photoDiv.innerHTML=`<img src="${photoStore[matchedCh.id]}" alt="Chapter photo"><div class="chapter-photo-caption">${escHtml(caption||matchedCh.title)}</div>`;
+    firstP.insertAdjacentElement('afterend',photoDiv);
+  }
+  return wrap.innerHTML;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1343,6 +1788,77 @@ function clearWaveCanvas(){const c=document.getElementById('wave-canvas');if(c)c
    API KEYS
 ══════════════════════════════════════════════════════ */
 function saveApiKeys(){appData.keys.gemini=document.getElementById('input-key-gemini').value.trim();appData.keys.groq=document.getElementById('input-key-groq').value.trim();saveState();toast('Credentials saved.','success');toggleModal('settings-modal',false);}
+function saveBookIdentity(){
+  appData.bookTitle=document.getElementById('input-book-title').value.trim()||'A Letter to My Kids';
+  appData.authorName=document.getElementById('input-author-name').value.trim();
+  saveState();toast('Book identity saved.','success');
+}
+
+/* ══════════════════════════════════════════════════════
+   PHOTO STORE — separate from appData to keep backup small
+   Persisted to localStorage key: lifepage_photos_v5
+   Shape: { [chapterId]: "data:image/...base64..." }
+══════════════════════════════════════════════════════ */
+let photoStore = {};
+
+function savePhotoStore(){
+  try{localStorage.setItem('lifepage_photos_v5',JSON.stringify(photoStore));}
+  catch(e){toast('Photo storage full — try a smaller image or remove unused photos.','warn',5000);}
+}
+function loadPhotoStore(){
+  try{
+    const raw=localStorage.getItem('lifepage_photos_v5');
+    if(raw)photoStore=JSON.parse(raw);
+  }catch(e){photoStore={};}
+}
+
+function handleChapterPhotoUpload(input){
+  if(!input.files?.[0])return;
+  const file=input.files[0];
+  if(!file.type.startsWith('image/')){toast('Please upload an image file.','warn');return;}
+  // Warn if file is large
+  if(file.size>3*1024*1024)toast('Large photo — may approach storage limits. Consider resizing first.','warn',5000);
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const chId=appData.activeEra;
+    photoStore[chId]=e.target.result;
+    savePhotoStore();
+    appData.chapters[chId].hasPhoto=true;
+    saveState();
+    renderChapterPhotoStrip();
+    toast('Photo saved for this chapter ✓','success');
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+function removeChapterPhoto(){
+  const chId=appData.activeEra;
+  delete photoStore[chId];
+  savePhotoStore();
+  appData.chapters[chId].hasPhoto=false;
+  saveState();
+  renderChapterPhotoStrip();
+  toast('Photo removed.','info');
+}
+function renderChapterPhotoStrip(){
+  const ch=appData.chapters[appData.activeEra];
+  const thumb=document.getElementById('photo-thumb');
+  const thumbWrap=document.getElementById('photo-thumb-wrap');
+  const label=document.getElementById('photo-strip-label');
+  const removeBtn=document.getElementById('photo-remove-btn');
+  const hasPhoto=!!(photoStore[appData.activeEra]);
+  if(hasPhoto){
+    thumb.src=photoStore[appData.activeEra];
+    thumbWrap.style.display='block';
+    label.innerHTML='<strong>Photo attached</strong> — will appear in compiled book after the first paragraph.';
+    removeBtn.style.display='inline-block';
+  }else{
+    thumb.src='';
+    thumbWrap.style.display='none';
+    label.innerHTML='<strong>Chapter Photo</strong> — Add a photo to appear in the compiled book after the first paragraph.';
+    removeBtn.style.display='none';
+  }
+}
 async function testKeyConnection(t){
   const el=document.getElementById(`${t}-test-status`);
   const diagEl=document.getElementById(`${t}-diag`);
@@ -1394,14 +1910,61 @@ async function testKeyConnection(t){
    BACKUP / RESTORE
 ══════════════════════════════════════════════════════ */
 function triggerMasterBackupDownload(){
+  // Book backup — never includes photo blobs
+  const stamp=new Date().toISOString().slice(0,10);
   const ds='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(appData,null,2));
-  const a=document.createElement('a');a.href=ds;a.download=`lifepage_backup_${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a);a.click();a.remove();toast('Backup downloaded.','success');
+  const a=document.createElement('a');a.href=ds;a.download=`lifepage_book_${stamp}.json`;
+  document.body.appendChild(a);a.click();a.remove();
+  toast('Book backup downloaded.','success');
+}
+function triggerPhotosBackupDownload(){
+  const count=Object.keys(photoStore).length;
+  if(!count){toast('No chapter photos to export yet.','warn');return;}
+  const stamp=new Date().toISOString().slice(0,10);
+  const ds='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(photoStore,null,2));
+  const a=document.createElement('a');a.href=ds;a.download=`lifepage_photos_${stamp}.json`;
+  document.body.appendChild(a);a.click();a.remove();
+  toast(`Photos backup downloaded (${count} photo${count>1?'s':''}). Keep this with your book backup.`,'success',5000);
 }
 function restoreMasterBackupFromFile(input){
   if(!input.files?.[0])return;
   const r=new FileReader();
-  r.onload=e=>{try{const p=JSON.parse(e.target.result);if(p.chapters&&p.keys){appData=p;saveState();loadStateFromStorage();loadActiveChapter(Object.keys(appData.chapters)[0]);updateSlipsUI();toast('Backup restored.','success',4000);toggleModal('settings-modal',false);}else toast('Invalid backup file.','error');}catch{toast('Could not read backup file.','error');}};
+  r.onload=e=>{
+    try{
+      const p=JSON.parse(e.target.result);
+      if(p.chapters&&p.keys){
+        // Strip any legacy photo blobs that crept into a book backup
+        Object.values(p.chapters).forEach(ch=>{delete ch.photo;if(ch.hasPhoto===undefined)ch.hasPhoto=false;});
+        appData=p;saveState();loadStateFromStorage();
+        loadActiveChapter(Object.keys(appData.chapters)[0]);
+        updateSlipsUI();
+        toast('Book restored. If you have a photos backup, restore that next.','success',5000);
+        toggleModal('settings-modal',false);
+      }else toast('Invalid book backup file.','error');
+    }catch{toast('Could not read backup file.','error');}
+  };
+  r.readAsText(input.files[0]);
+}
+function restorePhotosFromFile(input){
+  if(!input.files?.[0])return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const p=JSON.parse(e.target.result);
+      // Validate: values should be data URLs or null
+      const ids=Object.keys(p);
+      const valid=ids.every(k=>typeof p[k]==='string'&&p[k].startsWith('data:image'));
+      if(!valid&&ids.length>0){toast('Invalid photos backup file.','error');return;}
+      photoStore=p;
+      savePhotoStore();
+      // Sync hasPhoto flags in appData
+      Object.values(appData.chapters).forEach(ch=>{ch.hasPhoto=!!(photoStore[ch.id]);});
+      saveState();
+      renderChapterPhotoStrip();
+      toast(`Photos restored (${ids.length} photo${ids.length!==1?'s':''}).`,'success',4000);
+      toggleModal('settings-modal',false);
+    }catch{toast('Could not read photos backup file.','error');}
+  };
   r.readAsText(input.files[0]);
 }
 function triggerPrint(){const vp=document.getElementById('production-book-viewport');if(!vp.querySelector('p,h2,h3')){toast('Compile the full book first, then print.','warn',4000);return;}window.print();}
@@ -1409,14 +1972,20 @@ function triggerPrint(){const vp=document.getElementById('production-book-viewpo
 /* ══════════════════════════════════════════════════════
    PERSIST
 ══════════════════════════════════════════════════════ */
-function saveState(){localStorage.setItem('lifepage_v4',JSON.stringify(appData));}
+function saveState(){localStorage.setItem('lifepage_v5',JSON.stringify(appData));}
 function loadStateFromStorage(){
-  const c=localStorage.getItem('lifepage_v4');
+  // Try v5 first, fall back to v4 for migration
+  const c=localStorage.getItem('lifepage_v5')||localStorage.getItem('lifepage_v4');
   if(c){try{const p=JSON.parse(c);if(p.chapters&&p.keys){
     // Merge to ensure new fields exist on old chapters
     appData=p;
+    if(!appData.bookTitle)appData.bookTitle='A Letter to My Kids';
+    if(!appData.authorName)appData.authorName='';
+    if(!appData.theme)appData.theme='midnight';
     Object.values(appData.chapters).forEach(ch=>{
       if(!ch.aiNotes)ch.aiNotes=[];
+      if(ch.hasPhoto===undefined)ch.hasPhoto=!!(ch.photo);  // migrate old photo flag
+      delete ch.photo; // remove any old base64 blob from appData
       if(ch.draftA===undefined)ch.draftA=null;
       if(ch.draftB===undefined)ch.draftB=null;
       if(ch.draftALocked===undefined)ch.draftALocked=false;
@@ -1427,6 +1996,8 @@ function loadStateFromStorage(){
   }}catch(e){}}
   document.getElementById('input-key-gemini').value=appData.keys.gemini||'';
   document.getElementById('input-key-groq').value=appData.keys.groq||'';
+  document.getElementById('input-book-title').value=appData.bookTitle||'';
+  document.getElementById('input-author-name').value=appData.authorName||'';
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1464,11 +2035,11 @@ function obJumpTo(idx){
   const btn=document.getElementById('onboarding-next-btn');
   const backBtn=document.getElementById('ob-back-btn');
   backBtn.disabled=currentOnboardingIndex===0;
-  if(currentOnboardingIndex===ONBOARDING_SLIDES.length-1){btn.textContent='Get Started ✓';btn.onclick=()=>{localStorage.setItem('lifepage_ob_v4','true');toggleModal('onboarding-modal',false);};}
-  else{btn.textContent='Next →';btn.onclick=()=>obNav(1);}
+  if(currentOnboardingIndex===ONBOARDING_SLIDES.length-1){btn.textContent='Get Started ✓';btn.onclick=()=>{localStorage.setItem('lifepage_ob_v5','true');toggleModal('onboarding-modal',false);};}
+else{btn.textContent='Next →';btn.onclick=()=>obNav(1);}
 }
-function checkOnboarding(){if(!localStorage.getItem('lifepage_ob_v4')){buildOnboarding();toggleModal('onboarding-modal',true);}}
-function skipOnboarding(){localStorage.setItem('lifepage_ob_v4','true');toggleModal('onboarding-modal',false);}
+function checkOnboarding(){if(!localStorage.getItem('lifepage_ob_v5')){buildOnboarding();toggleModal('onboarding-modal',true);}}
+function skipOnboarding(){localStorage.setItem('lifepage_ob_v5','true');toggleModal('onboarding-modal',false);}
 function replayOnboarding(){buildOnboarding();currentOnboardingIndex=0;toggleModal('settings-modal',false);toggleModal('onboarding-modal',true);}
 
 /* ══════════════════════════════════════════════════════
@@ -1484,7 +2055,9 @@ window.addEventListener('beforeunload',e=>{
    INIT
 ══════════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded',()=>{
+  loadPhotoStore();
   loadStateFromStorage();
+  loadSavedTheme();
   updateSlipsUI();
   loadActiveChapter(appData.activeEra||'roots');
   renderSidebar();
