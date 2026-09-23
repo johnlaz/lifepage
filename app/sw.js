@@ -3,7 +3,7 @@
    © LAZLAB Creations
 */
 
-const CACHE_NAME = 'lifepage-app-v1';
+const CACHE_NAME = 'lifepage-app-v1.1';
 
 const PRECACHE = [
   './',
