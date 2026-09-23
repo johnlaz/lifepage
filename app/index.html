@@ -1486,7 +1486,7 @@ Write in the first person, in the author's natural voice. Be warm, specific, and
 Output only the chapter text. No headings, no preamble, no explanation. Plain prose with optional > blockquote lines.`;
   const userPrompt=`Chapter: ${ch.title}\n\nMy notes:\n${ch.text}${aiNotesText}`;
   try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appData.keys.gemini}`,{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${appData.keys.gemini}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         contents:[{role:'user',parts:[{text:userPrompt}]}],
@@ -1567,7 +1567,7 @@ For the closing paragraph (at the very end):
 Do NOT include a wrapper div. Just the raw sequence of HTML elements.`;
 
   try{
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appData.keys.gemini}`,{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${appData.keys.gemini}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         contents:[{role:'user',parts:[{text:chapterContent}]}],
@@ -1644,7 +1644,7 @@ async function injectChapterPhotos(html, chapters) {
     try{
       const chapterText=(matchedCh.draftA||matchedCh.text||'').substring(0,600);
       const captionPrompt=`You are writing a warm, literary photo caption for a personal memoir. Based on this chapter excerpt, write a single evocative sentence (15-25 words) that could caption a personal photo in this chapter. Be specific and tender, not generic.\n\nChapter: ${matchedCh.title}\n\nExcerpt: ${chapterText}`;
-      const cr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appData.keys.gemini}`,{
+      const cr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${appData.keys.gemini}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
           contents:[{role:'user',parts:[{text:captionPrompt}]}],
@@ -1868,8 +1868,8 @@ async function testKeyConnection(t){
   if(!val){el.textContent='Empty key';el.className='key-status fail';return;}
   try{
     if(t==='gemini'){
-      // Try v1beta with gemini-2.5-flash first, then fall back to listing models
-      const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${val}`;
+      // Try v1beta with gemini-3.1-flash-lite first, then fall back to listing models
+      const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${val}`;
       const body=JSON.stringify({contents:[{role:'user',parts:[{text:'Hi'}]}],generationConfig:{maxOutputTokens:5}});
       const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body});
       const status=r.status;
@@ -1877,7 +1877,7 @@ async function testKeyConnection(t){
       try{errData=await r.json();}catch(e){}
       if(r.ok){
         el.textContent='✓ Active';el.className='key-status ok';
-        if(diagEl){diagEl.style.display='block';diagEl.textContent='✓ Connected to gemini-2.5-flash';}
+        if(diagEl){diagEl.style.display='block';diagEl.textContent='✓ Connected to gemini-3.1-flash-lite';}
       } else {
         const code=errData?.error?.code||status;
         const msg=errData?.error?.message||'Unknown error';
