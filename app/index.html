@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="slate">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="LifePage">
-<meta name="theme-color" content="#050811">
+<meta name="theme-color" content="#f0f4f8">
+<script>
+/* Apply saved palette before first paint (default: Slate) */
+(function(){try{
+  var raw=localStorage.getItem('lifepage_v5')||localStorage.getItem('lifepage_v4');
+  var t=(raw&&JSON.parse(raw).theme)||'slate';
+  if(t==='midnight')document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme',t);
+}catch(e){document.documentElement.setAttribute('data-theme','slate');}})();
+</script>
 <title>LifePage — A Letter to My Kids</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,6 +53,18 @@
 [data-theme="slate"] body::before{opacity:0.1;}
 [data-theme="slate"] body::after{background:radial-gradient(ellipse at center,rgba(37,99,235,0.05) 0%,transparent 70%);}
 [data-theme="slate"] header{background:rgba(240,244,248,0.92);}
+
+/* Light palettes: white text on filled accent buttons (dark text is for the dark themes) */
+[data-theme="slate"] .toggle-pill button.active,[data-theme="parchment"] .toggle-pill button.active,
+[data-theme="slate"] .btn-rec,[data-theme="parchment"] .btn-rec,
+[data-theme="slate"] .btn-save,[data-theme="parchment"] .btn-save,
+[data-theme="slate"] .btn-compile,[data-theme="parchment"] .btn-compile{color:#fff;}
+[data-theme="slate"] .btn-compile{background:linear-gradient(135deg,#2563eb,#4f7df0);}
+
+/* Light palettes: wordmark must read on a light header */
+[data-theme="slate"] .wordmark-life,[data-theme="parchment"] .wordmark-life{color:var(--text);}
+[data-theme="slate"] .wordmark-page{background:linear-gradient(135deg,#2563eb 0%,#7c3aed 100%);-webkit-background-clip:text;background-clip:text;}
+[data-theme="parchment"] .wordmark-page{background:linear-gradient(135deg,var(--cyan) 0%,#c17f24 100%);-webkit-background-clip:text;background-clip:text;}
 
 /* ── PALETTE: Dusk (warm dark — softer than midnight) ── */
 [data-theme="dusk"]{
@@ -1062,7 +1083,7 @@ let appData = {
   saveReminderCount: 0,
   bookTitle: 'A Letter to My Kids',
   authorName: '',
-  theme: 'midnight',
+  theme: 'slate',
   chapters: buildFreshChapters()
 };
 
@@ -1077,7 +1098,7 @@ const THEMES = {
 };
 
 function applyTheme(id, save=true) {
-  const theme = THEMES[id] ? id : 'midnight';
+  const theme = THEMES[id] ? id : 'slate';
   // Set data-theme on <html> — CSS selectors do the rest
   document.documentElement.setAttribute('data-theme', theme === 'midnight' ? '' : theme);
   if(theme === 'midnight') document.documentElement.removeAttribute('data-theme');
@@ -1088,11 +1109,14 @@ function applyTheme(id, save=true) {
   // Update label in settings button
   const lbl = document.getElementById('active-theme-label');
   if(lbl) lbl.textContent = THEMES[theme].label;
+  // Keep browser/status-bar color in sync with the palette
+  const TC = { midnight:'#050811', dusk:'#1a1218', parchment:'#faf6f0', slate:'#f0f4f8' };
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', TC[theme]);
   if(save){ appData.theme = theme; saveState(); }
 }
 
 function loadSavedTheme() {
-  applyTheme(appData.theme || 'midnight', false);
+  applyTheme(appData.theme || 'slate', false);
 }
 
 const WORD_TARGET = 150;
@@ -2214,7 +2238,7 @@ function loadStateFromStorage(){
     appData=p;
     if(!appData.bookTitle)appData.bookTitle='A Letter to My Kids';
     if(!appData.authorName)appData.authorName='';
-    if(!appData.theme)appData.theme='midnight';
+    if(!appData.theme)appData.theme='slate';
     Object.values(appData.chapters).forEach(ch=>{
       if(!ch.aiNotes)ch.aiNotes=[];
       if(ch.hasPhoto===undefined)ch.hasPhoto=!!(ch.photo);  // migrate old photo flag
