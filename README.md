@@ -1,19 +1,10 @@
 <div align="center">
 
-<img src="icons/icon-192x192.png" width="120" alt="LifePage Logo" />
+<img src="docs/banner.svg" alt="LifePage — A Letter to My Kids" width="100%" />
 
-# LifePage
-
-### *A Letter to My Kids*
-
-**A private autobiography engine that turns your memories into a polished first-person memoir — one chapter at a time.**
-
-[![Live Site](https://img.shields.io/badge/Live%20Site-lifepage-5bc8e8?style=for-the-badge&logo=github)](https://johnlaz.github.io/lifepage/)
-[![Open App](https://img.shields.io/badge/Open%20App-Launch%20LifePage-c9a84c?style=for-the-badge)](https://johnlaz.github.io/lifepage/app/)
-[![Built by LAZLAB](https://img.shields.io/badge/Built%20by-LAZLAB%20Creations-a78bfa?style=for-the-badge)](https://lazlab.org)
-[![PWA Ready](https://img.shields.io/badge/PWA-Install%20Ready-4ade80?style=for-the-badge&logo=pwa)](https://johnlaz.github.io/lifepage/app/)
-
----
+[![Live Site](https://img.shields.io/badge/Live%20Site-lifepage-2563eb?style=for-the-badge&logo=github)](https://johnlaz.github.io/lifepage/)
+[![Open App](https://img.shields.io/badge/Open%20App-Launch%20LifePage-7c3aed?style=for-the-badge)](https://johnlaz.github.io/lifepage/app/)
+[![Built by LAZLAB](https://img.shields.io/badge/Built%20by-LAZLAB%20Creations-0f1e35?style=for-the-badge)](https://lazlab.org)
 
 *"No chapter needs to be complete. A few honest sentences is more than most people's children will ever have from them."*
 
@@ -21,148 +12,116 @@
 
 ---
 
-## What is LifePage?
+## What it is
 
-Most people intend to write their story. Almost nobody does.
+LifePage is a private, browser-based autobiography engine. You pick one of twelve chapters, write, talk, or answer an AI interviewer, and when you're ready it compiles everything into a first-person memoir framed as a letter to your kids.
 
-Not because they don't have anything to say — but because a blank page is intimidating, life is busy, and nobody ever taught us how to capture forty years of memories in a way that actually means something to the people who come after us.
+No account. No subscription. No LifePage server. Your story lives in your browser, and AI features run on your own free API keys.
 
-**LifePage changes that.**
+## Live URLs
 
-It's a private, browser-based autobiography engine designed for real people — not writers. You don't need to start at the beginning. You don't need to finish. You just need to open a chapter and say something true. The app handles the rest — guiding you with AI-powered questions, transcribing your voice, connecting related memories across chapters, and compiling everything into a beautifully written first-person memoir when you're ready.
+| | |
+|---|---|
+| Landing page | https://johnlaz.github.io/lifepage/ |
+| App (installable PWA) | https://johnlaz.github.io/lifepage/app/ |
 
-No account. No subscription. No data leaves your device without your action. Just your story, preserved for the people you love.
+## How it works
 
----
+<img src="docs/how-it-works.svg" alt="Five steps: choose a chapter, write or talk or AI interview, pin memories, chapter draft, full memoir" width="100%" />
+
+## Screenshots
+
+<p align="center">
+  <img src="app/shot-narrow-1.png" alt="Chapter list" width="240" />
+  &nbsp;
+  <img src="app/shot-narrow-2.png" alt="Chapter editor with Record and AI Interview" width="240" />
+</p>
+<p align="center"><img src="app/shot-wide.png" alt="LifePage on desktop" width="720" /></p>
+
+<sub>Screenshots use fictional sample text.</sub>
 
 ## Features
 
-### ✦ AI Interview
-Every chapter has an AI Interview button. Tap it and the AI opens a warm, guided conversation — asking thoughtful follow-up questions to pull out the details, emotions, and stories that make a chapter come alive. When you're done, your answers drop straight into the chapter with one tap. It feels like talking to a friend who genuinely wants to hear your story.
+- **AI Interview** — a warm, guided conversation per chapter (Groq). Answers drop into the chapter with one tap.
+- **Voice to Story** — record and transcribe with Groq Whisper, or use your keyboard's dictation.
+- **Memory Connections** — pin other chapters; the AI adds a short note there when something belongs, without touching your words.
+- **Draft A / Draft B** — two compiled drafts per chapter (Gemini). Compare them and mark one Final.
+- **Vault chapters** — mark a chapter Vault and it's left out of the compiled output in Abbreviated view.
+- **Full autobiography** — one tap weaves all chapters into a single memoir (Gemini).
+- **Photos, palettes, backup/restore** — chapter photos, four color palettes (default: Slate), and separate Book and Photos JSON backups.
 
-### 🎙 Voice to Story
-Rather speak than type? Hit Record and narrate your memories out loud. With a free Groq API key, your voice is transcribed automatically using Whisper. On mobile, your keyboard's built-in dictation works too. Your voice, your words — no editing required.
+## The twelve chapters
 
-### 📌 Memory Connections
-Memory doesn't move in straight lines. While writing about your career you might remember something that belongs in *People Who Changed Everything*. Pin it. The AI quietly reads your entry, decides if anything genuinely belongs in the pinned chapter, and adds a warm note there — without touching a single word you wrote.
+| # | Chapter | # | Chapter |
+|---|---------|---|---------|
+| 1 | Roots & Where We Come From | 7 | Places That Shaped Me |
+| 2 | The Neighborhood I Grew Up In | 8 | The Hard Years |
+| 3 | School Years & Real Lessons | 9 | Things I Made & Left Behind |
+| 4 | The Leap — Standing on My Own | 10 | People Who Changed Everything |
+| 5 | Career & The Grind | 11 | If I Were Doing It Over |
+| 6 | Love, Marriage & Family | 12 | What I Want You to Know |
 
-### ⚡ Draft A & Draft B
-Each chapter can hold two separate compiled drafts. Write your notes, compile into Draft A — it locks automatically to protect it. Add more over time, unlock, and compile a fresh Draft B. Compare them side by side or flip between them. Mark your favorite as Final before publishing the full book.
-
-### 🔐 Vault Privacy
-Some chapters aren't ready to share yet. Mark them Private — they stay fully preserved in your browser but are scrubbed completely from any compiled output you choose to share with your family.
-
-### 📖 Full Autobiography Compile
-When you're ready, one click asks Google Gemini to weave all your chapters into a beautifully written first-person memoir — framed as a heartfelt letter to your children. It adds light transitions between chapters, pulls natural quotes as blockquotes, and preserves your voice throughout. Print it, share it, or keep it.
-
----
-
-## Twelve Chapters
-
-LifePage structures a lifetime into twelve carefully designed chapters — each with a rich opening prompt and AI follow-up questions built specifically around the *letter to my kids* framing.
-
-| # | Chapter |
-|---|---------|
-| 1 | Roots & Where We Come From |
-| 2 | The Neighborhood I Grew Up In |
-| 3 | School Years & Real Lessons |
-| 4 | The Leap — Standing on My Own |
-| 5 | Career & The Grind |
-| 6 | Love, Marriage & Family |
-| 7 | Places That Shaped Me |
-| 8 | The Hard Years |
-| 9 | Things I Made & Left Behind |
-| 10 | People Who Changed Everything |
-| 11 | If I Were Doing It Over |
-| 12 | What I Want You to Know |
-
-Not every chapter needs to be completed. Some will be a page. Some will be a paragraph. That's fine — even one honest sentence per chapter is a gift your kids will carry for the rest of their lives.
-
----
-
-## How It Works
-
-**1. Choose a chapter** — Pick whichever one feels right today. There's no required order and nothing needs to be finished in one sitting.
-
-**2. Write, talk, or let AI guide you** — Type freely in the editor, tap Record to narrate out loud, or open AI Interview and just answer questions. All three paths lead to the same place: your story, in your words.
-
-**3. Connect memories across chapters** — Pin your entry to other chapters before saving. The AI reads your notes and quietly adds relevant memories where they belong — without changing what you wrote.
-
-**4. Compile each chapter into a polished draft** — When a chapter feels complete, click Write Draft. Gemini turns your raw notes into flowing, first-person prose. Lock it as Draft A. Come back later and compile a Draft B. Compare and choose.
-
-**5. Publish your full book** — When you're ready, compile the full autobiography. Gemini weaves all your chapters into one cohesive memoir — a letter your kids will read long after you're gone.
-
----
-
-## Privacy First
-
-LifePage is built on a simple principle: **your story belongs to you.**
-
-- Everything is stored in your browser's `localStorage` — nothing is transmitted to any server
-- AI features (interview, transcription, compile) use your own API keys, called directly from your browser
-- No account, no login, no tracking
-- Backup and restore via a simple JSON file you control completely
-
----
-
-## PWA — Install on Any Device
-
-LifePage is a fully installable Progressive Web App. Open the app in your browser and tap *Add to Home Screen* on iOS or *Install* on Android or Chrome desktop. It installs like a native app with:
-
-- Full offline support via service worker
-- Custom splash screens for all iPhone and iPad sizes
-- Android adaptive icons with safe-zone maskable variants
-- App shortcuts for quick access to your most-used chapters
-- App Badging API support for future notification features
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Vanilla HTML, CSS, JavaScript — zero dependencies, zero build tools |
-| AI Interview | [Groq](https://console.groq.com) — `llama-3.3-70b-versatile` |
-| Voice Transcription | [Groq Whisper](https://console.groq.com) — `whisper-large-v3` |
-| Chapter & Book Compile | [Google Gemini](https://aistudio.google.com) — `gemini-1.5-flash` |
-| Storage | Browser `localStorage` |
-| Deployment | GitHub Pages |
-| PWA | Service Worker, Web App Manifest, App Badging API |
-
----
-
-## Repo Structure
+## Repo layout
 
 ```
 /
-├── index.html          ← Landing page
-├── favicon.ico
-├── icons/              ← All PWA icons + Apple splash screens
+├── index.html          ← Landing page (plain webpage, no PWA)
+├── README.md
+├── docs/               ← README visuals (SVG only)
 └── app/
-    ├── index.html      ← The LifePage app
-    ├── manifest.json   ← PWA manifest (scoped to /app/)
-    └── sw.js           ← Service worker (scoped to /app/)
+    ├── index.html      ← The LifePage app (single file)
+    ├── manifest.json   ← PWA manifest (scope /lifepage/app/)
+    ├── sw.js           ← Service worker (scope /lifepage/app/)
+    ├── icon-192.png
+    ├── icon-512.png
+    └── shot-narrow-1.png, shot-narrow-2.png, shot-wide.png   ← install-dialog + README screenshots
 ```
 
-The service worker and manifest live inside `/app/` intentionally — the SW scope is `/app/` only, so the landing page stays a fast, plain webpage with no PWA overhead.
+The manifest and service worker live in `/app/` on purpose, so the landing page stays a fast, plain webpage.
 
----
+## AI & model setup
 
-## Getting Started (API Keys)
+LifePage uses two free API keys, entered in **⚙️ Settings**. Both are optional until you use the feature that needs them.
 
-LifePage uses two free AI APIs. Both have generous free tiers.
+| Provider | Used for | Get a key |
+|----------|----------|-----------|
+| Groq | AI Interview, memory-connection notes, voice transcription | [console.groq.com](https://console.groq.com) |
+| Google Gemini | Chapter drafts and the full memoir | [aistudio.google.com](https://aistudio.google.com) |
 
-**Groq** (AI Interview + Voice Transcription)
-1. Go to [console.groq.com](https://console.groq.com)
-2. Create a free account and generate an API key
-3. Paste it into LifePage → ⚙️ Settings → Groq API Key
+**Model picker.** When you save a key, LifePage asks the provider which chat models that key can use and shows the newest few in a dropdown. **Refresh** re-pulls the list (it also refreshes quietly when it's more than 3 days old). Your selected model is never swapped automatically. If a model drops off the provider's list, it stays selected and is flagged so you can choose. Voice transcription is fixed to `whisper-large-v3`. The last-resort fallbacks before any key is saved are `llama-3.3-70b-versatile` (Groq) and `gemini-3.7-flash` (Gemini).
 
-**Google Gemini** (Chapter & Book Compilation)
-1. Go to [aistudio.google.com](https://aistudio.google.com)
-2. Click *Get API Key* — free tier is more than enough
-3. Paste it into LifePage → ⚙️ Settings → Google Gemini API Key
+## Data & privacy
 
-Keys are stored only in your browser's localStorage and are never transmitted anywhere except directly to the respective APIs.
+<img src="docs/architecture.svg" alt="Your browser stores everything locally and calls Groq and Gemini directly. There is no LifePage server." width="100%" />
+
+- Chapters, drafts, photos, and settings are stored in your browser's `localStorage`.
+- AI calls go straight from your browser to Groq or Google with your own key. Text is sent only when you tap an AI action.
+- Backups (Book + Photos JSON) **never include your API keys**.
+- Clearing site data erases everything, so download backups regularly.
+- No account, no login, no tracking.
+
+## Install & offline
+
+Open the app and use *Install* (Chrome/Android/desktop) or *Add to Home Screen* (iOS Safari). Once loaded, the app shell and fonts work offline; AI features need a connection. When a new version is available, the app shows an **Update** prompt instead of reloading underneath you. The current version is shown at the bottom of Settings.
+
+## Deploy & update
+
+Hosted on GitHub Pages from the `main` branch root. To release:
+
+1. Edit `app/index.html` (and `index.html` if the landing changes).
+2. Bump `VERSION` in `app/sw.js` **and** `APP_VERSION` in `app/index.html` (they must match; Settings shows both).
+3. Commit and push. Installed apps will offer the Update prompt on next open.
+
+## Changelog
+
+**v1.3**
+- App now registers its service worker and links its manifest (installable, offline shell).
+- Update prompt, visible version stamp in Settings, and Google Fonts cached for offline.
+- Model picker: saved model is never auto-swapped; missing models are kept and flagged.
+- Flattened repo (two icons, no splash images), manifest trimmed to what the app supports.
+- Accessibility pass (labels, dialog roles, keyboard-reachable controls, reduced motion).
+- Landing: shared type pairing with the app, SVG feature icons, fixed logo link, phone-frame screenshots.
+- Manifest now includes real install screenshots (2 narrow, 1 wide).
 
 ---
 
@@ -170,10 +129,6 @@ Keys are stored only in your browser's localStorage and are never transmitted an
 
 **[→ Open LifePage](https://johnlaz.github.io/lifepage/app/)**
 
----
-
-*Built with care by [LAZLAB Creations](https://lazlab.org)*
-
-© 2025 LAZLAB Creations · All rights reserved
+© 2026 LAZLAB Creations. All Rights Reserved. · [lazlab.io@gmail.com](mailto:lazlab.io@gmail.com)
 
 </div>
