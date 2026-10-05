@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 300" width="1240" height="300" role="img" aria-labelledby="t d">
+  <title id="t">How LifePage works</title>
+  <desc id="d">Five steps: choose a chapter, write talk or use the AI interview, pin memories across chapters, compile a chapter draft, then compile the full memoir.</desc>
+  <rect width="1240" height="300" rx="20" fill="#f0f4f8"/>
+  <text x="40" y="44" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" letter-spacing="3" fill="#2563eb">HOW IT WORKS</text>
+  <rect x="40" y="70" width="200" height="190" rx="16" fill="#ffffff" stroke="#c9d6e4" stroke-width="1.5"/>
+<circle cx="76" cy="106" r="18" fill="#2563eb"/><text x="76" y="112" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="700" fill="#ffffff">1</text>
+<text x="58" y="152" font-family="Georgia,'Times New Roman',serif" font-size="21" fill="#0f1e35">Choose a chapter</text>
+<text x="58" y="184" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">Any of twelve,</text>
+<text x="58" y="202" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">any order</text>
+<path d="M246 165 h28" stroke="#7c8fb0" stroke-width="2" stroke-linecap="round"/><path d="M268 159 l8 6 -8 6" fill="none" stroke="#7c8fb0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="280" y="70" width="200" height="190" rx="16" fill="#ffffff" stroke="#c9d6e4" stroke-width="1.5"/>
+<circle cx="316" cy="106" r="18" fill="#3b6fe8"/><text x="316" y="112" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="700" fill="#ffffff">2</text>
+<text x="298" y="152" font-family="Georgia,'Times New Roman',serif" font-size="21" fill="#0f1e35">Write, talk, or</text>
+<text x="298" y="176" font-family="Georgia,'Times New Roman',serif" font-size="21" fill="#0f1e35">AI Interview</text>
+<text x="298" y="208" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">Type, record (Whisper),</text>
+<text x="298" y="226" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">or answer questions</text>
+<path d="M486 165 h28" stroke="#7c8fb0" stroke-width="2" stroke-linecap="round"/><path d="M508 159 l8 6 -8 6" fill="none" stroke="#7c8fb0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="520" y="70" width="200" height="190" rx="16" fill="#ffffff" stroke="#c9d6e4" stroke-width="1.5"/>
+<circle cx="556" cy="106" r="18" fill="#5b5ae8"/><text x="556" y="112" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="700" fill="#ffffff">3</text>
+<text x="538" y="152" font-family="Georgia,'Times New Roman',serif" font-size="21" fill="#0f1e35">Pin memories</text>
+<text x="538" y="184" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">AI adds notes in other</text>
+<text x="538" y="202" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">chapters, never edits yours</text>
+<path d="M726 165 h28" stroke="#7c8fb0" stroke-width="2" stroke-linecap="round"/><path d="M748 159 l8 6 -8 6" fill="none" stroke="#7c8fb0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="760" y="70" width="200" height="190" rx="16" fill="#ffffff" stroke="#c9d6e4" stroke-width="1.5"/>
+<circle cx="796" cy="106" r="18" fill="#6d49e6"/><text x="796" y="112" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="700" fill="#ffffff">4</text>
+<text x="778" y="152" font-family="Georgia,'Times New Roman',serif" font-size="21" fill="#0f1e35">Chapter draft</text>
+<text x="778" y="184" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">Draft A / Draft B,</text>
+<text x="778" y="202" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">mark one Final</text>
+<path d="M966 165 h28" stroke="#7c8fb0" stroke-width="2" stroke-linecap="round"/><path d="M988 159 l8 6 -8 6" fill="none" stroke="#7c8fb0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1000" y="70" width="200" height="190" rx="16" fill="#ffffff" stroke="#c9d6e4" stroke-width="1.5"/>
+<circle cx="1036" cy="106" r="18" fill="#7c3aed"/><text x="1036" y="112" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="700" fill="#ffffff">5</text>
+<text x="1018" y="152" font-family="Georgia,'Times New Roman',serif" font-size="21" fill="#0f1e35">Full memoir</text>
+<text x="1018" y="184" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">Gemini weaves it into</text>
+<text x="1018" y="202" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#4a6080">a letter to your kids</text>
+
+</svg>
