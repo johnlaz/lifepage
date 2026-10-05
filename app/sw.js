@@ -1,106 +1,91 @@
-/* LifePage Service Worker — v1.0
+/* LifePage Service Worker
    Scope: /app/
-   © LAZLAB Creations
-*/
+   © 2026 LAZLAB Creations. All Rights Reserved.
 
-const CACHE_NAME = 'lifepage-app-v1.2';
+   Bump VERSION on every release. The app's visible version stamp reads it back from here,
+   so the two can never drift apart. */
+
+const VERSION = '1.3';
+const CACHE_NAME = 'lifepage-app-v' + VERSION;
+const FONT_CACHE = 'lifepage-fonts-v1';
 
 const PRECACHE = [
   './',
   './index.html',
   './manifest.json',
-  '../icons/icon-192x192.png',
-  '../icons/icon-512x512.png',
+  './icon-192.png',
+  './icon-512.png',
 ];
 
-/* ── INSTALL ── */
+/* ── INSTALL ──
+   No automatic skipWaiting: an update waits until the person taps "Update" in the app,
+   so a reload never lands in the middle of writing. (On the very first install there is
+   no older worker, so this one activates immediately anyway.) */
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(PRECACHE))
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE)));
 });
 
-/* ── ACTIVATE — purge old caches ── */
+/* ── ACTIVATE — purge old app caches (fonts cache is kept) ── */
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k.startsWith('lifepage-app-') && k !== CACHE_NAME).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
 });
 
-/* ── FETCH — network first, cache fallback ── */
+/* ── MESSAGES from the app ── */
+self.addEventListener('message', event => {
+  const d = event.data || {};
+  if (d.type === 'SKIP_WAITING') self.skipWaiting();
+  if (d.type === 'GET_VERSION' && event.source) event.source.postMessage({ type: 'VERSION', version: VERSION, cache: CACHE_NAME });
+});
+
+/* ── FETCH ── */
 self.addEventListener('fetch', event => {
   const { request } = event;
+  if (request.method !== 'GET') return;
   const url = new URL(request.url);
 
-  if (request.method !== 'GET') return;
-  if (url.origin !== self.location.origin) return;
-  if (url.protocol === 'chrome-extension:') return;
-
-  event.respondWith(
-    fetch(request)
-      .then(response => {
-        // Cache successful responses
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
-        }
-        return response;
-      })
-      .catch(() =>
-        caches.match(request).then(cached => {
-          if (cached) return cached;
-          // Navigation fallback — serve app shell
-          if (request.mode === 'navigate') {
-            return caches.match('./index.html');
-          }
+  // Google Fonts: stale-while-revalidate so the typography works offline after first load.
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    event.respondWith(
+      caches.open(FONT_CACHE).then(cache =>
+        cache.match(request).then(cached => {
+          const fresh = fetch(request).then(res => {
+            if (res.ok || res.type === 'opaque') cache.put(request, res.clone());
+            return res;
+          }).catch(() => cached);
+          return cached || fresh;
         })
       )
-  );
-});
-
-/* ── PUSH NOTIFICATIONS ── */
-self.addEventListener('push', event => {
-  if (!event.data) return;
-  let data = {};
-  try { data = event.data.json(); } catch(e) { data = { title: 'LifePage', body: event.data.text() }; }
-
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'LifePage', {
-      body: data.body || 'Your story is waiting.',
-      icon: '../icons/icon-192x192.png',
-      badge: '../icons/icon-96x96.png',
-      tag: 'lifepage',
-      renotify: true,
-      data: { url: data.url || './' },
-    })
-  );
-});
-
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  const target = event.notification.data?.url || './';
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
-      for (const client of list) {
-        if ('focus' in client) return client.focus();
-      }
-      if (clients.openWindow) return clients.openWindow(target);
-    })
-  );
-});
-
-/* ── APP BADGE API ── */
-self.addEventListener('message', event => {
-  if (event.data?.type === 'SET_BADGE') {
-    self.registration.setAppBadge?.(event.data.count).catch(() => {});
+    );
+    return;
   }
-  if (event.data?.type === 'CLEAR_BADGE') {
-    self.registration.clearAppBadge?.().catch(() => {});
+
+  // Everything else cross-origin (AI APIs etc.) goes straight to the network, untouched.
+  if (url.origin !== self.location.origin) return;
+
+  // HTML / navigations: network-first, fall back to the cached app shell when offline.
+  if (request.mode === 'navigate' || request.destination === 'document') {
+    event.respondWith(
+      fetch(request)
+        .then(res => {
+          if (res.ok) { const copy = res.clone(); caches.open(CACHE_NAME).then(c => c.put(request, copy)); }
+          return res;
+        })
+        .catch(() => caches.match(request).then(hit => hit || caches.match('./index.html')))
+    );
+    return;
   }
+
+  // Static assets (icons, manifest): cache-first, fill the cache on a miss.
+  event.respondWith(
+    caches.match(request).then(hit => hit || fetch(request).then(res => {
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE_NAME).then(c => c.put(request, copy)); }
+      return res;
+    }))
+  );
 });

@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="LifePage">
 <meta name="theme-color" content="#f0f4f8">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <script>
 /* Apply saved palette before first paint (default: Slate) */
 (function(){try{
@@ -572,10 +575,18 @@ html,body{overscroll-behavior-y:contain;}
 .icon-btn.has-dot::after{content:'';position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;background:var(--amber);border:2px solid var(--surface2);}
 .chapter-status-text.unsaved{color:var(--amber);}
 #backup-status{font-size:11px;line-height:1.7;font-family:'JetBrains Mono',monospace;letter-spacing:0.01em;margin-bottom:10px;}
+
+/* ── PWA update banner, version stamp, a11y ── */
+.sw-update{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:9998;display:flex;align-items:center;gap:12px;padding:10px 14px 10px 18px;border-radius:12px;background:var(--surface);color:var(--text);border:1px solid var(--cyan);box-shadow:0 8px 28px rgba(0,0,0,0.25);font-size:13px;font-weight:500;max-width:calc(100vw - 24px);}
+.sw-update button{border:0;border-radius:8px;padding:7px 14px;font:inherit;font-weight:600;cursor:pointer;background:var(--cyan);color:var(--bg);}
+.sw-update button.sw-later{background:transparent;color:var(--text-dim);}
+.ver-stamp{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:var(--text-muted);text-align:center;padding-top:4px;}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important;}}
 </style>
 </head>
 <body>
-<div id="toast-root"></div>
+<div id="toast-root" role="status" aria-live="polite"></div>
 
 <!-- HEADER -->
 <header>
@@ -589,8 +600,8 @@ html,body{overscroll-behavior-y:contain;}
         <button id="toggle-full" onclick="changeGlobalFilter('full')" class="active">Full</button>
         <button id="toggle-abbr" onclick="changeGlobalFilter('abbreviated')">Abbreviated</button>
       </div>
-      <button class="icon-btn" onclick="triggerPrint()" title="Print / Save as PDF"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="1" width="10" height="5" rx="1" fill="currentColor" opacity="0.7"/><rect x="1" y="6" width="14" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="4" y="10" width="8" height="5" rx="1" fill="currentColor" opacity="0.7"/><circle cx="12.5" cy="9.5" r="1" fill="currentColor"/></svg></button>
-      <button class="icon-btn" id="settings-btn" onclick="toggleModal('settings-modal',true)" title="Settings">⚙️</button>
+      <button class="icon-btn" onclick="triggerPrint()" title="Print / Save as PDF" aria-label="Print or save as PDF"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="1" width="10" height="5" rx="1" fill="currentColor" opacity="0.7"/><rect x="1" y="6" width="14" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="4" y="10" width="8" height="5" rx="1" fill="currentColor" opacity="0.7"/><circle cx="12.5" cy="9.5" r="1" fill="currentColor"/></svg></button>
+      <button class="icon-btn" id="settings-btn" onclick="toggleModal('settings-modal',true)" title="Settings" aria-label="Settings">⚙️</button>
     </div>
   </div>
 </header>
@@ -666,7 +677,7 @@ html,body{overscroll-behavior-y:contain;}
       <!-- EDITOR -->
       <div>
         <div class="editor-label">Your Story</div>
-        <textarea id="journal-editor" placeholder="Type your thoughts freely here — there's no wrong way to start. Or tap ✦ AI Interview below and let it guide you with questions…" oninput="updateWordCount()"></textarea>
+        <textarea id="journal-editor" aria-label="Chapter notes" placeholder="Type your thoughts freely here — there's no wrong way to start. Or tap ✦ AI Interview below and let it guide you with questions…" oninput="updateWordCount()"></textarea>
         <div class="editor-footer">
           <span class="word-count" id="word-count">0 words</span>
           <span id="read-time" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);"></span>
@@ -708,7 +719,7 @@ html,body{overscroll-behavior-y:contain;}
 
       <!-- PIN TO CHAPTERS -->
       <div id="pin-section">
-        <div class="pin-header" onclick="togglePinSection()">
+        <div class="pin-header" onclick="togglePinSection()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePinSection();}">
           <div class="pin-header-left">
             <span class="pin-chevron" id="pin-chevron">▶</span>
             <span class="pin-title">Connect this memory to other chapters</span>
@@ -743,7 +754,7 @@ html,body{overscroll-behavior-y:contain;}
             📷 Upload
             <input type="file" accept="image/*" style="display:none;" onchange="handleChapterPhotoUpload(this)">
           </label>
-          <button id="photo-remove-btn" class="photo-remove-btn" style="display:none;" onclick="removeChapterPhoto()">✕</button>
+          <button id="photo-remove-btn" class="photo-remove-btn" style="display:none;" onclick="removeChapterPhoto()" aria-label="Remove chapter photo">✕</button>
         </div>
       </div>
 
@@ -785,7 +796,7 @@ html,body{overscroll-behavior-y:contain;}
 </main>
 
 <!-- UNLOCK CONFIRM MODAL -->
-<div id="unlock-modal" class="modal-overlay">
+<div id="unlock-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Unlock chapter">
   <div class="modal-box" style="max-width:400px;">
     <div class="confirm-body">
       <div class="confirm-icon">🔓</div>
@@ -800,7 +811,7 @@ html,body{overscroll-behavior-y:contain;}
 </div>
 
 <!-- SAVE REMINDER MODAL -->
-<div id="save-reminder-modal" class="modal-overlay">
+<div id="save-reminder-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Backup reminder">
   <div class="modal-box" style="max-width:400px;">
     <div class="save-reminder-body">
       <div class="save-reminder-icon">💾</div>
@@ -815,14 +826,14 @@ html,body{overscroll-behavior-y:contain;}
 </div>
 
 <!-- ONBOARDING MODAL -->
-<div id="onboarding-modal" class="modal-overlay">
+<div id="onboarding-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Welcome to LifePage">
   <div class="modal-box onboarding-box">
     <div class="modal-body">
       <div id="onboarding-cards"></div>
       <div class="onboarding-footer">
         <div class="onboarding-dots" id="ob-dots"></div>
         <div class="onboarding-nav">
-          <button class="ob-nav-btn" id="ob-back-btn" onclick="obNav(-1)" title="Back" disabled>←</button>
+          <button class="ob-nav-btn" id="ob-back-btn" onclick="obNav(-1)" title="Back" aria-label="Back" disabled>←</button>
           <button class="btn btn-secondary" onclick="skipOnboarding()" style="padding:7px 14px;font-size:11px;">Skip</button>
           <button class="btn btn-rec" id="onboarding-next-btn" onclick="obNav(1)">Next →</button>
         </div>
@@ -832,11 +843,11 @@ html,body{overscroll-behavior-y:contain;}
 </div>
 
 <!-- SETTINGS MODAL -->
-<div id="settings-modal" class="modal-overlay">
+<div id="settings-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Settings">
   <div class="modal-box" style="max-width:560px;">
     <div class="modal-header">
       <span class="modal-title">Settings</span>
-      <button class="modal-close" onclick="toggleModal('settings-modal',false)">✕</button>
+      <button class="modal-close" aria-label="Close settings" onclick="toggleModal('settings-modal',false)">✕</button>
     </div>
     <div class="modal-body">
       <div>
@@ -861,7 +872,7 @@ html,body{overscroll-behavior-y:contain;}
               <span id="gemini-test-status" class="key-status">Not Tested</span>
             </div>
             <div class="field-row">
-              <input type="password" id="input-key-gemini" class="text-input" placeholder="AIzaSy…">
+              <input type="password" id="input-key-gemini" aria-label="Google Gemini API key" class="text-input" placeholder="AIzaSy…">
               <button class="btn-test" onclick="testKeyConnection('gemini')">Test</button>
             </div>
             <div id="gemini-diag" style="display:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);margin-top:4px;line-height:1.5;word-break:break-word;padding:6px 10px;background:rgba(248,113,113,0.06);border-radius:6px;border:1px solid rgba(248,113,113,0.15);"></div>
@@ -881,7 +892,7 @@ html,body{overscroll-behavior-y:contain;}
               <span id="groq-test-status" class="key-status">Not Tested</span>
             </div>
             <div class="field-row">
-              <input type="password" id="input-key-groq" class="text-input" placeholder="gsk_…">
+              <input type="password" id="input-key-groq" aria-label="Groq API key" class="text-input" placeholder="gsk_…">
               <button class="btn-test" onclick="testKeyConnection('groq')">Test</button>
             </div>
             <div id="groq-diag" style="display:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);margin-top:4px;line-height:1.5;word-break:break-word;padding:6px 10px;background:rgba(248,113,113,0.06);border-radius:6px;border:1px solid rgba(248,113,113,0.15);"></div>
@@ -906,14 +917,14 @@ html,body{overscroll-behavior-y:contain;}
           <div class="data-grid">
             <button class="data-btn" onclick="triggerMasterBackupDownload()">📥 Download Book</button>
             <div class="data-btn" style="position:relative;overflow:hidden;">
-              <input type="file" id="restore-file-input" accept=".json" onchange="restoreMasterBackupFromFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;">
+              <input type="file" id="restore-file-input" aria-label="Restore book backup file" accept=".json" onchange="restoreMasterBackupFromFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;">
               📤 Restore Book
             </div>
           </div>
           <div class="data-grid">
             <button class="data-btn" onclick="triggerPhotosBackupDownload()" id="photos-backup-btn">🖼 Download Photos</button>
             <div class="data-btn" style="position:relative;overflow:hidden;">
-              <input type="file" id="restore-photos-input" accept=".json" onchange="restorePhotosFromFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;">
+              <input type="file" id="restore-photos-input" aria-label="Restore photos backup file" accept=".json" onchange="restorePhotosFromFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;">
               🖼 Restore Photos
             </div>
           </div>
@@ -933,6 +944,7 @@ html,body{overscroll-behavior-y:contain;}
         <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.65;">New to LifePage or want a refresher? Replay the intro walkthrough anytime.</div>
         <button class="data-btn" onclick="replayOnboarding()" style="width:100%;">▶ Replay Intro Tour</button>
       </div>
+      <div class="ver-stamp" id="ver-stamp" aria-live="polite">LifePage</div>
       <div class="settings-info-box">
         <div class="settings-section-title" style="border:none;padding:0;margin:0 0 4px;">About LifePage</div>
         <p>Built to preserve your story, your voice, and your values — for the people who will carry them forward. Everything runs privately in your own browser. Nothing is ever sent anywhere without your action.</p>
@@ -942,18 +954,18 @@ html,body{overscroll-behavior-y:contain;}
 </div>
 
 <!-- THEME PICKER MODAL -->
-<div id="theme-picker-modal" class="modal-overlay">
+<div id="theme-picker-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Color palette">
   <div class="modal-box" style="max-width:480px;">
     <div class="modal-header">
       <span class="modal-title">Color Palette</span>
-      <button class="modal-close" onclick="toggleModal('theme-picker-modal',false);toggleModal('settings-modal',true);">✕</button>
+      <button class="modal-close" aria-label="Close palette picker" onclick="toggleModal('theme-picker-modal',false);toggleModal('settings-modal',true);">✕</button>
     </div>
     <div class="modal-body">
       <div style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:4px;">Pick the palette that fits your mood. Your choice is saved automatically.</div>
       <div class="theme-picker-grid">
 
         <!-- Midnight (default dark) -->
-        <div class="theme-card" id="theme-card-midnight" onclick="applyTheme('midnight')">
+        <div class="theme-card" id="theme-card-midnight" onclick="applyTheme('midnight')" role="button" tabindex="0" aria-label="Midnight palette" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();applyTheme('midnight');}">
           <div class="theme-card-preview" style="background:#06080f;">
             <div class="theme-card-bar" style="background:#5bc8e8;opacity:0.9;"></div>
             <div class="theme-card-bar short" style="background:#e2e8f0;opacity:0.4;"></div>
@@ -971,7 +983,7 @@ html,body{overscroll-behavior-y:contain;}
         </div>
 
         <!-- Dusk (warm dark) -->
-        <div class="theme-card" id="theme-card-dusk" onclick="applyTheme('dusk')">
+        <div class="theme-card" id="theme-card-dusk" onclick="applyTheme('dusk')" role="button" tabindex="0" aria-label="Dusk palette" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();applyTheme('dusk');}">
           <div class="theme-card-preview" style="background:#1a1218;">
             <div class="theme-card-bar" style="background:#e8906a;opacity:0.9;"></div>
             <div class="theme-card-bar short" style="background:#f0e8e0;opacity:0.4;"></div>
@@ -989,7 +1001,7 @@ html,body{overscroll-behavior-y:contain;}
         </div>
 
         <!-- Parchment (warm light) -->
-        <div class="theme-card" id="theme-card-parchment" onclick="applyTheme('parchment')">
+        <div class="theme-card" id="theme-card-parchment" onclick="applyTheme('parchment')" role="button" tabindex="0" aria-label="Parchment palette" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();applyTheme('parchment');}">
           <div class="theme-card-preview" style="background:#faf6f0;">
             <div class="theme-card-bar" style="background:#b4652a;opacity:0.85;"></div>
             <div class="theme-card-bar short" style="background:#2c1f0e;opacity:0.3;"></div>
@@ -1007,7 +1019,7 @@ html,body{overscroll-behavior-y:contain;}
         </div>
 
         <!-- Slate (cool light) -->
-        <div class="theme-card" id="theme-card-slate" onclick="applyTheme('slate')">
+        <div class="theme-card" id="theme-card-slate" onclick="applyTheme('slate')" role="button" tabindex="0" aria-label="Slate palette" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();applyTheme('slate');}">
           <div class="theme-card-preview" style="background:#f0f4f8;">
             <div class="theme-card-bar" style="background:#2563eb;opacity:0.85;"></div>
             <div class="theme-card-bar short" style="background:#0f1e35;opacity:0.3;"></div>
@@ -1030,7 +1042,7 @@ html,body{overscroll-behavior-y:contain;}
 </div>
 
 <!-- THEMED CONFIRM MODAL -->
-<div id="confirm-modal" class="modal-overlay">
+<div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Please confirm">
   <div class="modal-box" style="max-width:400px;">
     <div class="confirm-body">
       <div class="confirm-icon" id="cm-icon"></div>
@@ -1392,7 +1404,7 @@ function renderAiNotes() {
             <div class="ai-note-source">From: ${appData.chapters[n.fromChapterId]?.title||n.fromChapterId}</div>
             <div class="ai-note-text">${n.text}</div>
           </div>
-          <button class="ai-note-remove" onclick="removeAiNote('${appData.activeEra}','${n.id}')" title="Remove this note">✕</button>
+          <button class="ai-note-remove" onclick="removeAiNote('${appData.activeEra}','${n.id}')" title="Remove this note" aria-label="Remove this note">✕</button>
         </div>
       `).join('')}
     </div>`;
@@ -1799,7 +1811,7 @@ function updateSlipsUI(){
   c.innerHTML='';
   appData.slips.forEach(s=>{
     const card=document.createElement('div');card.className='slip-card';
-    card.innerHTML=`<div class="slip-card-header"><span class="slip-target-label">→ ${appData.chapters[s.targetEra]?.title||s.targetEra}</span><button class="slip-delete-btn" onclick="removeSlip(${s.id})">✕</button></div><div class="slip-preview">"${s.dataText.substring(0,80)}${s.dataText.length>80?'…':''}"</div>`;
+    card.innerHTML=`<div class="slip-card-header"><span class="slip-target-label">→ ${appData.chapters[s.targetEra]?.title||s.targetEra}</span><button class="slip-delete-btn" onclick="removeSlip(${s.id})" aria-label="Remove cached slip">✕</button></div><div class="slip-preview">"${s.dataText.substring(0,80)}${s.dataText.length>80?'…':''}"</div>`;
     c.appendChild(card);
   });
 }
@@ -1887,7 +1899,7 @@ function getModelCache(p){try{return JSON.parse(localStorage.getItem(MODEL_PROVI
 function getModel(p){return localStorage.getItem(MODEL_PROVIDERS[p].selKey)||MODEL_PROVIDERS[p].fallback;}
 function getGroqModel(){return getModel('groq');}
 function getGeminiModel(){return getModel('gemini');}
-function setModelChoice(p,v){localStorage.setItem(MODEL_PROVIDERS[p].selKey,v);}
+function setModelChoice(p,v){localStorage.setItem(MODEL_PROVIDERS[p].selKey,v);renderModelPicker(p);}
 function wipeModelState(p){localStorage.removeItem(MODEL_PROVIDERS[p].cacheKey);localStorage.removeItem(MODEL_PROVIDERS[p].selKey);}
 
 // Rough size from the id ("...-70b-...", "...-120b") so the default pick favours capable models.
@@ -1930,9 +1942,11 @@ function commitModelList(p,list,availableIds,best){
   const c=MODEL_PROVIDERS[p];
   const cur=localStorage.getItem(c.selKey);
   const still=!!cur&&availableIds.includes(cur);
-  if(still&&!list.some(m=>m.id===cur))list.push({id:cur});
-  if(!still)localStorage.setItem(c.selKey,best(list));
-  localStorage.setItem(c.cacheKey,JSON.stringify({fetchedAt:Date.now(),list}));
+  // Never auto-swap: a saved choice always stays selected. If the provider no longer lists it,
+  // keep it in the picker and flag it so the person can decide.
+  if(cur&&!list.some(m=>m.id===cur))list.push({id:cur});
+  if(!cur)localStorage.setItem(c.selKey,best(list));
+  localStorage.setItem(c.cacheKey,JSON.stringify({fetchedAt:Date.now(),list,missing:(cur&&!still)?cur:null}));
   renderModelPicker(p);
 }
 function setModelStatus(p,text,cls){
@@ -2000,9 +2014,10 @@ function renderModelPicker(p){
   const ids=cache.list.map(m=>m.id);
   if(!ids.includes(selected))ids.unshift(selected);
   select.innerHTML='';
-  ids.forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=id;if(id===selected)o.selected=true;select.appendChild(o);});
+  ids.forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=(id===cache.missing)?id+' (not in latest list)':id;if(id===selected)o.selected=true;select.appendChild(o);});
   block.style.display='';
-  setModelStatus(p,'Updated '+new Date(cache.fetchedAt).toLocaleDateString(),'ok');
+  if(cache.missing&&cache.missing===selected)setModelStatus(p,'⚠ '+selected+' is no longer in your provider’s list. It is kept as-is; pick another if calls fail.','fail');
+  else setModelStatus(p,'Updated '+new Date(cache.fetchedAt).toLocaleDateString(),'ok');
 }
 function renderModelPickers(){renderModelPicker('groq');renderModelPicker('gemini');}
 
@@ -2023,8 +2038,9 @@ function handleKeysSaved(prevGroq,prevGemini){
   if(appData.keys.gemini)refreshGeminiModels();
 }
 
-/* One shared Groq chat call for the text features. Uses the selected model, strips <think>
-   blocks reasoning models may emit, and self-heals once if the model has been retired. */
+/* One shared Groq chat call for the text features. Uses the selected model and strips <think>
+   blocks reasoning models may emit. If the model has been retired it refreshes the list and
+   tells the person; it never swaps their saved model. */
 async function groqChat(apiKey,messages,temperature,extra,_retried){
   const model=getGroqModel();
   const body=Object.assign({model,messages,temperature},extra||{});
@@ -2042,9 +2058,8 @@ async function groqChat(apiKey,messages,temperature,extra,_retried){
       let detail='';
       try{const err=await response.clone().json();detail=JSON.stringify(err.error||err);}catch(e){}
       if(/model/i.test(detail)){
-        localStorage.removeItem(MODEL_PROVIDERS.groq.selKey);
         await refreshGroqModels({silent:true});
-        if(getGroqModel()!==model)return groqChat(apiKey,messages,temperature,extra,true);
+        throw new Error('Groq model "'+model+'" looks retired or unavailable. Open Settings and pick another from the refreshed list.');
       }
     }
     throw new Error('Groq request failed (status '+response.status+'). Try again.');
@@ -2057,8 +2072,8 @@ async function groqChat(apiKey,messages,temperature,extra,_retried){
 
 /* Gemini generateContent call. Same (key, fetch-init) shape the call sites already use, but the
    model comes from the picker. Returns the raw Response so existing error handling is unchanged.
-   Self-heals once: (a) model rejects thinkingConfig → retry without it; (b) model retired → re-pull
-   the list and retry on the replacement. */
+   Self-heals once: model rejects thinkingConfig → retry without it. If the model looks retired it
+   re-pulls the list and tells the person; it never swaps their saved model. */
 async function geminiFetch(apiKey,init,_retried){
   const model=getGeminiModel();
   const url='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+apiKey;
@@ -2076,10 +2091,9 @@ async function geminiFetch(apiKey,init,_retried){
     }catch(e){}
     return r;
   }
-  if(r.status===404||/model/i.test(msg)){
-    localStorage.removeItem(MODEL_PROVIDERS.gemini.selKey);
+  if(r.status===404||(/model/i.test(msg)&&/not found|retired|deprecat|no longer|unsupported|not supported/i.test(msg))){
     await refreshGeminiModels({silent:true});
-    if(getGeminiModel()!==model)return geminiFetch(apiKey,init,true);
+    toast('Gemini model "'+model+'" looks retired or unavailable. Open Settings and pick another from the refreshed list.','warn',7000);
   }
   return r;
 }
@@ -2541,6 +2555,42 @@ window.addEventListener('beforeunload',e=>{
 });
 
 /* ══════════════════════════════════════════════════════
+   PWA — service worker, update prompt, version stamp
+   APP_VERSION must equal VERSION in sw.js (bump both on every release).
+══════════════════════════════════════════════════════ */
+const APP_VERSION='1.3';
+function paintVersionStamp(swVer){
+  const el=document.getElementById('ver-stamp');if(!el)return;
+  el.textContent='LifePage v'+APP_VERSION+(swVer&&swVer!==APP_VERSION?' · installed v'+swVer+' (update ready)':'');
+}
+function showUpdateBanner(worker){
+  if(document.getElementById('sw-update'))return;
+  const b=document.createElement('div');b.id='sw-update';b.className='sw-update';b.setAttribute('role','status');
+  const t=document.createElement('span');t.textContent='A new version of LifePage is ready.';
+  const go=document.createElement('button');go.type='button';go.textContent='Update';
+  go.onclick=()=>{draftFlush();worker.postMessage({type:'SKIP_WAITING'});};
+  const later=document.createElement('button');later.type='button';later.className='sw-later';later.textContent='Later';
+  later.onclick=()=>b.remove();
+  b.append(t,go,later);document.body.appendChild(b);
+}
+function initServiceWorker(){
+  paintVersionStamp();
+  if(!('serviceWorker' in navigator)||!/^https:|^http:\/\/localhost/.test(location.href))return;
+  const hadController=!!navigator.serviceWorker.controller;
+  let reloading=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading||!hadController)return;reloading=true;location.reload();});
+  navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='VERSION')paintVersionStamp(e.data.version);});
+  navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(reg=>{
+    if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg.waiting);
+    reg.addEventListener('updatefound',()=>{
+      const nw=reg.installing;if(!nw)return;
+      nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller)showUpdateBanner(nw);});
+    });
+    navigator.serviceWorker.ready.then(()=>{if(navigator.serviceWorker.controller)navigator.serviceWorker.controller.postMessage({type:'GET_VERSION'});});
+  }).catch(()=>{});
+}
+
+/* ══════════════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════════════ */
 document.addEventListener('visibilitychange',()=>{if(document.hidden)draftFlush();else bkMaybeRemind();});
@@ -2559,6 +2609,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   bkInitStorage();
   bkRefreshUI();
   setTimeout(bkMaybeRemind,2500);
+  initServiceWorker();
 });
 </script>
 </body>
