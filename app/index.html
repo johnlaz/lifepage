@@ -567,6 +567,11 @@ select.text-input{min-width:0;cursor:pointer;}select.text-input option{backgroun
   .book-cover{padding:40px 16px 36px;}
   .book-cover-title{font-size:22px;}
 }
+html,body{overscroll-behavior-y:contain;}
+.icon-btn.has-dot{position:relative;}
+.icon-btn.has-dot::after{content:'';position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;background:var(--amber);border:2px solid var(--surface2);}
+.chapter-status-text.unsaved{color:var(--amber);}
+#backup-status{font-size:11px;line-height:1.7;font-family:'JetBrains Mono',monospace;letter-spacing:0.01em;margin-bottom:10px;}
 </style>
 </head>
 <body>
@@ -585,7 +590,7 @@ select.text-input{min-width:0;cursor:pointer;}select.text-input option{backgroun
         <button id="toggle-abbr" onclick="changeGlobalFilter('abbreviated')">Abbreviated</button>
       </div>
       <button class="icon-btn" onclick="triggerPrint()" title="Print / Save as PDF"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="1" width="10" height="5" rx="1" fill="currentColor" opacity="0.7"/><rect x="1" y="6" width="14" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="4" y="10" width="8" height="5" rx="1" fill="currentColor" opacity="0.7"/><circle cx="12.5" cy="9.5" r="1" fill="currentColor"/></svg></button>
-      <button class="icon-btn" onclick="toggleModal('settings-modal',true)" title="Settings">⚙️</button>
+      <button class="icon-btn" id="settings-btn" onclick="toggleModal('settings-modal',true)" title="Settings">⚙️</button>
     </div>
   </div>
 </header>
@@ -799,8 +804,8 @@ select.text-input{min-width:0;cursor:pointer;}select.text-input option{backgroun
   <div class="modal-box" style="max-width:400px;">
     <div class="save-reminder-body">
       <div class="save-reminder-icon">💾</div>
-      <div class="save-reminder-title">Download a backup?</div>
-      <div class="save-reminder-sub">Your story is saved in this browser, but a downloaded backup keeps it safe forever — even if you clear your browser or switch devices.</div>
+      <div class="save-reminder-title" id="save-reminder-title">Download a backup?</div>
+      <div class="save-reminder-sub" id="save-reminder-sub">Your story is saved in this browser, but a downloaded backup keeps it safe forever — even if you clear your browser or switch devices.</div>
       <div class="save-reminder-buttons">
         <button class="btn btn-secondary" onclick="toggleModal('save-reminder-modal',false)">Maybe Later</button>
         <button class="btn btn-save" onclick="quickSaveAndClose()">📥 Download Now</button>
@@ -896,6 +901,7 @@ select.text-input{min-width:0;cursor:pointer;}select.text-input option{backgroun
       <div>
         <div class="settings-section-title">Data &amp; Backup</div>
         <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.65;">Your story and photos are saved separately. Download both regularly to keep a full backup.</div>
+        <div id="backup-status"></div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div class="data-grid">
             <button class="data-btn" onclick="triggerMasterBackupDownload()">📥 Download Book</button>
@@ -1019,6 +1025,18 @@ select.text-input{min-width:0;cursor:pointer;}select.text-input option{backgroun
         </div>
 
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- THEMED CONFIRM MODAL -->
+<div id="confirm-modal" class="modal-overlay">
+  <div class="modal-box" style="max-width:400px;">
+    <div class="confirm-body">
+      <div class="confirm-icon" id="cm-icon"></div>
+      <div class="confirm-title" id="cm-title"></div>
+      <div class="confirm-sub" id="cm-sub"></div>
+      <div class="confirm-buttons" id="cm-buttons"></div>
     </div>
   </div>
 </div>
@@ -1153,13 +1171,9 @@ function updateWordCount() {
   wc.textContent=words===1?'1 word':`${words} words`;
   wc.className='word-count'+(words>0?' has-words':'');
   rt.textContent=words>20?`~${Math.ceil(words/200)} min read`:'';
-  wordsSinceReminder++;
-  if(wordsSinceReminder>=100&&words>30){
-    wordsSinceReminder=0;clearTimeout(saveReminderTimer);
-    saveReminderTimer=setTimeout(()=>toggleModal('save-reminder-modal',true),800);
-  }
+  draftSchedule();
 }
-function quickSaveAndClose(){triggerMasterBackupDownload();toggleModal('save-reminder-modal',false);}
+function quickSaveAndClose(){bkDownloadAll();toggleModal('save-reminder-modal',false);}
 
 /* ══════════════════════════════════════════════════════
    SIDEBAR
@@ -1181,6 +1195,8 @@ function renderSidebar() {
     if(hasA&&hasB){statusText='2 drafts saved';statusClass='compiled';}
     else if(hasA){statusText='Draft A saved';statusClass='compiled';}
     else if(wc>0){statusText=`${wc} words`;statusClass='logged';}
+    const dw=lpDrafts[ch.id];
+    if(dw!==undefined){const dn=dw.trim().split(/\s+/).filter(Boolean).length;statusText=`Unsaved notes · ${dn} words`;statusClass='unsaved';}
     const ringClass=isLocked?'locked-ring':(done?'done':'');
     const iconChar=isLocked?'🔒':(done?'✓':(wc>0?'✦':''));
     const row=document.createElement('div');
@@ -1250,12 +1266,17 @@ function togglePinSection() {
    CHAPTER LOAD
 ══════════════════════════════════════════════════════ */
 function loadActiveChapter(id) {
+  draftFlush();
   appData.activeEra=id;
+  try{localStorage.setItem('lifepage_last_ch',id);}catch(e){}
   const ch=appData.chapters[id];
   document.getElementById('context-indicator').textContent=`Chapter ${ch.title.split('.')[0].trim()} of 12`;
   document.getElementById('active-prompt-label').textContent=`"${ch.prompt}"`;
   const ed=document.getElementById('journal-editor');
-  ed.value=ch.text||'';
+  const dr=lpDrafts[id];
+  const recovered=dr!==undefined&&dr!==(ch.text||'');
+  ed.value=recovered?dr:(ch.text||'');
+  if(recovered&&!lpRecoveredShown.has(id)){lpRecoveredShown.add(id);toast('Restored your unsaved notes for this chapter. Tap Save Chapter Notes to keep them.','info',5000);}
   ed.classList.add('fade-in');setTimeout(()=>ed.classList.remove('fade-in'),300);
   document.getElementById('privacy-switch').checked=ch.isPublic;
   updateWordCount();wordsSinceReminder=0;
@@ -1300,7 +1321,7 @@ function selectDraftView(slot) {
   if(slot==='b'&&!ch.draftB)return;
   activeDraftView=slot;
   renderDraftSelector();
-  if(compareMode==='side')renderSideBySide();
+  if(compareMode==='side')renderSideBySize();
   else renderFlipView(slot);
 }
 
@@ -1433,9 +1454,8 @@ async function commitActiveMemoryBlock() {
   if(!textVal.trim()){toast('Write something first before saving.','warn');return;}
   appData.chapters[appData.activeEra].text=textVal;
   saveState();renderSidebar();
+  draftClear(appData.activeEra);
   toast('Chapter notes saved ✓','success');
-  appData.saveReminderCount=(appData.saveReminderCount||0)+1;
-  if(appData.saveReminderCount%3===0)setTimeout(()=>toggleModal('save-reminder-modal',true),600);
 
   // Process pins if any
   if(pinnedChapters.size>0&&appData.keys.groq){
@@ -1507,7 +1527,7 @@ async function compileChapter() {
   if(ch.draftA&&ch.draftALocked){
     // Writing Draft B
     if(ch.draftB){
-      if(!confirm('You already have a Draft B. Overwrite it?'))return;
+      if((await themedConfirm({icon:'✍️',title:'Replace Draft B?',sub:'You already have a Draft B. Writing a new one will overwrite it. Draft A is kept.',ok:'Overwrite Draft B',danger:true}))!=='ok')return;
     }
     slot='b';
   }
@@ -1714,38 +1734,59 @@ function toggleAiPanel(){
   startAiInterview();
 }
 function closeAiPanel(){document.getElementById('ai-panel').classList.remove('open');document.getElementById('ai-interview-btn').classList.remove('active');}
-async function startAiInterview(){
+function buildInterviewSystem(){
   const ch=appData.chapters[appData.activeEra];
-  const existing=document.getElementById('journal-editor').value.trim();
-  const sys=`You are a warm, empathetic biographer helping someone write their life story as a letter to their children. You're working on the chapter called "${ch.title}". Ask one thoughtful, conversational question at a time to help the person go deeper. Keep your responses to 1-3 sentences. Be warm, curious, and personal. Never ask multiple questions at once.`;
-  const userMsg=existing?`I've written this so far:\n\n"${existing}"\n\nAsk me a warm follow-up question to help me go deeper.`:`I haven't started yet. Please open our conversation with a warm, personal question based on: "${ch.prompt}"`;
-  aiHistory=[{role:'user',content:userMsg}];
-  await callGroqChat(sys);
+  const notes=(document.getElementById('journal-editor').value||'').trim();
+  const clipped=notes.length>4000?'…'+notes.slice(-4000):notes;
+  const notesBlock=notes
+    ?`The person's own notes for this chapter so far (they may have kept writing since the conversation began, so treat this as the latest version):\n"""\n${clipped}\n"""\nRead the notes closely. Ask about what is missing or only hinted at: a specific person, place, moment, sensory detail, what they felt at the time, or why it still matters to them. Build on their actual words and refer to something specific they wrote. Do not ask about anything they have already covered in full.`
+    :`They have not written any notes yet. Start from the chapter theme.`;
+  return `You are a warm, perceptive biographer helping someone write their life story as a letter to their children.\nChapter: "${ch.title}"\nChapter theme: "${ch.prompt}"\n\n${notesBlock}\n\nAsk exactly one question at a time, in 1-3 sentences, warm and conversational. Never summarize their notes back at length, never give advice, and never write the story for them.`;
+}
+async function startAiInterview(){
+  const hasNotes=!!document.getElementById('journal-editor').value.trim();
+  aiHistory=[{role:'user',content:hasNotes?'Please begin the interview. Use my notes to ask your first question.':'Please open our conversation with a warm, personal question based on the chapter theme.'}];
+  await callGroqChat();
 }
 async function sendAiMessage(){
   const input=document.getElementById('ai-user-input');
   const txt=input.value.trim();if(!txt)return;input.value='';
   addBubble(txt,'user');aiHistory.push({role:'user',content:txt});
-  const ch=appData.chapters[appData.activeEra];
-  const sys=`Warm biographer, chapter "${ch.title}". Ask one thoughtful follow-up question. 1-3 sentences. Warm, specific, personal.`;
-  await callGroqChat(sys);
+  await callGroqChat();
 }
-async function callGroqChat(sys){
+async function callGroqChat(){
   const typing=addTyping();
   try{
+    const sys=buildInterviewSystem(); /* rebuilt every turn so edits to the notes box are picked up */
     const data=await groqChat(appData.keys.groq,[{role:'system',content:sys},...aiHistory],0.72,{max_tokens:220});const reply=data.choices[0].message.content.trim();
     typing.remove();addBubble(reply,'ai');aiHistory.push({role:'assistant',content:reply});
   }catch(e){typing.remove();addBubble('I had trouble connecting. Check your Groq key in Settings.','ai');}
 }
 function addBubble(text,role){const msgs=document.getElementById('ai-messages');const el=document.createElement('div');el.className=`ai-bubble ${role}`;el.textContent=text;msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}
 function addTyping(){const msgs=document.getElementById('ai-messages');const el=document.createElement('div');el.className='ai-bubble typing';el.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;return el;}
-function useAiConversation(){
-  const userTurns=aiHistory.filter(m=>m.role==='user'&&!m.content.startsWith("I've written")&&!m.content.startsWith("I haven't")).map(m=>m.content).join('\n\n');
-  if(!userTurns.trim()){toast('Share some answers first.','warn');return;}
+let aiUseBusy=false;
+async function useAiConversation(){
+  if(aiUseBusy)return;
+  /* index 0 is the hidden kickoff message, not something the person wrote */
+  const turns=aiHistory.slice(1);
+  const answers=turns.filter(m=>m.role==='user');
+  if(!answers.length){toast('Share some answers first.','warn');return;}
   const ed=document.getElementById('journal-editor');
-  ed.value=ed.value.trim()?ed.value+'\n\n'+userTurns:userTurns;
-  updateWordCount();closeAiPanel();
-  toast('Your answers have been added. Save when ready.','success',4000);
+  const append=t=>{ed.value=ed.value.trim()?ed.value.trim()+'\n\n'+t:t;updateWordCount();closeAiPanel();};
+  const rawAnswers=answers.map(m=>m.content).join('\n\n');
+  const transcript=turns.map(m=>(m.role==='assistant'?'Interviewer: ':'Me: ')+m.content).join('\n\n');
+  const btn=document.querySelector('.ai-use-btn');const label=btn?btn.textContent:'';
+  aiUseBusy=true;if(btn){btn.disabled=true;btn.textContent='Weaving…';}
+  try{
+    const sys='You turn interview answers into prose for a personal autobiography written as a letter to the author\'s children. Rewrite ONLY what the person said ("Me:") as 1-3 short paragraphs in first person, in their own voice and wording as much as possible. Use the interviewer\'s questions only to understand what each answer refers to. Do not add facts, names, places, or feelings that were not stated. Do not include the questions. Output only the paragraphs.';
+    const data=await groqChat(appData.keys.groq,[{role:'system',content:sys},{role:'user',content:transcript}],0.3,{max_tokens:700});
+    const woven=data.choices[0].message.content.trim();
+    append(woven||rawAnswers);
+    toast('Your answers were added as prose. Edit freely, then save.','success',4000);
+  }catch(e){
+    append(rawAnswers);
+    toast('Added your answers as written. Save when ready.','success',4000);
+  }finally{aiUseBusy=false;if(btn){btn.disabled=false;btn.textContent=label;}}
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2059,8 +2100,8 @@ function saveBookIdentity(){
 let photoStore = {};
 
 function savePhotoStore(){
-  try{localStorage.setItem('lifepage_photos_v5',JSON.stringify(photoStore));}
-  catch(e){toast('Photo storage full — try a smaller image or remove unused photos.','warn',5000);}
+  try{localStorage.setItem('lifepage_photos_v5',JSON.stringify(photoStore));bkNoteChange('photos');}
+  catch(e){toast('Photo storage full — try a smaller image or remove unused photos.','warn',5000);bkStorageFail('photos');}
 }
 function loadPhotoStore(){
   try{
@@ -2088,7 +2129,8 @@ function handleChapterPhotoUpload(input){
   reader.readAsDataURL(file);
   input.value='';
 }
-function removeChapterPhoto(){
+async function removeChapterPhoto(){
+  if((await themedConfirm({icon:'🖼',title:'Remove this photo?',sub:"It will be removed from this chapter and the compiled book. If you haven't downloaded a photos backup, it can't be recovered.",ok:'Remove',danger:true}))!=='ok')return;
   const chId=appData.activeEra;
   delete photoStore[chId];
   savePhotoStore();
@@ -2168,11 +2210,17 @@ async function testKeyConnection(t){
 ══════════════════════════════════════════════════════ */
 function triggerMasterBackupDownload(){
   // Book backup — never includes photo blobs
+  draftFlush();
   const stamp=new Date().toISOString().slice(0,10);
-  const ds='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(appData,null,2));
+  const out=JSON.parse(JSON.stringify(appData));
+  const dKeys=Object.keys(lpDrafts);
+  if(dKeys.length)out.drafts={...lpDrafts}; // typed-but-unsaved notes ride along so a backup never silently omits them
+  out.keys=Object.fromEntries(Object.keys(appData.keys||{}).map(k=>[k,''])); // never write API keys into a file you might share or store in the cloud
+  const ds='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(out,null,2));
   const a=document.createElement('a');a.href=ds;a.download=`lifepage_book_${stamp}.json`;
   document.body.appendChild(a);a.click();a.remove();
-  toast('Book backup downloaded.','success');
+  bkMeta.book={at:Date.now(),changes:0};bkSave();bkRefreshUI();
+  toast(dKeys.length?`Book backup downloaded, including unsaved notes in ${dKeys.length} chapter${dKeys.length===1?'':'s'}. Tap Save Chapter Notes to make them permanent.`:'Book backup downloaded.','success',dKeys.length?6000:3000);
 }
 function triggerPhotosBackupDownload(){
   const count=Object.keys(photoStore).length;
@@ -2181,55 +2229,68 @@ function triggerPhotosBackupDownload(){
   const ds='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(photoStore,null,2));
   const a=document.createElement('a');a.href=ds;a.download=`lifepage_photos_${stamp}.json`;
   document.body.appendChild(a);a.click();a.remove();
+  bkMeta.photos={at:Date.now(),dirty:false};bkSave();bkRefreshUI();
   toast(`Photos backup downloaded (${count} photo${count>1?'s':''}). Keep this with your book backup.`,'success',5000);
 }
-function restoreMasterBackupFromFile(input){
-  if(!input.files?.[0])return;
-  const r=new FileReader();
-  r.onload=e=>{
-    try{
-      const p=JSON.parse(e.target.result);
-      if(p.chapters&&p.keys){
-        // Strip any legacy photo blobs that crept into a book backup
-        Object.values(p.chapters).forEach(ch=>{delete ch.photo;if(ch.hasPhoto===undefined)ch.hasPhoto=false;});
-        appData=p;saveState();loadStateFromStorage();
-        loadActiveChapter(Object.keys(appData.chapters)[0]);
-        updateSlipsUI();
-        toast('Book restored. If you have a photos backup, restore that next.','success',5000);
-        toggleModal('settings-modal',false);
-      }else toast('Invalid book backup file.','error');
-    }catch{toast('Could not read backup file.','error');}
-  };
-  r.readAsText(input.files[0]);
+async function restoreMasterBackupFromFile(input){
+  const f=input.files?.[0];if(!f)return;
+  const reset=()=>{input.value='';};
+  let p;
+  try{p=JSON.parse(await f.text());}catch{toast('Could not read backup file.','error');reset();return;}
+  if(!(p&&p.chapters&&p.keys)){toast('Invalid book backup file.','error');reset();return;}
+  const rd={};if(p.drafts&&typeof p.drafts==='object')Object.entries(p.drafts).forEach(([k,v])=>{if(p.chapters[k]&&typeof v==='string'&&v.trim())rd[k]=v;});
+  delete p.drafts;
+  const nd=Object.keys(rd).length;
+  const n=Object.values(p.chapters).filter(c=>c.text&&c.text.trim()).length;
+  const pending=bkMeta.book.changes>0?` Your current book has ${bkMeta.book.changes} change${bkMeta.book.changes===1?'':'s'} that aren't backed up.`:'';
+  const choice=await themedConfirm({icon:'📤',title:'Replace your current book?',sub:`This backup has ${n} chapter${n===1?'':'s'} with saved notes${nd?` and unsaved notes in ${nd}`:''}. Restoring replaces everything currently in LifePage.${pending}`,ok:'Replace',cancel:'Cancel',alt:'Back Up Current First',danger:true});
+  if(choice==='alt'){triggerMasterBackupDownload();toast('Current book backed up. Choose your restore file again when ready.','info',5000);reset();return;}
+  if(choice!=='ok'){reset();return;}
+  Object.values(p.chapters).forEach(ch=>{delete ch.photo;if(ch.hasPhoto===undefined)ch.hasPhoto=false;});
+  const curKeys=appData.keys||{};
+  const bkKeys=Object.fromEntries(Object.entries(p.keys||{}).filter(([k,v])=>v));
+  appData=p;appData.keys={...curKeys,...bkKeys};
+  bkSuppress=true;saveState();bkSuppress=false;
+  lpDrafts=rd;draftsWrite();
+  loadStateFromStorage();
+  loadActiveChapter(lpPickStartChapter());
+  updateSlipsUI();
+  bkMeta.book={at:Date.now(),changes:0};bkSave();bkRefreshUI();
+  toast('Book restored. If you have a photos backup, restore that next.','success',5000);
+  toggleModal('settings-modal',false);
+  reset();
 }
-function restorePhotosFromFile(input){
-  if(!input.files?.[0])return;
-  const r=new FileReader();
-  r.onload=e=>{
-    try{
-      const p=JSON.parse(e.target.result);
-      // Validate: values should be data URLs or null
-      const ids=Object.keys(p);
-      const valid=ids.every(k=>typeof p[k]==='string'&&p[k].startsWith('data:image'));
-      if(!valid&&ids.length>0){toast('Invalid photos backup file.','error');return;}
-      photoStore=p;
-      savePhotoStore();
-      // Sync hasPhoto flags in appData
-      Object.values(appData.chapters).forEach(ch=>{ch.hasPhoto=!!(photoStore[ch.id]);});
-      saveState();
-      renderChapterPhotoStrip();
-      toast(`Photos restored (${ids.length} photo${ids.length!==1?'s':''}).`,'success',4000);
-      toggleModal('settings-modal',false);
-    }catch{toast('Could not read photos backup file.','error');}
-  };
-  r.readAsText(input.files[0]);
+async function restorePhotosFromFile(input){
+  const f=input.files?.[0];if(!f)return;
+  const reset=()=>{input.value='';};
+  let p;
+  try{p=JSON.parse(await f.text());}catch{toast('Could not read photos backup file.','error');reset();return;}
+  const ids=Object.keys(p||{});
+  const valid=ids.every(k=>typeof p[k]==='string'&&p[k].startsWith('data:image'));
+  if(!valid&&ids.length>0){toast('Invalid photos backup file.','error');reset();return;}
+  if(bkPhotoCount()>0){
+    const ok=await themedConfirm({icon:'🖼',title:'Replace your current photos?',sub:`This will replace the ${bkPhotoCount()} photo${bkPhotoCount()===1?'':'s'} currently in LifePage with the ${ids.length} in this backup.`,ok:'Replace',cancel:'Cancel',danger:true});
+    if(ok!=='ok'){reset();return;}
+  }
+  photoStore=p;
+  bkSuppress=true;savePhotoStore();
+  Object.values(appData.chapters).forEach(ch=>{ch.hasPhoto=!!(photoStore[ch.id]);});
+  saveState();bkSuppress=false;
+  bkMeta.photos={at:Date.now(),dirty:false};bkSave();bkRefreshUI();
+  renderChapterPhotoStrip();
+  toast(`Photos restored (${ids.length} photo${ids.length!==1?'s':''}).`,'success',4000);
+  toggleModal('settings-modal',false);
+  reset();
 }
 function triggerPrint(){const vp=document.getElementById('production-book-viewport');if(!vp.querySelector('p,h2,h3')){toast('Compile the full book first, then print.','warn',4000);return;}window.print();}
 
 /* ══════════════════════════════════════════════════════
    PERSIST
 ══════════════════════════════════════════════════════ */
-function saveState(){localStorage.setItem('lifepage_v5',JSON.stringify(appData));}
+function saveState(){
+  try{localStorage.setItem('lifepage_v5',JSON.stringify(appData));bkNoteChange('book');return true;}
+  catch(e){bkStorageFail('story');return false;}
+}
 function loadStateFromStorage(){
   // Try v5 first, fall back to v4 for migration
   const c=localStorage.getItem('lifepage_v5')||localStorage.getItem('lifepage_v4');
@@ -2301,6 +2362,176 @@ function skipOnboarding(){localStorage.setItem('lifepage_ob_v5','true');toggleMo
 function replayOnboarding(){buildOnboarding();currentOnboardingIndex=0;toggleModal('settings-modal',false);toggleModal('onboarding-modal',true);}
 
 /* ══════════════════════════════════════════════════════
+   THEMED CONFIRM (replaces native confirm())
+══════════════════════════════════════════════════════ */
+let cmResolve=null;
+function themedConfirm(o){
+  return new Promise(res=>{
+    if(cmResolve){cmResolve('cancel');cmResolve=null;}
+    cmResolve=res;
+    document.getElementById('cm-icon').textContent=o.icon||'❓';
+    document.getElementById('cm-title').textContent=o.title||'';
+    document.getElementById('cm-sub').textContent=o.sub||'';
+    const box=document.getElementById('cm-buttons');box.innerHTML='';
+    box.style.flexDirection=o.alt?'column':'row';
+    const mk=(label,cls,val)=>{const b=document.createElement('button');b.className='btn '+cls;b.textContent=label;if(o.alt)b.style.flex='none';b.onclick=()=>closeConfirm(val);box.appendChild(b);};
+    mk(o.cancel||'Cancel','btn-secondary','cancel');
+    if(o.alt)mk(o.alt,'btn-save','alt');
+    mk(o.ok||'Confirm',o.danger?'btn-danger':'btn-save','ok');
+    toggleModal('confirm-modal',true);
+  });
+}
+function closeConfirm(val){toggleModal('confirm-modal',false);const r=cmResolve;cmResolve=null;if(r)r(val);}
+
+/* ══════════════════════════════════════════════════════
+   BACKUP TRACKING + REMINDERS
+══════════════════════════════════════════════════════ */
+const BK_KEY='lifepage_bk_v1';
+let bkMeta={book:{at:0,changes:0},photos:{at:0,dirty:false},promptedAt:0};
+let bkSuppress=false,bkTimer=null,bkPersisted=null;
+function bkLoad(){try{const m=JSON.parse(localStorage.getItem(BK_KEY)||'null');if(m&&m.book&&m.photos)bkMeta=m;}catch(e){}}
+function bkSave(){try{localStorage.setItem(BK_KEY,JSON.stringify(bkMeta));}catch(e){}}
+function bkHasContent(){return Object.values(appData.chapters).some(c=>(c.text&&c.text.trim())||c.draftA||c.draftB);}
+function bkPhotoCount(){return Object.keys(photoStore).length;}
+function bkAge(ts){if(!ts)return 'never';const d=Math.floor((Date.now()-ts)/864e5);return d<=0?'today':d===1?'1 day ago':`${d} days ago`;}
+function bkNeeds(){
+  const b=bkMeta.book,p=bkMeta.photos;
+  const bookDue=bkHasContent()&&b.changes>=1&&(!b.at||b.changes>=3||Date.now()-b.at>2*864e5);
+  const photoDue=p.dirty&&bkPhotoCount()>0;
+  return {bookDue,photoDue,any:bookDue||photoDue};
+}
+function bkSummary(){
+  const b=bkMeta.book,p=bkMeta.photos,parts=[];
+  if(b.changes>0)parts.push(b.at?`${b.changes} change${b.changes===1?'':'s'} to your book since your last backup (${bkAge(b.at)})`:`your book has never been backed up`);
+  if(p.dirty&&bkPhotoCount()>0)parts.push('your photos have changed since their last backup');
+  return parts.length?parts.join(', and ')+'.':'';
+}
+function bkNoteChange(kind){
+  if(bkSuppress)return;
+  if(kind==='photos')bkMeta.photos.dirty=true;else bkMeta.book.changes++;
+  bkSave();bkRefreshUI();
+  clearTimeout(bkTimer);bkTimer=setTimeout(bkMaybeRemind,kind==='photos'?800:2000);
+}
+function bkMaybeRemind(){
+  if(!bkNeeds().any)return;
+  if(Date.now()-bkMeta.promptedAt<30*60*1000)return;
+  if(document.querySelector('.modal-overlay.show'))return;
+  bkShowReminder();
+}
+function bkShowReminder(custom){
+  const first=!bkMeta.book.at;
+  document.getElementById('save-reminder-title').textContent=custom?.title||(first?'Download your first backup':'Time for a backup');
+  document.getElementById('save-reminder-sub').textContent=custom?.sub||(first
+    ?'Your story only lives in this browser right now. A downloaded file keeps it safe even if the browser is cleared or you switch devices.'
+    :('You have '+bkSummary().replace(/\.$/,'')+'. A downloaded file keeps it safe even if the browser is cleared.'));
+  bkMeta.promptedAt=Date.now();bkSave();
+  toggleModal('save-reminder-modal',true);
+}
+function bkRefreshUI(){
+  const n=bkNeeds();
+  document.getElementById('settings-btn')?.classList.toggle('has-dot',n.any);
+  const el=document.getElementById('backup-status');if(!el)return;
+  const b=bkMeta.book,p=bkMeta.photos;
+  let h=`<div style="color:${n.bookDue?'var(--amber)':'var(--text-dim)'}">Book: last backup ${bkAge(b.at)}${b.changes?` · ${b.changes} change${b.changes===1?'':'s'} since`:' · up to date'}</div>`;
+  if(bkPhotoCount())h+=`<div style="color:${n.photoDue?'var(--amber)':'var(--text-dim)'}">Photos: last backup ${bkAge(p.at)}${p.dirty?' · changed since':' · up to date'}</div>`;
+  const dc=Object.keys(lpDrafts).length;
+  if(dc)h+=`<div style="color:var(--amber)">Unsaved notes in ${dc} chapter${dc===1?'':'s'} — included in backups; tap Save Chapter Notes to commit</div>`;
+  if(bkPersisted!==null)h+=`<div style="color:var(--text-muted)">Browser storage: ${bkPersisted?'protected from automatic clearing':'not guaranteed — keep backups'}</div>`;
+  el.innerHTML=h;
+}
+function bkDownloadAll(){
+  triggerMasterBackupDownload();
+  if(bkPhotoCount()&&(bkMeta.photos.dirty||!bkMeta.photos.at))setTimeout(triggerPhotosBackupDownload,700);
+}
+function bkStorageFail(what){
+  toast(`Couldn't save your ${what} — browser storage is full. Download a backup now.`,'error',7000);
+  bkShowReminder({title:'Storage is full',sub:'Your browser has no room left for new changes. Download a backup now so nothing is lost, then remove unneeded photos.'});
+}
+function bkInitStorage(){
+  try{if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().then(()=>navigator.storage.persisted()).then(v=>{bkPersisted=!!v;bkRefreshUI();}).catch(()=>{});}}catch(e){}
+}
+
+/* ══════════════════════════════════════════════════════
+   DRAFT AUTOSAVE (typed-but-unsaved notes survive tab kills + chapter switches)
+══════════════════════════════════════════════════════ */
+const DRAFT_KEY='lifepage_drafts_v1';
+let lpDrafts={},lpDraftDirty=false,lpDraftTimer=null;const lpRecoveredShown=new Set();
+function draftsLoad(){try{lpDrafts=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}')||{};}catch(e){lpDrafts={};}}
+function draftsWrite(){try{if(Object.keys(lpDrafts).length)localStorage.setItem(DRAFT_KEY,JSON.stringify(lpDrafts));else localStorage.removeItem(DRAFT_KEY);}catch(e){}}
+function draftCapture(){
+  const id=appData.activeEra,ch=appData.chapters[id];if(!ch)return;
+  const v=document.getElementById('journal-editor').value;
+  const had=lpDrafts[id]!==undefined;
+  if(v.trim()&&v!==(ch.text||''))lpDrafts[id]=v;else delete lpDrafts[id];
+  lpDraftDirty=false;draftsWrite();
+  if(had!==(lpDrafts[id]!==undefined)){renderSidebar();bkRefreshUI();}
+}
+function draftSchedule(){lpDraftDirty=true;clearTimeout(lpDraftTimer);lpDraftTimer=setTimeout(draftCapture,600);}
+function draftFlush(){if(lpDraftDirty){clearTimeout(lpDraftTimer);draftCapture();}}
+function draftClear(id){const had=lpDrafts[id]!==undefined;delete lpDrafts[id];lpDraftDirty=false;draftsWrite();if(had){renderSidebar();bkRefreshUI();}}
+function lpPickStartChapter(){
+  let last=null;try{last=localStorage.getItem('lifepage_last_ch');}catch(e){}
+  const ok=id=>id&&appData.chapters[id];
+  const dIds=Object.keys(lpDrafts).filter(ok);
+  if(ok(last)&&(!dIds.length||dIds.includes(last)))return last;
+  if(dIds.length)return dIds[0];
+  if(ok(appData.activeEra))return appData.activeEra;
+  return Object.keys(appData.chapters)[0];
+}
+
+/* ══════════════════════════════════════════════════════
+   BACK-PRESS GUARD
+══════════════════════════════════════════════════════ */
+let lpLeaving=false,lpGuardArmed=false;
+function armBackGuard(){try{history.pushState({lp:1},'',location.href);}catch(e){}}
+function initBackGuard(){
+  try{history.replaceState({lp:0},'',location.href);}catch(e){}
+  /* browsers ignore history entries added before the first user interaction, so arm on first touch */
+  const arm=()=>{if(lpGuardArmed)return;lpGuardArmed=true;armBackGuard();['pointerdown','keydown','touchstart'].forEach(t=>window.removeEventListener(t,arm,true));};
+  ['pointerdown','keydown','touchstart'].forEach(t=>window.addEventListener(t,arm,true));
+  window.addEventListener('popstate',onBackPress);
+}
+function onBackPress(){
+  if(lpLeaving||!lpGuardArmed)return;
+  armBackGuard();
+  const layers=[...document.querySelectorAll('.modal-overlay.show')];
+  if(layers.length){
+    const id=layers[layers.length-1].id;
+    if(id==='confirm-modal')closeConfirm('cancel');
+    else if(id==='onboarding-modal')skipOnboarding();
+    else if(id==='theme-picker-modal'){toggleModal(id,false);toggleModal('settings-modal',true);}
+    else toggleModal(id,false);
+    return;
+  }
+  const panel=document.getElementById('ai-panel');
+  if(panel&&panel.classList.contains('open')){closeAiPanel();return;}
+  if(appData.audioState==='recording'||appData.audioState==='paused'){toast('Recording in progress — stop recording first.','warn');return;}
+  lpExitPrompt();
+}
+async function lpExitPrompt(){
+  draftFlush();
+  const ch=appData.chapters[appData.activeEra];
+  const v=document.getElementById('journal-editor').value;
+  const unsaved=v.trim()&&v!==(ch.text||'');
+  const n=bkNeeds();
+  const warn=[];
+  if(unsaved)warn.push("You have typed notes that aren't saved to this chapter yet (they're kept as a draft on this device).");
+  if(n.any){const s=bkSummary();warn.push(s.charAt(0).toUpperCase()+s.slice(1));}
+  const choice=await themedConfirm({
+    icon:warn.length?'⚠️':'👋',title:'Leave LifePage?',
+    sub:warn.length?warn.join(' '):'Your story is saved on this device and your backup is up to date.',
+    ok:'Leave',cancel:'Stay',alt:n.any?'Back Up Now':null,danger:warn.length>0
+  });
+  if(choice==='alt')bkDownloadAll();
+  else if(choice==='ok')lpLeave();
+}
+function lpLeave(){
+  lpLeaving=true;
+  history.go(-2);
+  setTimeout(()=>{if(!document.hidden)toast('Press back again to exit.','info',3500);},400);
+}
+
+/* ══════════════════════════════════════════════════════
    UNSAVED GUARD
 ══════════════════════════════════════════════════════ */
 window.addEventListener('beforeunload',e=>{
@@ -2312,15 +2543,22 @@ window.addEventListener('beforeunload',e=>{
 /* ══════════════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════════════ */
+document.addEventListener('visibilitychange',()=>{if(document.hidden)draftFlush();else bkMaybeRemind();});
+window.addEventListener('pagehide',draftFlush);
 window.addEventListener('DOMContentLoaded',()=>{
+  bkLoad();draftsLoad();
   loadPhotoStore();
   loadStateFromStorage();
   refreshModelsIfStale();
   loadSavedTheme();
   updateSlipsUI();
-  loadActiveChapter(appData.activeEra||'roots');
+  loadActiveChapter(lpPickStartChapter());
   renderSidebar();
   checkOnboarding();
+  initBackGuard();
+  bkInitStorage();
+  bkRefreshUI();
+  setTimeout(bkMaybeRemind,2500);
 });
 </script>
 </body>
