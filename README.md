@@ -14,7 +14,7 @@
 
 ## What it is
 
-LifePage is a private, browser-based autobiography engine. You pick one of twelve chapters, write, talk, or answer an AI interviewer, and when you're ready it compiles everything into a first-person memoir framed as a letter to your kids.
+LifePage is a private, browser-based autobiography engine. You pick one of twelve chapters, write, talk, or answer an AI interviewer, and your book assembles itself, live, into a first-person memoir framed as a letter to your kids. Print it or share it as a web page.
 
 No account. No subscription. No LifePage server. Your story lives in your browser, and AI features run on your own free API keys.
 
@@ -45,8 +45,10 @@ No account. No subscription. No LifePage server. Your story lives in your browse
 - **AI Interview** — a warm, guided conversation per chapter (Groq). Answers drop into the chapter with one tap.
 - **Voice to Story** — record and transcribe with Groq Whisper, or use your keyboard's dictation.
 - **Memory Connections** — pin other chapters; the AI adds a short note there when something belongs, without touching your words.
-- **Draft A / Draft B** — two compiled drafts per chapter (Gemini). Compare them and mark one Final.
-- **Vault chapters** — mark a chapter Vault and it's left out of the compiled output in Abbreviated view.
+- **Draft A / Draft B** — two AI drafts per chapter (Gemini), each in a style you choose (*stay close to my words* or *polished*). Compare them, edit them by hand, and pick which one goes in the book. Replaced drafts and older notes are kept in History.
+- **People & places** — tell the AI who you are, your children's names and who each person is, so names stay right in every interview and draft.
+- **Book** — assembled locally from your chosen drafts (no AI rewrite step), with a cover, contents, chapter openers, pull quotes and page numbers. Print / Save as PDF, or download a shareable web page. Optional AI-drafted opening and closing letters you can edit.
+- **Vault chapters** — mark a chapter Vault and it's left out of the book in Abbreviated view.
 - **Full autobiography** — one tap weaves all chapters into a single memoir (Gemini).
 - **Photos, palettes, backup/restore** — chapter photos, four color palettes (default: Slate), and separate Book and Photos JSON backups.
 
