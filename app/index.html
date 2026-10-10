@@ -2052,7 +2052,7 @@ function buildBookInner(){
       }
       first=false;
     });
-    h+=`<section class="bk-chapter" id="ch-${p.ch.id}"><header class="bk-ch-head"><div class="bk-ch-num">Chapter ${NUM_WORDS[p.i]||(p.i+1)}</div><h2 class="bk-ch-title">${escHtml(chapterShortTitle(p.ch))}</h2><div class="bk-orn"><i></i></div></header><div class="bk-body">${body}</div></section>`;
+    h+=`<section class="bk-chapter" id="ch-${p.ch.id}"><div class="bk-ch-head"><div class="bk-ch-num">Chapter ${NUM_WORDS[p.i]||(p.i+1)}</div><h2 class="bk-ch-title">${escHtml(chapterShortTitle(p.ch))}</h2><div class="bk-orn"><i></i></div></div><div class="bk-body">${body}</div></section>`;
   });
   if((f.closing||'').trim()){
     h+=`<section class="bk-closing">${parseBlocks(f.closing,true).map(b=>`<p>${inlineMd(b.x)}</p>`).join('')}${author?`<div class="bk-sign">With all my love,<br>${escHtml(author)}</div>`:''}</section>`;
