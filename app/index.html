@@ -334,9 +334,6 @@ main{flex:1;max-width:1280px;width:100%;margin:0 auto;padding:20px 20px 60px;dis
 .book-empty-icon{font-size:36px;opacity:0.3;}
 .book-empty-text{font-family:'DM Serif Display',serif;font-style:italic;font-size:15px;color:var(--text-dim);line-height:1.6;}
 .book-empty-sub{font-size:11px;color:var(--text-muted);}
-#production-book-viewport h3{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin:28px 0 10px;letter-spacing:-0.01em;}
-#production-book-viewport h3:first-child{margin-top:0;}
-#production-book-viewport p{font-family:'DM Sans',sans-serif;font-weight:300;font-size:15px;line-height:1.8;color:#94a3b8;margin-bottom:16px;}
 
 /* ── BOOK COVER ── */
 .book-cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 32px 56px;border-bottom:1px solid var(--border);margin-bottom:8px;position:relative;background:linear-gradient(160deg,rgba(91,200,232,0.04) 0%,transparent 60%);}
@@ -458,22 +455,121 @@ select.text-input{min-width:0;cursor:pointer;}select.text-input option{backgroun
 .fade-in{animation:fade-in 0.22s ease forwards;}
 @keyframes fade-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
+
+/* ══════════════════════════════════════════════════════
+   v6 ADDITIONS — drafts, history, expand, people & places, book
+══════════════════════════════════════════════════════ */
+.btn-sm{padding:6px 12px;font-size:11px;}
+.sec-help{font-size:12px;color:var(--text-dim);line-height:1.55;margin-top:4px;max-width:640px;font-weight:400;}
+.editor-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.editor-head .editor-label{margin:0;}
+.mini-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap;}
+.mini-btn:hover{border-color:var(--border-hi);color:var(--text);}
+#journal-editor{min-height:240px;}
+.editor-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* expand / focus mode */
+main.has-expanded{z-index:450;}
+.is-expanded{position:fixed!important;inset:2vh 2vw;z-index:850;background:var(--surface)!important;border:1px solid var(--border-hi)!important;border-radius:16px!important;padding:18px!important;display:flex!important;flex-direction:column;box-shadow:0 0 0 100vmax rgba(0,0,0,.6),0 30px 90px rgba(0,0,0,.5);overflow:hidden;margin:0!important;max-height:none!important;}
+.is-expanded #journal-editor{flex:1;max-height:none!important;min-height:0;height:auto!important;font-size:17px;line-height:1.8;resize:none;}
+.is-expanded #ai-messages{flex:1;max-height:none!important;}
+.is-expanded #dr-read,.is-expanded #dr-compare,.is-expanded #production-book-viewport{flex:1;max-height:none!important;overflow:auto;}
+.is-expanded #dr-edit-area{flex:1;height:auto!important;}
+
+/* drafts section */
+.dr-help{font-size:12px;color:var(--text-dim);line-height:1.55;margin-top:4px;max-width:640px;}
+.dr-style{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0 4px;}
+.dr-style-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);}
+.seg{display:inline-flex;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:2px;gap:2px;}
+.seg button{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;border:1px solid transparent;cursor:pointer;background:transparent;color:var(--text-dim);font-family:'DM Sans',sans-serif;transition:all .15s;}
+.seg button.active{background:var(--surface);color:var(--text);border-color:var(--border-hi);}
+.dr-style-hint{flex-basis:100%;font-size:11px;color:var(--text-dim);line-height:1.5;}
+.dr-stale{margin:12px 0 0;padding:10px 14px;border-radius:9px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.28);color:var(--amber);font-size:12px;line-height:1.5;}
+.dr-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+.dr-card{border:1px solid var(--border);background:var(--surface2);border-radius:var(--radius-sm);padding:14px;display:flex;flex-direction:column;gap:8px;}
+.dr-card.viewing{border-color:var(--border-hi);}
+.dr-card.inbook{box-shadow:inset 0 0 0 1px rgba(74,222,128,.45);}
+.dr-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.dr-card-name{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);}
+.dr-badge{font-size:10px;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:99px;background:rgba(74,222,128,.14);color:var(--emerald);white-space:nowrap;}
+.dr-meta{font-size:11px;color:var(--text-dim);line-height:1.5;}
+.dr-meta .warn{color:var(--amber);font-weight:600;}
+.dr-card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;}
+.dr-viewer{border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);padding:14px 16px;display:none;flex-direction:column;gap:10px;}
+.dr-viewer.show{display:flex;}
+.dr-viewer-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.dr-viewer-title{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);}
+#dr-read{max-height:420px;overflow-y:auto;padding-right:6px;}
+#dr-read p,.dr-pane p{font-family:'DM Sans',sans-serif;font-weight:300;font-size:15px;line-height:1.8;color:var(--text);margin:0 0 14px;}
+#dr-read blockquote,.dr-pane blockquote{border-left:3px solid var(--cyan);margin:16px 0;padding:6px 16px;font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;line-height:1.55;color:var(--text);background:var(--cyan-dim);border-radius:0 8px 8px 0;}
+#dr-compare{display:none;grid-template-columns:1fr 1fr;gap:12px;max-height:480px;overflow:auto;}
+#dr-compare.show{display:grid;}
+.dr-pane{border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:var(--surface);}
+.dr-pane h4{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;}
+#dr-edit-area{display:none;width:100%;min-height:300px;background:var(--surface);border:1px solid var(--border-hi);border-radius:10px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.75;color:var(--text);resize:vertical;outline:none;}
+.dr-edit-note{display:none;font-size:11px;color:var(--text-dim);}
+.dr-empty{font-size:13px;color:var(--text-dim);font-style:italic;padding:6px 0;}
+
+/* history + people modals */
+.hist-item{border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:var(--surface2);display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.hist-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--text);font-weight:600;}
+.hist-sub{font-size:11px;color:var(--text-dim);}
+.hist-prev{font-size:12px;color:var(--text-dim);line-height:1.55;}
+.hist-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.hist-h{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin:14px 0 8px;}
+.pp-row{display:grid;grid-template-columns:150px 1fr 32px;gap:8px;margin-bottom:8px;align-items:center;}
+.pp-sug{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--surface2);margin-bottom:8px;}
+.pp-sug.q{border-color:rgba(251,191,36,.45);}
+.pp-q{font-size:12px;color:var(--amber);line-height:1.5;margin:4px 0 6px;}
+.pp-sug-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;}
+.field-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;}
+.ai-next-btn{padding:9px 12px;border-radius:8px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:var(--amber);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.ai-next-btn:hover{background:rgba(251,191,36,.2);}
+.ai-input-row{flex-wrap:wrap;}
+#ai-user-input{min-width:160px;}
+
+/* book panel */
+.book-actions{display:flex;gap:8px;flex-wrap:wrap;}
+#book-check,#book-letters{border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);margin-bottom:12px;}
+#book-check>summary,#book-letters>summary{cursor:pointer;padding:11px 14px;font-size:12px;font-weight:600;color:var(--text);list-style:none;}
+#book-check>summary::-webkit-details-marker,#book-letters>summary::-webkit-details-marker{display:none;}
+#book-check>summary::before,#book-letters>summary::before{content:'▸ ';color:var(--text-dim);}
+#book-check[open]>summary::before,#book-letters[open]>summary::before{content:'▾ ';}
+.bc-body{padding:0 14px 12px;}
+.bc-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--border);font-size:12px;cursor:pointer;}
+.bc-row:hover .bc-title{color:var(--cyan);}
+.bc-ico{width:18px;text-align:center;flex-shrink:0;}
+.bc-title{flex:1;color:var(--text);min-width:0;}
+.bc-state{color:var(--text-dim);font-size:11px;text-align:right;}
+.bc-state.warn{color:var(--amber);font-weight:600;}
+.bc-state.ok{color:var(--emerald);}
+.bc-note{font-size:12px;color:var(--amber);padding:6px 0 0;line-height:1.5;}
+.let-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 14px 14px;}
+.let-grid textarea{width:100%;min-height:150px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.65;color:var(--text);resize:vertical;outline:none;}
+.let-grid textarea:focus{border-color:var(--border-hi);}
+.let-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;}
+.let-head span{font-size:11px;font-weight:700;color:var(--text);}
+#book-view-wrap{border-radius:var(--radius-sm);}
+.bv-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.bv-bar span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);}
+#production-book-viewport{max-height:620px;background:#e9e4da;border-radius:10px;padding:18px 10px;}
+[data-theme="" ] #production-book-viewport,:root:not([data-theme]) #production-book-viewport{background:#161b2a;}
+.book-tip{font-size:11px;color:var(--text-dim);margin-top:8px;line-height:1.5;}
+@media(max-width:640px){
+  .dr-cards,#dr-compare.show,.let-grid{grid-template-columns:1fr;}
+  .pp-row{grid-template-columns:1fr 32px;}.pp-row input:nth-child(2){grid-column:1/2;}
+  .is-expanded{inset:0;border-radius:0!important;}
+}
+/* keep the grid from stretching past the screen on phones */
+.sidebar,.content-col,.panel{min-width:0;}
+.chapter-row-left,.chapter-info{min-width:0;}
+.chapter-info{flex:1;}
+.chapter-title-text,.chapter-status-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 @media print{
-  header,.sidebar,.recording-strip,.save-row,.workspace-header .privacy-row,
-  .compile-header button,#toast-root,.modal-overlay,#ai-panel,#ai-interview-btn,
-  #pin-section,#connections-summary,#locked-banner,#draft-selector-bar,#draft-compare-view,
-  .photo-upload-strip{display:none!important;}
-  body{background:white;color:#111;}main{display:block;padding:0;}
-  .content-col{gap:0;}.panel{border:none;padding:0;background:white;}.panel::before{display:none;}
-  #production-book-viewport{max-height:none;overflow:visible;}
-  #production-book-viewport h3{color:#111;page-break-after:avoid;}
-  #production-book-viewport p{color:#333;}.workspace-panel{display:none;}
-  .book-cover{background:none;border-bottom:1px solid #ccc;}
-  .book-cover-title{color:#111;}.book-cover-subtitle{color:#555;}.book-cover-author{color:#333;}
-  .book-cover-eyebrow,.book-cover-author-label{color:#888;}
-  .chapter-eyebrow-label{color:#888;}
-  .chapter-photo-wrap img{max-height:280px;}
-  .chapter-photo-caption{color:#555;border-top:1px solid #ddd;}
+  header,.sidebar,.workspace-panel,#drafts-panel,.compile-header,#book-check,#book-letters,.bv-bar,.book-tip,#toast-root,.modal-overlay,.recording-strip{display:none!important;}
+  body{background:#fff;color:#111;}body::before,body::after{display:none;}main{display:block;padding:0;}
+  .panel{border:none;padding:0;background:none;}.panel::before{display:none;}
+  #production-book-viewport{max-height:none;overflow:visible;background:none;padding:0;}
 }
 /* ══════════════════════════════════════════════════════
    MOBILE RESPONSIVE — 7 BREAKPOINTS
@@ -600,6 +696,7 @@ html,body{overscroll-behavior-y:contain;}
         <button id="toggle-full" onclick="changeGlobalFilter('full')" class="active">Full</button>
         <button id="toggle-abbr" onclick="changeGlobalFilter('abbreviated')">Abbreviated</button>
       </div>
+      <button class="icon-btn" onclick="openPeople()" title="About me, people &amp; places" aria-label="About me, people and places">👥</button>
       <button class="icon-btn" onclick="triggerPrint()" title="Print / Save as PDF" aria-label="Print or save as PDF"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="1" width="10" height="5" rx="1" fill="currentColor" opacity="0.7"/><rect x="1" y="6" width="14" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="4" y="10" width="8" height="5" rx="1" fill="currentColor" opacity="0.7"/><circle cx="12.5" cy="9.5" r="1" fill="currentColor"/></svg></button>
       <button class="icon-btn" id="settings-btn" onclick="toggleModal('settings-modal',true)" title="Settings" aria-label="Settings">⚙️</button>
     </div>
@@ -644,44 +741,21 @@ html,body{overscroll-behavior-y:contain;}
         </div>
       </div>
 
-      <!-- LOCKED BANNER -->
-      <div id="locked-banner">
-        <div class="locked-banner-text">🔒 <strong>This chapter has a saved draft.</strong> Your notes are safe. Unlock to write a new version — your current draft will be preserved.</div>
-        <button class="btn-unlock" onclick="requestUnlock()">Unlock to Edit</button>
-      </div>
-
-      <!-- DRAFT SELECTOR BAR -->
-      <div id="draft-selector-bar">
-        <button id="draft-tab-a" class="draft-tab" onclick="selectDraftView('a')">Draft A</button>
-        <button id="draft-tab-b" class="draft-tab" onclick="selectDraftView('b')">Draft B</button>
-        <div class="draft-compare-toggle">
-          <button id="view-flip-btn" onclick="setCompareMode('flip')" class="active">Flip</button>
-          <button id="view-side-btn" onclick="setCompareMode('side')">Side by Side</button>
+<!-- EDITOR -->
+      <div id="notes-box">
+        <div class="editor-head">
+          <div class="editor-label">Your Story</div>
+          <div class="editor-actions">
+            <button class="mini-btn" onclick="openHistory()" title="See earlier versions of your notes and drafts">🕘 History</button>
+            <button class="mini-btn" data-expand-btn onclick="toggleExpand('notes-box')">⤢ Expand</button>
+          </div>
         </div>
-      </div>
-
-      <!-- DRAFT COMPARE VIEW (side by side) -->
-      <div id="draft-compare-view">
-        <div class="draft-compare-pane">
-          <h4>Draft A</h4>
-          <p id="compare-a-text"></p>
-          <button class="draft-select-btn" id="select-a-btn" onclick="selectFinalDraft('a')">Use Draft A as Final</button>
-        </div>
-        <div class="draft-compare-pane">
-          <h4>Draft B</h4>
-          <p id="compare-b-text"></p>
-          <button class="draft-select-btn" id="select-b-btn" onclick="selectFinalDraft('b')">Use Draft B as Final</button>
-        </div>
-      </div>
-
-      <!-- EDITOR -->
-      <div>
-        <div class="editor-label">Your Story</div>
         <textarea id="journal-editor" aria-label="Chapter notes" placeholder="Type your thoughts freely here — there's no wrong way to start. Or tap ✦ AI Interview below and let it guide you with questions…" oninput="updateWordCount()"></textarea>
         <div class="editor-footer">
           <span class="word-count" id="word-count">0 words</span>
           <span id="read-time" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);"></span>
         </div>
+        <div class="sec-help">You can come back and change these notes any time, even after writing drafts. Save, then tap Rewrite on a draft to include your changes. Older versions are kept in History.</div>
       </div>
 
       <!-- AI NOTES (cross-chapter, shown when viewing a chapter that received notes) -->
@@ -707,12 +781,13 @@ html,body{overscroll-behavior-y:contain;}
       <div id="ai-panel">
         <div class="ai-panel-header">
           <span class="ai-panel-title">✦ AI Interview — deepening your chapter</span>
-          <button class="ai-close-btn" onclick="closeAiPanel()">✕ Close</button>
+          <span style="display:flex;gap:10px;align-items:center;"><button class="ai-close-btn" data-expand-btn onclick="toggleExpand('ai-panel')" style="font-size:11px;font-weight:600;">⤢ Expand</button><button class="ai-close-btn" onclick="closeAiPanel()">✕ Close</button></span>
         </div>
         <div id="ai-messages"></div>
         <div class="ai-input-row">
           <input type="text" id="ai-user-input" placeholder="Type your answer and press Enter…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiMessage();}">
           <button class="ai-send-btn" onclick="sendAiMessage()">Send</button>
+          <button class="ai-next-btn" onclick="aiNextTopic()" title="Skip this topic and ask about something else">↷ Next topic</button>
           <button class="ai-use-btn" onclick="useAiConversation()">↑ Add to Chapter</button>
         </div>
       </div>
@@ -748,7 +823,7 @@ html,body{overscroll-behavior-y:contain;}
         <div id="photo-thumb-wrap" style="display:none;">
           <img id="photo-thumb" class="photo-upload-thumb" src="" alt="Chapter photo">
         </div>
-        <div class="photo-upload-label" id="photo-strip-label"><strong>Chapter Photo</strong> — Add a photo to appear in the compiled book after the first paragraph.</div>
+        <div style="flex:1;min-width:0;"><div class="photo-upload-label" id="photo-strip-label"><strong>Chapter Photo</strong> — Add a photo to appear in your book after the first paragraph.</div><input type="text" id="photo-caption" class="text-input" style="display:none;margin-top:6px;font-family:'DM Sans',sans-serif;" placeholder="Caption for this photo (optional)" oninput="savePhotoCaption(this.value)"></div>
         <div style="display:flex;gap:6px;align-items:center;">
           <label class="photo-upload-btn" style="cursor:pointer;">
             📷 Upload
@@ -764,47 +839,133 @@ html,body{overscroll-behavior-y:contain;}
       </div>
     </div>
 
-    <!-- COMPILED OUTPUT / BOOK PANEL -->
-    <div class="panel">
-      <div class="compile-header">
-        <span class="panel-label">Your Autobiography</span>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-secondary" onclick="triggerPrint()" style="padding:7px 12px;font-size:11px;">🖨 Print</button>
-          <button class="btn btn-compile" onclick="compileFullBook()">⚡ Compile Full Book</button>
+<!-- CHAPTER DRAFTS -->
+    <div class="panel" id="drafts-panel">
+      <div class="chapter-compile-header">
+        <div>
+          <span class="chapter-compile-title">Chapter Drafts</span>
+          <div class="dr-help">A draft is an AI-written version of your notes for this chapter. Your notes are never changed by a draft. Write one or two versions, compare them, and choose which goes in your book. Anything you replace is kept in History, so nothing is lost.</div>
         </div>
+        <button class="btn btn-secondary btn-sm" onclick="openHistory()">🕘 History</button>
       </div>
-      <div id="production-book-viewport">
-        <div class="book-empty">
-          <div class="book-empty-icon">📖</div>
-          <div class="book-empty-text">Your autobiography lives here.</div>
-          <div class="book-empty-sub">Compile individual chapters below, then compile the full book when you're ready.</div>
+      <div class="dr-style">
+        <span class="dr-style-label">Style for the next draft</span>
+        <div class="seg" id="dr-style-seg">
+          <button data-style="close" onclick="setDraftStyle('close')">Stay close to my words</button>
+          <button data-style="polished" onclick="setDraftStyle('polished')">Polished</button>
         </div>
+        <div class="dr-style-hint" id="dr-style-hint"></div>
       </div>
-      <!-- Per-chapter compile section -->
-      <div class="chapter-compile-section">
-        <div class="chapter-compile-header">
-          <span class="chapter-compile-title">Compile This Chapter</span>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span id="chapter-draft-status" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);">No drafts yet</span>
-            <button class="btn btn-compile" style="padding:7px 14px;font-size:11px;" onclick="compileChapter()">⚡ Write Chapter Draft</button>
+      <div id="dr-stale" class="dr-stale" style="display:none;"></div>
+      <div class="dr-cards">
+        <div class="dr-card" id="dr-card-a"></div>
+        <div class="dr-card" id="dr-card-b"></div>
+      </div>
+      <div class="dr-viewer" id="dr-viewer">
+        <div class="dr-viewer-bar">
+          <span class="dr-viewer-title" id="dr-viewer-title">Reading Draft A</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span id="dr-view-actions" style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="mini-btn" id="dr-compare-btn" onclick="toggleCompare()">Side by side</button>
+              <button class="mini-btn" onclick="startEditDraft()">✎ Edit this draft</button>
+              <button class="mini-btn" onclick="copyDraft()">📋 Copy</button>
+              <button class="mini-btn" data-expand-btn onclick="toggleExpand('dr-viewer')">⤢ Expand</button>
+            </span>
+            <span id="dr-edit-actions" style="display:none;gap:6px;">
+              <button class="btn btn-save btn-sm" onclick="saveEditDraft()">Save my edits</button>
+              <button class="btn btn-secondary btn-sm" onclick="cancelEditDraft()">Cancel</button>
+            </span>
           </div>
         </div>
-        <div id="chapter-compile-output" style="font-size:13px;color:var(--text-dim);font-style:italic;">Select a chapter and click Write Chapter Draft to generate a polished version of your notes.</div>
+        <div id="dr-read"></div>
+        <div id="dr-compare"></div>
+        <div class="dr-edit-note" id="dr-edit-note">Editing by hand. Use *asterisks* for italics and start a line with &gt; to make it a pull quote. The version before your edit goes to History.</div>
+        <textarea id="dr-edit-area" aria-label="Edit draft"></textarea>
       </div>
+    </div>
+
+    <!-- BOOK PANEL -->
+    <div class="panel" id="book-panel">
+      <div class="compile-header">
+        <div>
+          <span class="panel-label">Your Book</span>
+          <div class="dr-help">A live preview of your finished book, assembled from the draft you chose for each chapter. It updates by itself and uses no AI, so nothing gets cut off or rewritten.</div>
+        </div>
+        <div class="book-actions">
+          <button class="btn btn-secondary btn-sm" onclick="refreshBook(true)">↻ Refresh</button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadBookHtml()">⬇ Web page (.html)</button>
+          <button class="btn btn-compile btn-sm" onclick="printBook()">🖨 Print / Save as PDF</button>
+        </div>
+      </div>
+      <details id="book-check" open>
+        <summary id="book-check-sum">Checklist</summary>
+        <div id="book-check-list"></div>
+      </details>
+      <details id="book-letters">
+        <summary>Opening &amp; closing letters (optional)</summary>
+        <div class="sec-help" style="padding:0 14px 10px;">A short letter before Chapter 1 and one at the end. Let the AI draft them from your chapters, then edit freely or redo them any time.</div>
+        <div class="let-grid">
+          <div>
+            <div class="let-head"><span>Opening letter</span><span style="display:flex;gap:6px;"><button class="mini-btn" id="let-undo-opening" style="display:none;" onclick="undoLetter('opening')">↶ Undo</button><button class="mini-btn" id="let-btn-opening" onclick="draftLetter('opening')">✦ Draft with AI</button></span></div>
+            <textarea id="let-opening" placeholder="To my dear children…" oninput="saveLetters()"></textarea>
+          </div>
+          <div>
+            <div class="let-head"><span>Closing letter</span><span style="display:flex;gap:6px;"><button class="mini-btn" id="let-undo-closing" style="display:none;" onclick="undoLetter('closing')">↶ Undo</button><button class="mini-btn" id="let-btn-closing" onclick="draftLetter('closing')">✦ Draft with AI</button></span></div>
+            <textarea id="let-closing" placeholder="Before I go…" oninput="saveLetters()"></textarea>
+          </div>
+        </div>
+      </details>
+      <div id="book-view-wrap">
+        <div class="bv-bar"><span>Preview</span><button class="mini-btn" data-expand-btn onclick="toggleExpand('book-view-wrap')">⤢ Expand</button></div>
+        <div id="production-book-viewport"></div>
+      </div>
+      <div class="book-tip">Printing tip: in the print dialog choose “Save as PDF” (or your printer) and turn off “Headers and footers”. The page numbers come from the book itself.</div>
     </div>
   </div>
 </main>
 
-<!-- UNLOCK CONFIRM MODAL -->
-<div id="unlock-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Unlock chapter">
-  <div class="modal-box" style="max-width:400px;">
-    <div class="confirm-body">
-      <div class="confirm-icon">🔓</div>
-      <div class="confirm-title">Unlock this chapter?</div>
-      <div class="confirm-sub">Your existing drafts will be kept safe. Unlocking just means the next time you click Write Chapter Draft, a new version will be generated. You can always keep both.</div>
-      <div class="confirm-buttons">
-        <button class="btn btn-secondary" onclick="toggleModal('unlock-modal',false)">Cancel</button>
-        <button class="btn btn-save" onclick="confirmUnlock()">Yes, Unlock It</button>
+<!-- HISTORY MODAL -->
+<div id="history-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="History">
+  <div class="modal-box" style="max-width:620px;">
+    <div class="modal-header">
+      <span class="modal-title">History for this chapter</span>
+      <button class="modal-close" aria-label="Close history" onclick="toggleModal('history-modal',false)">✕</button>
+    </div>
+    <div class="modal-body" id="history-body" style="overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- PEOPLE & PLACES MODAL -->
+<div id="people-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="People and places">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-header">
+      <span class="modal-title">About me · People &amp; places</span>
+      <button class="modal-close" aria-label="Close" onclick="toggleModal('people-modal',false)">✕</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto;">
+      <div class="sec-help" style="margin:0 0 12px;">The AI reads this every time it interviews you or writes a draft, so names and relationships stay right (for example, two people who are both called Liz).</div>
+      <div class="settings-section-title">About me</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+        <div class="field-group"><div class="field-label"><span>I am writing as a</span></div>
+          <select id="am-role" class="field-select" onchange="document.getElementById('am-role-other').style.display=this.value==='other'?'':'none'">
+            <option value="">Choose…</option><option value="father">Father</option><option value="mother">Mother</option><option value="grandparent">Grandparent</option><option value="other">Something else</option>
+          </select>
+          <input type="text" id="am-role-other" class="text-input" placeholder="e.g. aunt, godfather" style="display:none;margin-top:6px;font-family:'DM Sans',sans-serif;">
+        </div>
+        <div class="field-group"><div class="field-label"><span>Names of the children I am writing to</span></div><input type="text" id="am-kids" class="text-input" placeholder="e.g. Cathy and Johnny" style="font-family:'DM Sans',sans-serif;"></div>
+        <div class="field-group"><div class="field-label"><span>My partner or spouse (optional)</span></div><input type="text" id="am-partner" class="text-input" placeholder="Name" style="font-family:'DM Sans',sans-serif;"></div>
+        <div class="field-group"><div class="field-label"><span>Anything else the AI should always know (optional)</span></div><input type="text" id="am-extra" class="text-input" placeholder="e.g. We never married. Keep the tone plain and direct." style="font-family:'DM Sans',sans-serif;"></div>
+      </div>
+      <div class="settings-section-title">People &amp; places</div>
+      <div id="pp-rows"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
+        <button class="btn btn-secondary btn-sm" onclick="addPerson()">+ Add a person or place</button>
+        <button class="btn btn-ai btn-sm" id="pp-scan-btn" onclick="scanNames()">✦ Find names in my notes</button>
+      </div>
+      <div id="pp-suggest"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+        <button class="btn btn-secondary" onclick="toggleModal('people-modal',false)">Cancel</button>
+        <button class="btn btn-save" onclick="savePeople()">Save</button>
       </div>
     </div>
   </div>
@@ -861,14 +1022,18 @@ html,body{overscroll-behavior-y:contain;}
             <div class="field-label"><span>Your Name (Author)</span></div>
             <input type="text" id="input-author-name" class="text-input" placeholder="Your Name" style="font-family:'DM Sans',sans-serif;">
           </div>
-          <button class="btn btn-secondary" style="align-self:flex-start;padding:7px 14px;font-size:11px;" onclick="saveBookIdentity()">Save</button>
+          <div class="field-group">
+            <div class="field-label"><span>Subtitle (optional)</span></div>
+            <input type="text" id="input-book-subtitle" class="text-input" placeholder="e.g. Stories, lessons and love" style="font-family:'DM Sans',sans-serif;">
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary" style="padding:7px 14px;font-size:11px;" onclick="saveBookIdentity()">Save</button><button class="btn btn-secondary" style="padding:7px 14px;font-size:11px;" onclick="toggleModal('settings-modal',false);openPeople()">👥 About me, people &amp; places</button></div>
         </div>
       </div>
       <div>
         <div style="display:flex;flex-direction:column;gap:14px;">
           <div class="field-group">
             <div class="field-label">
-              <span>Google Gemini API Key <span style="font-size:10px;color:var(--text-muted);">(Compile chapters &amp; full book)</span></span>
+              <span>Google Gemini API Key <span style="font-size:10px;color:var(--text-muted);">(Drafts, letters &amp; name check)</span></span>
               <span id="gemini-test-status" class="key-status">Not Tested</span>
             </div>
             <div class="field-row">
@@ -1077,8 +1242,9 @@ const ONBOARDING_SLIDES = [
   {emoji:'✦', title:'Stuck? Let AI ask\nthe questions.', body:'Every chapter has an <strong>AI Interview</strong> button. Tap it and the AI will have a warm, thoughtful conversation with you — asking follow-up questions to pull out the details and feelings that make your chapter come alive. Your answers drop right in with one tap.'},
   {emoji:'🎙', title:'Talk it out,\ndon\'t type it out.', body:'Rather speak than type? Hit <strong>Record</strong> and narrate your memories out loud. With a Groq key (free to get), your voice is transcribed automatically. On mobile, your keyboard\'s built-in dictation mic works great too.'},
   {emoji:'📌', title:'Connect memories\nacross chapters.', body:'Writing about your career and remember something that belongs in People Who Changed Everything? <strong>Pin it to that chapter</strong> before you save. Our writing assistant will quietly add a relevant note there — your original text is never touched.'},
-  {emoji:'⚡', title:'Draft A, Draft B —\nyour story, your call.', body:'Each chapter can have <strong>two saved drafts</strong>. Draft A is always written first. Once it\'s saved, the chapter locks automatically to protect it. You can unlock it anytime to write a fresh Draft B — then compare them side by side and choose your favorite before publishing.'},
-  {emoji:'🔐', title:'Keep some chapters\njust for you.', body:'Toggle any chapter to <strong>🔒 Vault</strong> mode. In Abbreviated view, those chapters are completely hidden from the compiled output — but still preserved here for whenever you\'re ready to share them.'},
+  {emoji:'⚡', title:'Drafts you can\ntrust.', body:'Each chapter can have <strong>two drafts</strong> (A and B), written in a style you choose: <strong>stay close to my words</strong> or <strong>polished</strong>. Pick which one goes in your book. You can edit your notes or a draft any time. Replaced versions are kept in <strong>History</strong>, so nothing is ever lost.'},
+  {emoji:'👥', title:'Keep names\nstraight.', body:'Tap <strong>👥</strong> at the top to tell the AI who you are, your children\'s names, and who people are (like two relatives who share a name). It uses this in every interview and draft.'},
+  {emoji:'🔐', title:'Keep some chapters\njust for you.', body:'Toggle any chapter to <strong>🔒 Vault</strong> mode. In Abbreviated view, those chapters are completely left out of your book — but still preserved here for whenever you\'re ready to share them.'},
   {emoji:'💾', title:'Back up your story\nregularly.', body:'Your story saves automatically in your browser, but browsers can be cleared. Use <strong>⚙️ Settings → Download Backup</strong> to save a file to your computer or cloud. LifePage will also remind you as you add content.'}
 ];
 
@@ -1097,8 +1263,12 @@ function buildFreshChapters() {
       draftB: null,      // compiled text
       draftALocked: false,
       draftBLocked: false,
-      finalDraft: null,  // 'a' | 'b' | null
-      activeDraftSlot: 'a' // which slot is currently unlocked for writing
+      finalDraft: null,  // 'a' | 'b' | null — the draft used in the book
+      activeDraftSlot: 'a',
+      draftMeta: {},     // {a:{at,style,sig,edited}, b:{...}}
+      history: [],       // replaced drafts
+      notesHistory: [],  // earlier versions of the notes
+      photoCaption: ''
     };
   });
   return chs;
@@ -1114,6 +1284,11 @@ let appData = {
   bookTitle: 'A Letter to My Kids',
   authorName: '',
   theme: 'slate',
+  bookSubtitle: '',
+  draftStyle: 'close',
+  aboutMe: {role:'',roleOther:'',kids:'',partner:'',extra:''},
+  cast: [],
+  bookFront: {opening:'',closing:'',prevOpening:'',prevClosing:''},
   chapters: buildFreshChapters()
 };
 
@@ -1183,6 +1358,7 @@ function updateWordCount() {
   wc.textContent=words===1?'1 word':`${words} words`;
   wc.className='word-count'+(words>0?' has-words':'');
   rt.textContent=words>20?`~${Math.ceil(words/200)} min read`:'';
+  autosizeNotes();
   draftSchedule();
 }
 function quickSaveAndClose(){bkDownloadAll();toggleModal('save-reminder-modal',false);}
@@ -1202,15 +1378,14 @@ function renderSidebar() {
     const offset=(circ*(1-prog)).toFixed(1);
     const done=prog>=1;
     const hasA=!!ch.draftA, hasB=!!ch.draftB;
-    const isLocked=ch.draftA&&ch.draftALocked;
+    const isLocked=false;
     let statusText='Empty — tap to start', statusClass='';
-    if(hasA&&hasB){statusText='2 drafts saved';statusClass='compiled';}
-    else if(hasA){statusText='Draft A saved';statusClass='compiled';}
+    if(hasA||hasB){const inb=(ch.finalDraft==='b'&&hasB)?'B':(hasA?'A':'B');const st=ch.draftMeta&&ch.draftMeta[inb.toLowerCase()];const stale=st&&st.sig&&st.sig!==hashStr(ch.text);statusText=(hasA&&hasB?'2 drafts · ':'1 draft · ')+'Draft '+inb+' in book'+(stale?' · notes changed':'');statusClass=stale?'unsaved':'compiled';}
     else if(wc>0){statusText=`${wc} words`;statusClass='logged';}
     const dw=lpDrafts[ch.id];
     if(dw!==undefined){const dn=dw.trim().split(/\s+/).filter(Boolean).length;statusText=`Unsaved notes · ${dn} words`;statusClass='unsaved';}
     const ringClass=isLocked?'locked-ring':(done?'done':'');
-    const iconChar=isLocked?'🔒':(done?'✓':(wc>0?'✦':''));
+    const iconChar=(hasA||hasB)?'✓':(done?'✓':(wc>0?'✦':''));
     const row=document.createElement('div');
     row.className='chapter-row'+(isActive?' active':'');
     row.onclick=()=>loadActiveChapter(ch.id);
@@ -1297,91 +1472,10 @@ function loadActiveChapter(id) {
   closeAiPanel();
   dismissConnections();
   renderPinChips();updatePinBadge();
-  renderLockedState();
-  renderDraftSelector();
   renderAiNotes();
-  updateChapterCompileStatus();
+  draftEditing=false;compareMode='flip';activeDraftView=ensureChapterFields(ch)||(ch.finalDraft||'a');renderDrafts();
   renderChapterPhotoStrip();
   renderSidebar();
-}
-
-function renderLockedState() {
-  const ch=appData.chapters[appData.activeEra];
-  const locked=ch.draftA&&ch.draftALocked;
-  document.getElementById('locked-banner').classList.toggle('show',!!locked);
-  const ed=document.getElementById('journal-editor');
-  if(locked){ed.classList.add('locked-editor');ed.setAttribute('readonly','');}
-  else{ed.classList.remove('locked-editor');ed.removeAttribute('readonly');}
-}
-
-function renderDraftSelector() {
-  const ch=appData.chapters[appData.activeEra];
-  const bar=document.getElementById('draft-selector-bar');
-  const hasA=!!ch.draftA, hasB=!!ch.draftB;
-  bar.classList.toggle('show',hasA||hasB);
-  const tabA=document.getElementById('draft-tab-a');
-  const tabB=document.getElementById('draft-tab-b');
-  tabA.className='draft-tab'+(hasA?' has-draft':'  no-draft')+(activeDraftView==='a'?' active-draft':'');
-  tabA.textContent='Draft A'+(ch.finalDraft==='a'?' ✓':'');
-  tabB.className='draft-tab'+(hasB?' has-draft':' no-draft')+(activeDraftView==='b'?' active-draft':'');
-  tabB.textContent=hasB?'Draft B'+(ch.finalDraft==='b'?' ✓':''):'Draft B (not yet)';
-  if(!hasB)tabB.onclick=null; else tabB.onclick=()=>selectDraftView('b');
-}
-
-function selectDraftView(slot) {
-  const ch=appData.chapters[appData.activeEra];
-  if(slot==='b'&&!ch.draftB)return;
-  activeDraftView=slot;
-  renderDraftSelector();
-  if(compareMode==='side')renderSideBySize();
-  else renderFlipView(slot);
-}
-
-function setCompareMode(mode) {
-  compareMode=mode;
-  document.getElementById('view-flip-btn').classList.toggle('active',mode==='flip');
-  document.getElementById('view-side-btn').classList.toggle('active',mode==='side');
-  if(mode==='side')renderSideBySize();
-  else{document.getElementById('draft-compare-view').classList.remove('show');renderFlipView(activeDraftView);}
-}
-
-function renderFlipView(slot) {
-  document.getElementById('draft-compare-view').classList.remove('show');
-  const ch=appData.chapters[appData.activeEra];
-  const text=slot==='a'?ch.draftA:ch.draftB;
-  document.getElementById('chapter-compile-output').innerHTML=text||'<span style="font-style:italic;color:var(--text-muted);">No draft yet for this slot.</span>';
-}
-
-function renderSideBySize() {
-  const ch=appData.chapters[appData.activeEra];
-  const view=document.getElementById('draft-compare-view');
-  view.classList.add('show');
-  document.getElementById('compare-a-text').textContent=ch.draftA||'No Draft A yet.';
-  document.getElementById('compare-b-text').textContent=ch.draftB||'No Draft B yet.';
-  const selA=document.getElementById('select-a-btn');
-  const selB=document.getElementById('select-b-btn');
-  selA.className='draft-select-btn'+(ch.finalDraft==='a'?' chosen':'');
-  selA.textContent=ch.finalDraft==='a'?'✓ Draft A selected':'Use Draft A as Final';
-  selB.className='draft-select-btn'+(ch.finalDraft==='b'?' chosen':'');
-  selB.textContent=ch.finalDraft==='b'?'✓ Draft B selected':'Use Draft B as Final';
-}
-
-function selectFinalDraft(slot) {
-  const ch=appData.chapters[appData.activeEra];
-  if(slot==='b'&&!ch.draftB){toast('Write Draft B first.','warn');return;}
-  ch.finalDraft=slot;saveState();renderDraftSelector();renderSideBySize();
-  toast(`Draft ${slot.toUpperCase()} marked as your final version.`,'success');
-}
-
-/* ══════════════════════════════════════════════════════
-   LOCK / UNLOCK
-══════════════════════════════════════════════════════ */
-function requestUnlock(){toggleModal('unlock-modal',true);}
-function confirmUnlock(){
-  const ch=appData.chapters[appData.activeEra];
-  ch.draftALocked=false;saveState();toggleModal('unlock-modal',false);
-  renderLockedState();renderSidebar();
-  toast('Chapter unlocked. Write your notes and click Write Chapter Draft to create a new version.','info',5000);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1464,8 +1558,10 @@ function syncPrivacyState(){appData.chapters[appData.activeEra].isPublic=documen
 async function commitActiveMemoryBlock() {
   const textVal=document.getElementById('journal-editor').value;
   if(!textVal.trim()){toast('Write something first before saving.','warn');return;}
-  appData.chapters[appData.activeEra].text=textVal;
-  saveState();renderSidebar();
+  const _ch=appData.chapters[appData.activeEra];ensureChapterFields(_ch);
+  if((_ch.text||'').trim()&&_ch.text!==textVal){_ch.notesHistory.unshift({id:'n_'+Date.now(),text:_ch.text,at:Date.now()});if(_ch.notesHistory.length>12)_ch.notesHistory.length=12;}
+  _ch.text=textVal;
+  saveState();renderSidebar();renderDrafts();scheduleBookRefresh();
   draftClear(appData.activeEra);
   toast('Chapter notes saved ✓','success');
 
@@ -1513,226 +1609,695 @@ Respond with either the note text or NONE. Nothing else.`;
 }
 
 /* ══════════════════════════════════════════════════════
-   CHAPTER COMPILE (Draft A / B)
+   SHARED HELPERS (v6)
 ══════════════════════════════════════════════════════ */
-function updateChapterCompileStatus() {
-  const ch=appData.chapters[appData.activeEra];
-  const statusEl=document.getElementById('chapter-draft-status');
-  if(ch.draftA&&ch.draftB)statusEl.textContent=`Draft A + Draft B saved${ch.finalDraft?' · Final: '+ch.finalDraft.toUpperCase():''}`;
-  else if(ch.draftA)statusEl.textContent='Draft A saved — locked';
-  else statusEl.textContent='No drafts yet';
-  const out=document.getElementById('chapter-compile-output');
-  if(ch.draftA){
-    if(compareMode==='side'&&ch.draftB)renderSideBySize();
-    else renderFlipView(activeDraftView);
-  }else{
-    out.innerHTML='<span style="font-style:italic;color:var(--text-muted);">Select a chapter and click Write Chapter Draft to generate a polished version of your notes.</span>';
-  }
+function escHtml(str){return String(str==null?'':str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function hashStr(s){let h=0;s=s||'';for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return String(h);}
+function fmtWhen(t){try{return new Date(t).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return '';}}
+function wordCount(t){return t&&t.trim()?t.trim().split(/\s+/).length:0;}
+function chapterShortTitle(ch){return ch.title.replace(/^\d+\.\s*/,'');}
+const NUM_WORDS=['One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve'];
+const STYLE_INFO={
+  close:{label:'Close to my words',hint:'Light touch: fixes spelling and grammar, tidies paragraphs, and keeps your phrases, quotes and humor. Best when you like how you already say it.'},
+  polished:{label:'Polished',hint:'Smoother and more flowing, like an editor reworked it. Still not allowed to invent details, but it may reword more of what you wrote.'}
+};
+
+/* tiny, safe formatter: blank line = new paragraph, "> " = pull quote, *x* = italic */
+function inlineMd(s){
+  s=escHtml(s);
+  s=s.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>');
+  s=s.replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<em>$2</em>');
+  return s;
+}
+function parseBlocks(text,singleNewlineIsParagraph){
+  const out=[];let para=[],quote=[];
+  const flushP=()=>{if(para.length){out.push({t:'p',x:para.join(' ')});para=[];}};
+  const flushQ=()=>{if(quote.length){out.push({t:'q',x:quote.join(' ')});quote=[];}};
+  String(text||'').replace(/\r/g,'').split('\n').forEach(line=>{
+    const l=line.trim();
+    if(!l){flushP();flushQ();return;}
+    if(l.charAt(0)==='>'){flushP();quote.push(l.replace(/^>\s?/,''));return;}
+    flushQ();
+    if(singleNewlineIsParagraph){flushP();}
+    para.push(l);
+  });
+  flushP();flushQ();
+  return out.map(b=>b.t==='q'?{t:'q',x:b.x.replace(/^["“]+/,'').replace(/["”]+$/,'')}:b);
+}
+function blocksToHtml(text,singleNL){
+  return parseBlocks(text,singleNL).map(b=>b.t==='q'?`<blockquote>${inlineMd(b.x)}</blockquote>`:`<p>${inlineMd(b.x)}</p>`).join('');
 }
 
-async function compileChapter() {
-  const ch=appData.chapters[appData.activeEra];
-  if(!appData.keys.gemini){toast('Add your Gemini key in ⚙️ Settings first.','warn',4000);toggleModal('settings-modal',true);return;}
-  if(!ch.text||!ch.text.trim()){toast('Write some notes in this chapter first.','warn');return;}
-  // Determine which slot to write
-  let slot='a';
-  if(ch.draftA&&ch.draftALocked){
-    // Writing Draft B
-    if(ch.draftB){
-      if((await themedConfirm({icon:'✍️',title:'Replace Draft B?',sub:'You already have a Draft B. Writing a new one will overwrite it. Draft A is kept.',ok:'Overwrite Draft B',danger:true}))!=='ok')return;
-    }
-    slot='b';
+/* ── context the AI always gets: who the author is + people & places ── */
+function authorContext(){
+  const m=appData.aboutMe||{};const lines=[];
+  const roleMap={father:'father',mother:'mother',grandparent:'grandparent',other:(m.roleOther||'').trim()};
+  const role=roleMap[m.role]||'';
+  if(appData.authorName)lines.push(`The author's name is ${appData.authorName}.`);
+  if(role)lines.push(`The author is a ${role}, writing this for their ${m.role==='grandparent'?'grandchildren':'children'}${m.kids?` (${m.kids})`:''}. Never assume the author's gender or family role beyond what is stated here.`);
+  else if(m.kids)lines.push(`The people this is written for: ${m.kids}.`);
+  if(m.partner)lines.push(`The author's partner or spouse: ${m.partner}.`);
+  if(m.extra&&m.extra.trim())lines.push(m.extra.trim());
+  const cast=(appData.cast||[]).filter(c=>c.name&&c.who);
+  if(cast.length)lines.push('People and places (authoritative: use these names and relationships exactly, and never merge two different people who share a name):\n'+cast.map(c=>`- ${c.name}: ${c.who}`).join('\n'));
+  return lines.join('\n');
+}
+function ensureChapterFields(ch){
+  if(!ch.aiNotes)ch.aiNotes=[];
+  if(!ch.draftMeta)ch.draftMeta={};
+  if(!ch.history)ch.history=[];
+  if(!ch.notesHistory)ch.notesHistory=[];
+  if(ch.photoCaption===undefined)ch.photoCaption='';
+  if(ch.draftA&&!ch.finalDraft)ch.finalDraft='a';
+  ch.draftALocked=false;ch.draftBLocked=false; /* locking was retired: notes are always editable, drafts are versions */
+}
+function ensureAppFields(){
+  if(!appData.cast)appData.cast=[];
+  if(!appData.aboutMe)appData.aboutMe={role:'',roleOther:'',kids:'',partner:'',extra:''};
+  if(!appData.bookFront)appData.bookFront={opening:'',closing:'',prevOpening:'',prevClosing:''};
+  if(appData.bookSubtitle===undefined)appData.bookSubtitle='';
+  if(!appData.draftStyle)appData.draftStyle='close';
+}
+
+/* ══════════════════════════════════════════════════════
+   EXPAND / FOCUS MODE
+══════════════════════════════════════════════════════ */
+function toggleExpand(id){
+  const el=document.getElementById(id);if(!el)return;
+  const turnOn=!el.classList.contains('is-expanded');
+  collapseAll();
+  if(turnOn){
+    el.classList.add('is-expanded');document.querySelector('main').classList.add('has-expanded');
+    el.querySelectorAll('[data-expand-btn]').forEach(b=>b.textContent='⤡ Close');
+    const ta=el.querySelector('textarea');if(ta&&ta.id==='journal-editor'){ta.style.height='';ta.focus();}
   }
-  const out=document.getElementById('chapter-compile-output');
-  out.innerHTML=`<div class="compile-loader"><div class="waveform-loader"><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div></div><div class="compile-status">Writing your chapter…</div></div>`;
+}
+function collapseAll(){
+  document.querySelectorAll('.is-expanded').forEach(e=>{e.classList.remove('is-expanded');e.querySelectorAll('[data-expand-btn]').forEach(b=>b.textContent='⤢ Expand');});
+  const m=document.querySelector('main');if(m)m.classList.remove('has-expanded');
+  autosizeNotes();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.is-expanded'))collapseAll();});
+function autosizeNotes(){
+  const ed=document.getElementById('journal-editor');if(!ed||ed.closest('.is-expanded'))return;
+  ed.style.height='auto';
+  ed.style.height=Math.max(240,Math.min(ed.scrollHeight+6,Math.round(window.innerHeight*0.7)))+'px';
+}
+
+/* ══════════════════════════════════════════════════════
+   DRAFTS — two versions per chapter, never lose anything
+══════════════════════════════════════════════════════ */
+let draftBusy=false;
+let draftEditing=false;
+function slotKey(slot){return slot==='a'?'draftA':'draftB';}
+function draftText(ch,slot){return ch[slotKey(slot)]||'';}
+function pushHistory(ch,slot,reason){
+  const old=draftText(ch,slot);if(!old)return;
+  const meta=(ch.draftMeta&&ch.draftMeta[slot])||{};
+  ch.history.unshift({id:'h_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),slot,text:old,at:Date.now(),writtenAt:meta.at||0,style:meta.style||'',reason:reason||'replaced'});
+  if(ch.history.length>14)ch.history.length=14;
+}
+function setDraftStyle(s){appData.draftStyle=s;saveState();renderDrafts();}
+
+function renderDrafts(){
+  const ch=appData.chapters[appData.activeEra];if(!ch)return;
+  ensureChapterFields(ch);
+  if(!draftText(ch,activeDraftView)){activeDraftView=ch.draftA?'a':(ch.draftB?'b':'a');}
+  const sty=appData.draftStyle||'close';
+  document.querySelectorAll('#dr-style-seg button').forEach(b=>b.classList.toggle('active',b.dataset.style===sty));
+  document.getElementById('dr-style-hint').textContent=STYLE_INFO[sty].hint;
+  const sig=hashStr(ch.text);
+  let stale=false;
+  ['a','b'].forEach(slot=>{
+    const card=document.getElementById('dr-card-'+slot);
+    const txt=draftText(ch,slot);const meta=(ch.draftMeta||{})[slot]||{};
+    const S=slot.toUpperCase();const inBook=ch.finalDraft===slot&&!!txt;
+    const isStale=!!txt&&!!meta.sig&&meta.sig!==sig;if(isStale)stale=true;
+    card.className='dr-card'+(inBook?' inbook':'')+((activeDraftView===slot&&txt)?' viewing':'');
+    if(!txt){
+      card.innerHTML=`<div class="dr-card-top"><span class="dr-card-name">Draft ${S}</span></div>
+        <div class="dr-meta">${slot==='a'?'Not written yet.':'Optional second version — write it in a different style to compare.'}</div>
+        <div class="dr-card-actions"><button class="btn btn-compile btn-sm" onclick="writeDraft('${slot}')" ${draftBusy?'disabled':''}>⚡ Write Draft ${S}</button></div>`;
+    }else{
+      card.innerHTML=`<div class="dr-card-top"><span class="dr-card-name">Draft ${S}</span>${inBook?'<span class="dr-badge">✓ IN YOUR BOOK</span>':''}</div>
+        <div class="dr-meta">${meta.at?'Written '+fmtWhen(meta.at):'Saved earlier'}${meta.style?' · '+(STYLE_INFO[meta.style]?STYLE_INFO[meta.style].label:meta.style):''}${meta.edited?' · edited by you':''} · ${wordCount(txt)} words${isStale?'<br><span class="warn">⚠ Your notes changed after this was written</span>':''}</div>
+        <div class="dr-card-actions">
+          <button class="btn btn-secondary btn-sm" onclick="selectDraftView('${slot}')">👁 View</button>
+          ${inBook?'':`<button class="btn btn-save btn-sm" onclick="setFinal('${slot}')">Use in book</button>`}
+          <button class="btn btn-secondary btn-sm" onclick="writeDraft('${slot}')" ${draftBusy?'disabled':''}>↻ Rewrite</button>
+        </div>`;
+    }
+  });
+  const st=document.getElementById('dr-stale');
+  if(stale){st.style.display='block';st.innerHTML='✎ You changed your notes after a draft was written. Tap <b>Rewrite</b> on that draft to include your changes. The old version is kept in History.';}
+  else st.style.display='none';
+  renderDraftViewer();
+}
+
+function renderDraftViewer(){
+  const ch=appData.chapters[appData.activeEra];
+  const wrap=document.getElementById('dr-viewer');
+  const hasA=!!ch.draftA,hasB=!!ch.draftB;
+  wrap.classList.toggle('show',hasA||hasB);
+  if(!(hasA||hasB))return;
+  const slot=activeDraftView;const S=slot.toUpperCase();
+  const read=document.getElementById('dr-read'),cmp=document.getElementById('dr-compare'),ed=document.getElementById('dr-edit-area');
+  document.getElementById('dr-viewer-title').textContent=compareMode==='side'&&hasA&&hasB?'Comparing Draft A and Draft B':`Reading Draft ${S}`;
+  document.getElementById('dr-compare-btn').style.display=(hasA&&hasB)?'':'none';
+  document.getElementById('dr-compare-btn').textContent=compareMode==='side'?'Single view':'Side by side';
+  const showCmp=compareMode==='side'&&hasA&&hasB&&!draftEditing;
+  cmp.classList.toggle('show',showCmp);
+  read.style.display=(!showCmp&&!draftEditing)?'block':'none';
+  ed.style.display=draftEditing?'block':'none';
+  document.getElementById('dr-edit-note').style.display=draftEditing?'block':'none';
+  document.getElementById('dr-edit-actions').style.display=draftEditing?'flex':'none';
+  document.getElementById('dr-view-actions').style.display=draftEditing?'none':'flex';
+  if(showCmp){
+    cmp.innerHTML=['a','b'].map(s=>`<div class="dr-pane"><h4>Draft ${s.toUpperCase()}${ch.finalDraft===s?' · in your book':''}</h4>${blocksToHtml(draftText(ch,s))}</div>`).join('');
+  }else if(!draftEditing){
+    read.innerHTML=draftText(ch,slot)?blocksToHtml(draftText(ch,slot)):'<div class="dr-empty">No draft here yet.</div>';
+  }
+}
+function selectDraftView(slot){
+  const ch=appData.chapters[appData.activeEra];if(!draftText(ch,slot))return;
+  if(draftEditing)return;
+  activeDraftView=slot;compareMode='flip';renderDrafts();
+  document.getElementById('dr-viewer').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function toggleCompare(){compareMode=compareMode==='side'?'flip':'side';renderDraftViewer();}
+function setFinal(slot){
+  const ch=appData.chapters[appData.activeEra];if(!draftText(ch,slot))return;
+  ch.finalDraft=slot;saveState();renderDrafts();renderSidebar();scheduleBookRefresh();
+  toast(`Draft ${slot.toUpperCase()} will be used in your book.`,'success');
+}
+function startEditDraft(){
+  const ch=appData.chapters[appData.activeEra];
+  draftEditing=true;
+  document.getElementById('dr-edit-area').value=draftText(ch,activeDraftView);
+  renderDraftViewer();
+  document.getElementById('dr-edit-area').focus();
+}
+function cancelEditDraft(){draftEditing=false;renderDraftViewer();}
+function saveEditDraft(){
+  const ch=appData.chapters[appData.activeEra];const slot=activeDraftView;
+  const v=document.getElementById('dr-edit-area').value;
+  if(!v.trim()){toast('A draft can’t be empty. Cancel to keep the original.','warn');return;}
+  if(v!==draftText(ch,slot)){
+    pushHistory(ch,slot,'before your edit');
+    ch[slotKey(slot)]=v;
+    ch.draftMeta[slot]=Object.assign({},ch.draftMeta[slot]||{},{edited:true});
+    saveState();scheduleBookRefresh();
+    toast(`Draft ${slot.toUpperCase()} updated. The version before your edit is in History.`,'success',4500);
+  }
+  draftEditing=false;renderDrafts();
+}
+async function copyDraft(){
+  const ch=appData.chapters[appData.activeEra];
+  try{await navigator.clipboard.writeText(draftText(ch,activeDraftView));toast('Draft copied.','success');}catch(e){toast('Could not copy. Select the text and copy it manually.','warn');}
+}
+
+function buildDraftPrompt(ch,style){
+  const common=`Output rules:
+- Write in the first person, as the author, speaking to their children ("you") where it fits naturally.
+- Separate paragraphs with a blank line. Output only the chapter text: no headings, no title, no preamble, no notes.
+- You may mark up to three standout lines of the author's own reflection or advice as pull quotes by starting the line with "> ". Use the author's own sentences (verbatim or nearly), never new ones.
+- Use *italics* very sparingly.`;
+  const faithful=`You are an editor helping someone turn their raw notes into one chapter of their autobiography, written as a letter to their children.
+
+THE MOST IMPORTANT RULES (they override everything else):
+- Do NOT add any fact, name, place, number, event, object, feeling, lesson or scenery that is not in the notes. Do not guess. If something is unclear, keep the author's wording.
+- Use EVERY story and point in the notes. Do not drop anything. Do not impose a paragraph limit; a long set of notes should become a long chapter.
+- Anything the author put in quotation marks, and any quoted saying, creed, poem, verse or passage, must stay exactly word for word. If the notes include a long quoted passage, include ALL of it, unchanged, as a "> " pull quote block.
+- Names and relationships must follow the "people and places" list if one is provided.`;
+  const closeStyle=`${faithful}
+
+STYLE: stay as close to the author's own words as possible. Make only light edits: fix spelling, grammar and punctuation, remove false starts and repetition, and arrange into clear paragraphs with a sensible order. Keep their phrases, humor, slang and sentence rhythm. Do not dramatize, embellish, or add metaphors. The result should sound like the author on their best day, not like a novelist.
+
+${common}`;
+  const polishedStyle=`${faithful}
+
+STYLE: make it flow and read warmly, as a skilled editor would. You may reorder for clarity, smooth transitions, and reword for rhythm. But keep the author's plain, direct voice: no purple prose, no clichés, no invented imagery, no dramatic flourishes, and no tidy moral at the end unless the author wrote one.
+
+${common}`;
+  return style==='polished'?polishedStyle:closeStyle;
+}
+
+async function writeDraft(slot){
+  if(draftBusy)return;
+  const ch=appData.chapters[appData.activeEra];ensureChapterFields(ch);
+  const S=slot.toUpperCase();
+  if(!appData.keys.gemini){toast('Add your Gemini key in ⚙️ Settings first.','warn',4000);toggleModal('settings-modal',true);return;}
+  const live=document.getElementById('journal-editor').value;
+  if(live.trim()&&live!==(ch.text||'')){
+    const c=await themedConfirm({icon:'📝',title:'Save your latest notes first?',sub:'You typed changes that are not saved yet. A draft is written from your saved notes.',ok:'Save and write draft',cancel:'Cancel'});
+    if(c!=='ok')return;
+    await commitActiveMemoryBlock();
+  }
+  if(!ch.text||!ch.text.trim()){toast('Write some notes in this chapter first.','warn');return;}
+  const style=appData.draftStyle||'close';
+  if(draftText(ch,slot)){
+    const c=await themedConfirm({icon:'↻',title:`Rewrite Draft ${S}?`,sub:`A new ${STYLE_INFO[style].label.toLowerCase()} version will replace Draft ${S}. The current Draft ${S} is saved in History and can be restored any time. Your notes${slot==='a'?' and Draft B':' and Draft A'} are not touched.`,ok:`Rewrite Draft ${S}`,cancel:'Cancel'});
+    if(c!=='ok')return;
+  }
+  draftBusy=true;draftEditing=false;
+  const chId=ch.id;const sig=hashStr(ch.text);
+  const wrap=document.getElementById('dr-viewer');wrap.classList.add('show');
+  document.getElementById('dr-compare').classList.remove('show');
+  const read=document.getElementById('dr-read');read.style.display='block';
+  document.getElementById('dr-viewer-title').textContent=`Writing Draft ${S}…`;
+  read.innerHTML=`<div class="compile-loader"><div class="waveform-loader"><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div></div><div class="compile-status">Writing Draft ${S}…</div></div>`;
+  renderDraftsCardsOnly();
   const aiNotesText=ch.aiNotes&&ch.aiNotes.length?'\n\nRelated notes from other chapters:\n'+ch.aiNotes.map(n=>`- ${n.text}`).join('\n'):'';
-  const si=`You are a warm, gifted creative biographer. Your job is to turn someone's raw personal notes into a beautifully written section of their autobiography — written as a loving letter to their children.
-
-Write in the first person, in the author's natural voice. Be warm, specific, and honest. Do not over-polish or sanitize. If there is a meaningful quote, reflection, or piece of advice that stands out, mark it as a blockquote by starting the line with > (e.g. > "The most important thing I ever learned…"). Keep it to 3-5 paragraphs.
-
-Output only the chapter text. No headings, no preamble, no explanation. Plain prose with optional > blockquote lines.`;
-  const userPrompt=`Chapter: ${ch.title}\n\nMy notes:\n${ch.text}${aiNotesText}`;
+  const ctx=authorContext();
+  const userPrompt=`Chapter: ${ch.title}\nChapter theme: ${ch.prompt}\n\n${ctx?ctx+'\n\n':''}The author's notes:\n"""\n${ch.text}\n"""${aiNotesText}`;
   try{
     const r=await geminiFetch(appData.keys.gemini,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         contents:[{role:'user',parts:[{text:userPrompt}]}],
-        systemInstruction:{role:'model',parts:[{text:si}]},
-        generationConfig:{temperature:0.3,thinkingConfig:{thinkingBudget:0}}
+        systemInstruction:{role:'model',parts:[{text:buildDraftPrompt(ch,style)}]},
+        generationConfig:{temperature:style==='polished'?0.5:0.2,maxOutputTokens:8192,thinkingConfig:{thinkingBudget:0}}
       })
     });
-    if(!r.ok){
-      const errData=await r.json().catch(()=>({}));
-      const errMsg=errData?.error?.message||`HTTP ${r.status}`;
-      throw new Error(errMsg);
-    }
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
     const result=await r.json();
-    const text=result.candidates?.[0]?.content?.parts?.[0]?.text||'';
-    if(!text)throw new Error('Empty response from Gemini');
-    if(slot==='a'){ch.draftA=text;ch.draftALocked=true;ch.finalDraft='a';activeDraftView='a';}
-    else{ch.draftB=text;ch.finalDraft=ch.finalDraft||'b';activeDraftView='b';}
-    saveState();renderLockedState();renderDraftSelector();updateChapterCompileStatus();renderSidebar();
-    toast(`Draft ${slot.toUpperCase()} saved and locked ✓`,'success',4000);
+    const text=(result.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
+    if(!text)throw new Error('The AI returned nothing. Your existing draft was not changed.');
+    pushHistory(ch,slot,'replaced by a rewrite');
+    ch[slotKey(slot)]=text;
+    ch.draftMeta[slot]={at:Date.now(),style,sig,edited:false};
+    if(!ch.finalDraft)ch.finalDraft=slot;
+    saveState();
+    toast(`Draft ${S} written ✓ ${ch.finalDraft===slot?'It is the one in your book.':'Tap “Use in book” if you prefer it.'}`,'success',5000);
   }catch(e){
-    out.innerHTML=`<span style="color:var(--red);font-size:13px;">Writing failed: ${e.message}</span>`;
-    toast(`Chapter compile failed: ${e.message}`,'error',6000);
+    toast(`Writing failed: ${e.message}. Nothing was changed.`,'error',7000);
+  }finally{
+    draftBusy=false;
+    if(appData.activeEra===chId){activeDraftView=draftText(ch,slot)?slot:activeDraftView;renderDrafts();}
+    renderSidebar();scheduleBookRefresh();
   }
+}
+function renderDraftsCardsOnly(){
+  ['a','b'].forEach(s=>{const b=document.querySelectorAll(`#dr-card-${s} button`);b.forEach(x=>x.disabled=true);});
+}
+
+/* ── history: every replaced draft and every older version of the notes ── */
+function openHistory(){
+  const ch=appData.chapters[appData.activeEra];ensureChapterFields(ch);
+  const body=document.getElementById('history-body');
+  const dh=ch.history.map(h=>`<div class="hist-item">
+      <div class="hist-top"><span>Draft ${h.slot.toUpperCase()} · ${h.reason}</span><span class="hist-sub">${fmtWhen(h.at)}</span></div>
+      <div class="hist-sub">${h.writtenAt?'Originally written '+fmtWhen(h.writtenAt):''}${h.style?' · '+(STYLE_INFO[h.style]?STYLE_INFO[h.style].label:h.style):''} · ${wordCount(h.text)} words</div>
+      <div class="hist-prev">${escHtml(h.text.slice(0,220))}${h.text.length>220?'…':''}</div>
+      <div class="hist-actions"><button class="btn btn-secondary btn-sm" onclick="restoreDraft('${h.id}')">↩ Restore as Draft ${h.slot.toUpperCase()}</button><button class="btn btn-secondary btn-sm" onclick="copyHistory('d','${h.id}')">📋 Copy</button></div>
+    </div>`).join('');
+  const nh=ch.notesHistory.map(h=>`<div class="hist-item">
+      <div class="hist-top"><span>Earlier version of your notes</span><span class="hist-sub">${fmtWhen(h.at)}</span></div>
+      <div class="hist-sub">${wordCount(h.text)} words</div>
+      <div class="hist-prev">${escHtml(h.text.slice(0,220))}${h.text.length>220?'…':''}</div>
+      <div class="hist-actions"><button class="btn btn-secondary btn-sm" onclick="restoreNotes('${h.id}')">↩ Put back in the notes box</button><button class="btn btn-secondary btn-sm" onclick="copyHistory('n','${h.id}')">📋 Copy</button></div>
+    </div>`).join('');
+  body.innerHTML=`<div class="sec-help" style="margin-bottom:6px;">Whenever a draft is replaced or edited, and whenever you save changed notes, the earlier version is kept here for this chapter. Nothing in this list is used in your book.</div>
+    <div class="hist-h">Earlier drafts</div>${dh||'<div class="dr-empty">No replaced drafts yet.</div>'}
+    <div class="hist-h">Earlier versions of your notes</div>${nh||'<div class="dr-empty">No earlier versions yet. Your first save is stored when you change the notes and save again.</div>'}`;
+  toggleModal('history-modal',true);
+}
+function findHist(kind,id){const ch=appData.chapters[appData.activeEra];return (kind==='d'?ch.history:ch.notesHistory).find(h=>h.id===id);}
+async function copyHistory(kind,id){const h=findHist(kind,id);if(!h)return;try{await navigator.clipboard.writeText(h.text);toast('Copied.','success');}catch(e){toast('Could not copy.','warn');}}
+async function restoreDraft(id){
+  const ch=appData.chapters[appData.activeEra];const h=findHist('d',id);if(!h)return;
+  const slot=h.slot;
+  if(draftText(ch,slot)){
+    const c=await themedConfirm({icon:'↩',title:`Restore this as Draft ${slot.toUpperCase()}?`,sub:`The current Draft ${slot.toUpperCase()} will be saved in History first, so nothing is lost.`,ok:'Restore',cancel:'Cancel'});
+    if(c!=='ok')return;
+  }
+  pushHistory(ch,slot,'replaced by a restore');
+  ch.history=ch.history.filter(x=>x.id!==id);
+  ch[slotKey(slot)]=h.text;
+  ch.draftMeta[slot]={at:h.writtenAt||Date.now(),style:h.style||'',sig:'',edited:false};
+  if(!ch.finalDraft)ch.finalDraft=slot;
+  saveState();renderDrafts();renderSidebar();scheduleBookRefresh();
+  openHistory();toast(`Restored as Draft ${slot.toUpperCase()}.`,'success');
+}
+function restoreNotes(id){
+  const h=findHist('n',id);if(!h)return;
+  const ed=document.getElementById('journal-editor');
+  const ch=appData.chapters[appData.activeEra];
+  if(ed.value.trim()&&ed.value!==(ch.text||'')&&ed.value!==h.text){ch.notesHistory.unshift({id:'n_'+Date.now(),text:ed.value,at:Date.now()});saveState();}
+  ed.value=h.text;updateWordCount();toggleModal('history-modal',false);
+  toast('Put back in the notes box. Tap Save Chapter Notes to keep it (your current saved notes go to History).','info',6500);
 }
 
 /* ══════════════════════════════════════════════════════
-   FULL BOOK COMPILE
+   THE BOOK — built right here from your chosen drafts (no AI rewrite step)
 ══════════════════════════════════════════════════════ */
-async function compileFullBook() {
-  const vp=document.getElementById('production-book-viewport');
-  if(!appData.keys.gemini){toast('Add your Gemini key in ⚙️ Settings first.','warn',4000);toggleModal('settings-modal',true);return;}
-  const chaptersWithDrafts=Object.values(appData.chapters).filter(ch=>{
-    if(!ch.isPublic&&appData.viewFilter==='abbreviated')return false;
-    return ch.draftA||ch.text;
+const BOOK_CSS=`.lp-book{--ink:#1f1b16;--soft:#4a4238;--muted:#857a6b;--accent:#8a6a35;--rule:#d8cdb8;font-family:'EB Garamond','Cormorant Garamond',Georgia,'Times New Roman',serif;color:var(--ink);font-size:12.5pt;line-height:1.62;background:#fffdf8;max-width:7.2in;margin:0 auto;padding:.55in .7in;box-shadow:0 10px 40px rgba(60,40,10,.18);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+.lp-book *{box-sizing:border-box;}
+.lp-book h1,.lp-book h2{font-family:'DM Serif Display',Georgia,'Times New Roman',serif;font-weight:400;color:var(--ink);margin:0;}
+.lp-book .bk-cover{min-height:8.6in;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:.6in .3in;border:1px solid var(--rule);outline:1px solid var(--rule);outline-offset:-10px;margin-bottom:.5in;}
+.lp-book .bk-eyebrow{font:600 8.5pt 'DM Sans',Arial,sans-serif;letter-spacing:.38em;text-transform:uppercase;color:var(--accent);}
+.lp-book .bk-line{width:1.2in;height:1px;background:var(--accent);opacity:.7;margin:.38in auto;}
+.lp-book .bk-title{font-size:42pt;line-height:1.08;letter-spacing:-.015em;max-width:5.4in;}
+.lp-book .bk-subtitle{font-style:italic;font-size:17pt;color:var(--soft);margin-top:.18in;max-width:5in;}
+.lp-book .bk-by{font:600 8pt 'DM Sans',Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:.1in;}
+.lp-book .bk-author{font-family:'DM Serif Display',Georgia,serif;font-size:20pt;}
+.lp-book .bk-year{margin-top:.35in;font-size:11pt;color:var(--muted);letter-spacing:.1em;}
+.lp-book .bk-page{margin:0 0 .5in;}
+.lp-book .bk-label{font:600 8.5pt 'DM Sans',Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);text-align:center;margin:0 0 .32in;}
+.lp-book .bk-letter p{font-style:italic;font-size:13.5pt;line-height:1.7;margin:0 0 .17in;text-align:left;}
+.lp-book .bk-sign{margin-top:.3in;text-align:right;font-family:'DM Serif Display',Georgia,serif;font-size:15pt;}
+.lp-book .bk-toc h2{text-align:center;font-size:24pt;margin-bottom:.35in;}
+.lp-book .bk-toc ol{list-style:none;margin:0 auto;padding:0;max-width:5in;}
+.lp-book .bk-toc li{display:flex;gap:.18in;align-items:baseline;padding:.075in 0;border-bottom:1px dotted var(--rule);}
+.lp-book .bk-toc li b{font:600 8.5pt 'DM Sans',Arial,sans-serif;letter-spacing:.14em;color:var(--accent);min-width:.45in;}
+.lp-book .bk-toc a{color:var(--ink);text-decoration:none;font-size:13pt;}
+.lp-book .bk-chapter{margin-top:.7in;}
+.lp-book .bk-ch-head{text-align:center;margin-bottom:.4in;padding-top:.5in;}
+.lp-book .bk-ch-num{font:600 8.5pt 'DM Sans',Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:var(--accent);margin-bottom:.14in;}
+.lp-book .bk-ch-title{font-size:27pt;line-height:1.15;letter-spacing:-.01em;}
+.lp-book .bk-orn{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:.24in;}
+.lp-book .bk-orn::before,.lp-book .bk-orn::after{content:'';width:.55in;height:1px;background:var(--rule);}
+.lp-book .bk-orn i{width:6px;height:6px;background:var(--accent);transform:rotate(45deg);display:block;}
+.lp-book .bk-body p{margin:0;text-align:justify;hyphens:auto;-webkit-hyphens:auto;text-indent:1.4em;orphans:3;widows:3;}
+.lp-book .bk-body p.bk-first,.lp-book .bk-body .bk-quote+p,.lp-book .bk-body .bk-photo+p{text-indent:0;}
+.lp-book .bk-body p.bk-first::first-letter{font-family:'DM Serif Display',Georgia,serif;float:left;font-size:3.7em;line-height:.82;padding:.07em .1em 0 0;color:var(--accent);}
+.lp-book .bk-body p+p{margin-top:.02in;}
+.lp-book .bk-quote{margin:.3in .45in;padding:.16in .1in;border-top:.75pt solid var(--rule);border-bottom:.75pt solid var(--rule);text-align:center;font-style:italic;font-size:14pt;line-height:1.5;color:var(--soft);break-inside:avoid;page-break-inside:avoid;}
+.lp-book .bk-quote::before{content:'\\201C';display:block;font-family:'DM Serif Display',Georgia,serif;font-size:30pt;line-height:.6;color:var(--accent);margin-bottom:.06in;font-style:normal;}
+.lp-book .bk-photo{margin:.3in auto;max-width:5.2in;text-align:center;break-inside:avoid;page-break-inside:avoid;}
+.lp-book .bk-photo img{max-width:100%;max-height:4in;object-fit:contain;display:inline-block;border:1px solid var(--rule);padding:5px;background:#fff;}
+.lp-book .bk-photo figcaption{font-style:italic;font-size:10.5pt;color:var(--muted);margin-top:.08in;}
+.lp-book .bk-closing{margin-top:.8in;padding-top:.5in;}
+.lp-book .bk-closing p{font-style:italic;font-size:13.5pt;line-height:1.7;margin:0 0 .17in;}
+.lp-book .bk-end{text-align:center;margin-top:.5in;color:var(--muted);font:600 8pt 'DM Sans',Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;}
+@media(max-width:640px){
+  .lp-book{padding:.3in .22in;font-size:12pt;}
+  .lp-book .bk-cover{min-height:6in;}
+  .lp-book .bk-title{font-size:30pt;}
+  .lp-book .bk-ch-title{font-size:22pt;}
+  .lp-book .bk-quote{margin:.25in .1in;}
+}
+@page{size:letter;margin:1in 1in 1.1in;}
+@page{@bottom-center{content:counter(page);font-family:'DM Sans',Arial,sans-serif;font-size:9pt;color:#857a6b;}}
+@page :first{@bottom-center{content:none;}}
+@media print{
+  html,body{background:#fff!important;margin:0!important;}
+  .lp-book{box-shadow:none;max-width:none;padding:0;margin:0;background:none;font-size:12pt;}
+  .lp-book .bk-cover{height:8.5in;min-height:0;margin:0;break-after:page;page-break-after:always;}
+  .lp-book .bk-page{break-after:page;page-break-after:always;margin:0;}
+  .lp-book .bk-chapter{break-before:page;page-break-before:always;margin-top:0;}
+  .lp-book .bk-ch-head{padding-top:1.1in;break-after:avoid;}
+  .lp-book .bk-closing{break-before:page;page-break-before:always;margin-top:0;padding-top:1.4in;}
+  .no-print{display:none!important;}
+}
+`;
+const BOOK_FONTS='https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap';
+
+function bookPlan(){
+  const abbr=appData.viewFilter==='abbreviated';
+  return CHAPTER_DEFS.map((d,i)=>{
+    const ch=appData.chapters[d.id];ensureChapterFields(ch);
+    let source='empty',text='';
+    if(ch.finalDraft==='b'&&ch.draftB){source='b';text=ch.draftB;}
+    else if(ch.finalDraft==='a'&&ch.draftA){source='a';text=ch.draftA;}
+    else if(ch.draftA){source='a';text=ch.draftA;}
+    else if(ch.draftB){source='b';text=ch.draftB;}
+    else if(ch.text&&ch.text.trim()){source='notes';text=ch.text;}
+    const excluded=!ch.isPublic&&abbr;
+    return {ch,i,source,text,excluded};
   });
-  if(!chaptersWithDrafts.length){toast('Write notes in at least one chapter first.','warn');return;}
-  vp.innerHTML=`<div class="compile-loader"><div class="waveform-loader"><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div><div class="wl-bar"></div></div><div class="compile-status">Weaving your story together…</div></div>`;
-
-  // Use finalDraft if set, else draftA, else raw text
-  const chapterContent=chaptersWithDrafts.map(ch=>{
-    let content='';
-    if(ch.finalDraft==='b'&&ch.draftB)content=ch.draftB;
-    else if(ch.draftA)content=ch.draftA;
-    else content=ch.text;
-    return `## ${ch.title}\n\n${content}`;
-  }).join('\n\n---\n\n');
-
-  const authorName=appData.authorName||'Your Author';
-  const bookTitle=appData.bookTitle||'A Letter to My Kids';
-
-  const si=`You are a master creative biographer compiling a complete autobiography written as a heartfelt letter from a parent to their children.
-
-Each chapter has already been polished individually. Your job is to:
-1. Write a warm, personal opening salutation paragraph addressed to the author's children (2-3 sentences, e.g. "To my dear children —"). This goes BEFORE any chapter heading.
-2. Weave the chapters together with brief transitional sentences between them so it reads as one cohesive memoir, not disconnected sections.
-3. Preserve any lines that begin with > as blockquotes.
-4. Add a warm, personal closing paragraph at the very end — signed lovingly from the author.
-5. Keep each chapter's text largely intact — do not rewrite them, just connect them.
-
-Output Format: Return structured HTML only. No markdown. No backticks. Use exactly these elements:
-
-For the opening salutation (before first chapter):
-<p class="book-salutation" style="font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;line-height:1.9;color:#cbd5e1;margin-bottom:36px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.07);">[salutation text]</p>
-
-For chapter eyebrow + heading:
-<span class="chapter-eyebrow-label">[e.g. Chapter One]</span>
-<h2 style="font-family:'DM Serif Display',serif;font-size:26px;color:#e2e8f0;margin:0 0 18px;letter-spacing:-0.01em;line-height:1.2;">[Chapter Title]</h2>
-
-For body paragraphs:
-<p style="font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.85;color:#94a3b8;margin-bottom:18px;font-weight:300;">[text]</p>
-
-For blockquotes (use when the author wrote a meaningful quote or reflection):
-<blockquote style="border-left:2px solid #5bc8e8;padding:12px 20px;margin:24px 0;font-family:'DM Serif Display',serif;font-style:italic;font-size:17px;color:#cbd5e1;background:rgba(91,200,232,0.04);border-radius:0 8px 8px 0;">[quote]</blockquote>
-
-For the closing paragraph (at the very end):
-<p class="book-closing" style="font-family:'DM Serif Display',serif;font-style:italic;font-size:16px;line-height:1.9;color:#cbd5e1;margin-top:40px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.07);">[closing text, signed from ${authorName}]</p>
-
-Do NOT include a wrapper div. Just the raw sequence of HTML elements.`;
-
-  try{
-    const r=await geminiFetch(appData.keys.gemini,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents:[{role:'user',parts:[{text:chapterContent}]}],
-        systemInstruction:{role:'model',parts:[{text:si}]},
-        generationConfig:{temperature:0.25,thinkingConfig:{thinkingBudget:0}}
-      })
-    });
-    if(!r.ok){
-      const errData=await r.json().catch(()=>({}));
-      const errMsg=errData?.error?.message||`HTTP ${r.status}`;
-      throw new Error(errMsg);
-    }
-    const result=await r.json();
-    const raw=result.candidates?.[0]?.content?.parts?.[0]?.text||'';
-    if(!raw)throw new Error('Empty response from Gemini');
-    const clean=raw.replace(/```html?/gi,'').replace(/```/g,'').trim();
-
-    // Build book cover HTML
-    const coverHtml=`<div class="book-cover">
-      <div class="book-cover-eyebrow">A Personal Memoir</div>
-      <div class="book-cover-title">${escHtml(bookTitle)}</div>
-      <div class="book-cover-subtitle">A Letter to My Kids</div>
-      <div class="book-cover-divider"></div>
-      <div class="book-cover-author-label">Written by</div>
-      <div class="book-cover-author">${escHtml(authorName||'The Author')}</div>
-    </div>`;
-
-    // Inject photos after first <p> in each chapter
-    let bodyHtml=clean;
-    if(appData.keys.gemini){
-      toast('Adding chapter photos…','info',3000);
-      bodyHtml=await injectChapterPhotos(clean, chaptersWithDrafts);
-    }
-
-    vp.innerHTML=`<div style="user-select:text;">${coverHtml}${bodyHtml}</div>`;
-    toast('Your autobiography is ready!','success',5000);
-  }catch(e){
-    vp.innerHTML=`<div class="book-empty"><div class="book-empty-icon">⚠️</div><div class="book-empty-text">Compilation failed.</div><div class="book-empty-sub">${e.message}</div></div>`;
-    toast(`Full book compile failed: ${e.message}`,'error',6000);
-  }
 }
-
-function escHtml(str){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-/* Inject chapter photos with AI captions after first <p> of each chapter */
-async function injectChapterPhotos(html, chapters) {
-  // Work on a DOM fragment for safe manipulation
-  const wrap=document.createElement('div');
-  wrap.innerHTML=html;
-
-  // Find all h2 elements to identify chapter boundaries
-  const h2s=Array.from(wrap.querySelectorAll('h2'));
-  for(const h2 of h2s){
-    // Match to a chapter by title substring
-    const titleRaw=h2.textContent.trim();
-    const matchedCh=chapters.find(ch=>{
-      const stripped=ch.title.replace(/^\d+\.\s*/,'').toLowerCase();
-      return titleRaw.toLowerCase().includes(stripped.substring(0,20));
-    });
-    if(!matchedCh||!photoStore[matchedCh.id])continue;
-
-    // Find the first <p> after this h2
-    let firstP=null;
-    let node=h2.nextElementSibling;
-    while(node){
-      if(node.tagName==='P'){firstP=node;break;}
-      if(node.tagName==='H2')break;
-      node=node.nextElementSibling;
-    }
-    if(!firstP)continue;
-
-    // Generate AI caption
-    let caption='';
-    try{
-      const chapterText=(matchedCh.draftA||matchedCh.text||'').substring(0,600);
-      const captionPrompt=`You are writing a warm, literary photo caption for a personal memoir. Based on this chapter excerpt, write a single evocative sentence (15-25 words) that could caption a personal photo in this chapter. Be specific and tender, not generic.\n\nChapter: ${matchedCh.title}\n\nExcerpt: ${chapterText}`;
-      const cr=await geminiFetch(appData.keys.gemini,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          contents:[{role:'user',parts:[{text:captionPrompt}]}],
-          generationConfig:{temperature:0.5,maxOutputTokens:60,thinkingConfig:{thinkingBudget:0}}
-        })
-      });
-      if(cr.ok){
-        const cd=await cr.json();
-        caption=cd.candidates?.[0]?.content?.parts?.[0]?.text?.trim()||'';
-        caption=caption.replace(/^["']|["']$/g,'');
+function buildBookInner(){
+  const plan=bookPlan().filter(p=>!p.excluded&&p.text.trim());
+  if(!plan.length)return '';
+  const title=appData.bookTitle||'A Letter to My Kids';
+  const sub=(appData.bookSubtitle||'').trim();
+  const author=(appData.authorName||'').trim();
+  const f=appData.bookFront||{};
+  let h='';
+  h+=`<section class="bk-cover"><div class="bk-eyebrow">A Personal Memoir</div><div class="bk-line"></div><h1 class="bk-title">${escHtml(title)}</h1>${sub?`<div class="bk-subtitle">${escHtml(sub)}</div>`:''}<div class="bk-line"></div>${author?`<div class="bk-by">Written by</div><div class="bk-author">${escHtml(author)}</div>`:''}<div class="bk-year">${new Date().getFullYear()}</div></section>`;
+  if((f.opening||'').trim()){
+    h+=`<section class="bk-page bk-letter"><div class="bk-label">Before We Begin</div>${parseBlocks(f.opening,true).map(b=>`<p>${inlineMd(b.x)}</p>`).join('')}${author?`<div class="bk-sign">${escHtml(author)}</div>`:''}</section>`;
+  }
+  h+=`<section class="bk-page bk-toc"><h2>Contents</h2><ol>${plan.map((p,n)=>`<li><b>${String(n+1).padStart(2,'0')}</b><a href="#ch-${p.ch.id}">${escHtml(chapterShortTitle(p.ch))}</a></li>`).join('')}</ol></section>`;
+  plan.forEach((p,n)=>{
+    const blocks=parseBlocks(p.text,p.source==='notes');
+    let body='',first=true,photoDone=false;
+    const photo=photoStore[p.ch.id];
+    blocks.forEach(b=>{
+      if(b.t==='q'){body+=`<div class="bk-quote">${inlineMd(b.x)}</div>`;return;}
+      body+=`<p${first?' class="bk-first"':''}>${inlineMd(b.x)}</p>`;
+      if(first&&photo&&!photoDone){
+        body+=`<figure class="bk-photo"><img src="${photo}" alt="">${(p.ch.photoCaption||'').trim()?`<figcaption>${escHtml(p.ch.photoCaption.trim())}</figcaption>`:''}</figure>`;photoDone=true;
       }
-    }catch(e){caption='';}
-
-    // Build photo element and insert after firstP
-    const photoDiv=document.createElement('div');
-    photoDiv.className='chapter-photo-wrap';
-    photoDiv.innerHTML=`<img src="${photoStore[matchedCh.id]}" alt="Chapter photo"><div class="chapter-photo-caption">${escHtml(caption||matchedCh.title)}</div>`;
-    firstP.insertAdjacentElement('afterend',photoDiv);
+      first=false;
+    });
+    h+=`<section class="bk-chapter" id="ch-${p.ch.id}"><header class="bk-ch-head"><div class="bk-ch-num">Chapter ${NUM_WORDS[p.i]||(p.i+1)}</div><h2 class="bk-ch-title">${escHtml(chapterShortTitle(p.ch))}</h2><div class="bk-orn"><i></i></div></header><div class="bk-body">${body}</div></section>`;
+  });
+  if((f.closing||'').trim()){
+    h+=`<section class="bk-closing">${parseBlocks(f.closing,true).map(b=>`<p>${inlineMd(b.x)}</p>`).join('')}${author?`<div class="bk-sign">With all my love,<br>${escHtml(author)}</div>`:''}</section>`;
   }
-  return wrap.innerHTML;
+  h+=`<div class="bk-end">The End</div>`;
+  return h;
 }
+let bookTimer=null;
+function scheduleBookRefresh(){clearTimeout(bookTimer);bookTimer=setTimeout(()=>refreshBook(false),350);}
+function ensureBookStyle(){
+  if(document.getElementById('lp-book-style'))return;
+  const st=document.createElement('style');st.id='lp-book-style';
+  /* in the app, the book preview uses the screen styles only (print goes through its own clean document) */
+  st.textContent=BOOK_CSS.split('\n').filter(l=>l.indexOf('@page')!==0).join('\n');
+  document.head.appendChild(st);
+}
+function refreshBook(manual){
+  ensureBookStyle();
+  const vp=document.getElementById('production-book-viewport');
+  const inner=buildBookInner();
+  const keepTop=vp.scrollTop;
+  if(!inner){vp.innerHTML=`<div class="book-empty"><div class="book-empty-icon">📖</div><div class="book-empty-text">Your book will appear here.</div><div class="book-empty-sub">Write notes in a chapter and it shows up automatically. No button to press.</div></div>`;}
+  else vp.innerHTML=`<div class="lp-book" style="user-select:text;">${inner}</div>`;
+  vp.scrollTop=keepTop;
+  renderBookCheck();
+  if(manual)toast('Preview refreshed.','info',1800);
+}
+function renderBookCheck(){
+  const plan=bookPlan();
+  let ready=0,notesOnly=0;
+  const rows=plan.map(p=>{
+    let ico='○',state='Empty',cls='';
+    if(p.excluded){ico='🔒';state='Vault — left out of this version';}
+    else if(p.source==='a'||p.source==='b'){ico='✓';state=`Draft ${p.source.toUpperCase()} in book`;cls='ok';ready++;}
+    else if(p.source==='notes'){ico='!';state='Your notes as written, no draft yet';cls='warn';notesOnly++;ready++;}
+    return `<div class="bc-row" onclick="goToChapter('${p.ch.id}')"><span class="bc-ico">${ico}</span><span class="bc-title">${escHtml(p.ch.title)}</span><span class="bc-state ${cls}">${state}</span></div>`;
+  }).join('');
+  const notes=[];
+  if(!(appData.authorName||'').trim())notes.push('Add your name in ⚙️ Settings so it appears on the cover.');
+  if(!((appData.bookFront||{}).opening||'').trim())notes.push('Optional: add an opening letter below.');
+  document.getElementById('book-check-sum').textContent=`Checklist · ${ready} of 12 chapters in the book${notesOnly?` · ${notesOnly} without a draft`:''}`;
+  document.getElementById('book-check-list').innerHTML=`<div class="bc-body">${rows}${notes.map(n=>`<div class="bc-note">• ${n}</div>`).join('')}</div>`;
+  const f=appData.bookFront||{};
+  const o=document.getElementById('let-opening'),c=document.getElementById('let-closing');
+  if(o&&document.activeElement!==o)o.value=f.opening||'';
+  if(c&&document.activeElement!==c)c.value=f.closing||'';
+  const uo=document.getElementById('let-undo-opening'),uc=document.getElementById('let-undo-closing');
+  if(uo)uo.style.display=f.prevOpening?'':'none';
+  if(uc)uc.style.display=f.prevClosing?'':'none';
+}
+function goToChapter(id){loadActiveChapter(id);window.scrollTo({top:0,behavior:'smooth'});}
+
+/* opening / closing letters: AI drafts them, you edit or redo them any time */
+function saveLetters(){
+  const f=appData.bookFront;
+  f.opening=document.getElementById('let-opening').value;
+  f.closing=document.getElementById('let-closing').value;
+  saveState();scheduleBookRefresh();
+}
+async function draftLetter(which){
+  if(!appData.keys.gemini){toast('Add your Gemini key in ⚙️ Settings first.','warn',4000);toggleModal('settings-modal',true);return;}
+  const f=appData.bookFront;const field=which;const prevKey=which==='opening'?'prevOpening':'prevClosing';
+  const plan=bookPlan().filter(p=>!p.excluded&&p.text.trim());
+  if(!plan.length){toast('Write at least one chapter first.','warn');return;}
+  const el=document.getElementById('let-'+which);
+  if(el.value.trim()){
+    const c=await themedConfirm({icon:'✦',title:`Replace your ${which} letter?`,sub:'A new one will be drafted. Your current text is kept, and you can bring it back with Undo.',ok:'Draft a new one',cancel:'Cancel'});
+    if(c!=='ok')return;
+  }
+  const btn=document.getElementById('let-btn-'+which);const lbl=btn.textContent;btn.disabled=true;btn.textContent='Writing…';
+  const digest=plan.map(p=>`${chapterShortTitle(p.ch)}: ${p.text.replace(/\s+/g,' ').slice(0,420)}`).join('\n');
+  const ctx=authorContext();
+  const si=which==='opening'
+   ?`You write a short opening letter that appears before chapter one of a parent's memoir to their children. Write 1-2 short paragraphs (80-140 words), in the first person, in the author's plain, warm voice. Say why they wrote this book and what they hope the reader takes from it. Only use facts found in the context or chapter excerpts; invent nothing. No clichés, no flowery language. Do not sign it (the signature is added automatically). Output only the letter, paragraphs separated by a blank line.`
+   :`You write a short closing letter that appears at the end of a parent's memoir to their children. Write 1-2 short paragraphs (80-150 words), in the first person, in the author's plain, warm voice, drawing on the themes and lessons actually present in the chapter excerpts. Invent no facts. No clichés. Do not sign it (a sign-off is added automatically). Output only the letter, paragraphs separated by a blank line.`;
+  try{
+    const r=await geminiFetch(appData.keys.gemini,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      contents:[{role:'user',parts:[{text:`${ctx?ctx+'\n\n':''}Book title: ${appData.bookTitle||''}\n\nChapter excerpts:\n${digest}`}]}],
+      systemInstruction:{role:'model',parts:[{text:si}]},
+      generationConfig:{temperature:0.5,maxOutputTokens:1024,thinkingConfig:{thinkingBudget:0}}})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+    const j=await r.json();
+    const t=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
+    if(!t)throw new Error('Empty response');
+    if(el.value.trim())f[prevKey]=el.value;
+    f[field]=t;el.value=t;saveState();scheduleBookRefresh();renderBookCheck();
+    toast(`${which==='opening'?'Opening':'Closing'} letter drafted. Edit it however you like.`,'success',4500);
+  }catch(e){toast(`Could not draft the letter: ${e.message}`,'error',6000);}
+  finally{btn.disabled=false;btn.textContent=lbl;}
+}
+function undoLetter(which){
+  const f=appData.bookFront;const prevKey=which==='opening'?'prevOpening':'prevClosing';
+  if(!f[prevKey])return;
+  const cur=f[which];f[which]=f[prevKey];f[prevKey]=cur;
+  document.getElementById('let-'+which).value=f[which];saveState();scheduleBookRefresh();renderBookCheck();
+  toast('Swapped back to the other version.','info');
+}
+
+/* print + share — both use the same finished book design */
+function buildBookDocument(forPrint){
+  const inner=buildBookInner();
+  if(!inner){toast('Nothing to print yet. Write notes in at least one chapter first.','warn',4000);return '';}
+  const title=escHtml(appData.bookTitle||'A Letter to My Kids');
+  const bar=forPrint?'':`<div class="no-print" style="position:fixed;top:12px;right:12px;z-index:9"><button onclick="window.print()" style="font:600 13px 'DM Sans',Arial,sans-serif;padding:9px 14px;border-radius:8px;border:1px solid #b9ad94;background:#fffdf8;color:#1f1b16;cursor:pointer">Print / Save as PDF</button></div>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="${BOOK_FONTS}" rel="stylesheet"><style>html,body{margin:0;background:#e9e4da}body{padding:28px 12px 60px}@media print{body{padding:0}}${BOOK_CSS}</style></head><body>${bar}<div class="lp-book">${inner}</div></body></html>`;
+}
+function printBook(){
+  const html=buildBookDocument(true);if(!html)return;
+  const old=document.getElementById('lp-print-frame');if(old)old.remove();
+  const f=document.createElement('iframe');f.id='lp-print-frame';
+  f.setAttribute('aria-hidden','true');
+  f.style.cssText='position:fixed;left:-9999px;top:0;width:8.5in;height:11in;border:0;';
+  document.body.appendChild(f);
+  toast('In the print dialog: choose “Save as PDF” or your printer, and turn off “Headers and footers” for the cleanest pages.','info',9000);
+  f.onload=()=>{
+    const go=()=>{try{f.contentWindow.focus();f.contentWindow.print();}catch(e){toast('Printing is blocked here. Use “Download web page” and print it from there.','warn',7000);}};
+    const fonts=f.contentDocument&&f.contentDocument.fonts;
+    if(fonts&&fonts.ready){Promise.race([fonts.ready,new Promise(r=>setTimeout(r,2500))]).then(()=>setTimeout(go,200));}
+    else setTimeout(go,1200);
+  };
+  f.srcdoc=html;
+}
+function triggerPrint(){printBook();}
+function downloadBookHtml(){
+  const html=buildBookDocument(false);if(!html)return;
+  const name=(appData.bookTitle||'My Book').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_')||'My_Book';
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${name}_${new Date().toISOString().slice(0,10)}.html`;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast('Web page downloaded. Open it in any browser, share it, or print it from there.','success',5000);
+}
+
+/* ══════════════════════════════════════════════════════
+   PEOPLE & PLACES  +  ABOUT ME  (keeps names straight everywhere)
+══════════════════════════════════════════════════════ */
+let ppSuggestions=[];
+function openPeople(){
+  ensureAppFields();
+  const m=appData.aboutMe;
+  document.getElementById('am-role').value=m.role||'';
+  document.getElementById('am-role-other').value=m.roleOther||'';
+  document.getElementById('am-role-other').style.display=m.role==='other'?'':'none';
+  document.getElementById('am-kids').value=m.kids||'';
+  document.getElementById('am-partner').value=m.partner||'';
+  document.getElementById('am-extra').value=m.extra||'';
+  renderPeopleRows();renderPpSuggestions();
+  toggleModal('people-modal',true);
+}
+function renderPeopleRows(){
+  const box=document.getElementById('pp-rows');
+  const rows=appData.cast.length?appData.cast:[];
+  box.innerHTML=rows.map((c,i)=>`<div class="pp-row"><input class="text-input" data-pp="name" data-i="${i}" value="${escHtml(c.name)}" placeholder="Name or place" style="font-family:'DM Sans',sans-serif;"><input class="text-input" data-pp="who" data-i="${i}" value="${escHtml(c.who)}" placeholder="Who or what it is, e.g. my sister" style="font-family:'DM Sans',sans-serif;"><button class="mini-btn" onclick="removePerson(${i})" aria-label="Remove">✕</button></div>`).join('')||'<div class="dr-empty">Nothing here yet. Add the people and places that come up in your story.</div>';
+}
+function syncPeopleFromInputs(){
+  document.querySelectorAll('#pp-rows input').forEach(inp=>{
+    const i=+inp.dataset.i;if(!appData.cast[i])return;
+    appData.cast[i][inp.dataset.pp==='name'?'name':'who']=inp.value;
+  });
+}
+function addPerson(name,who){syncPeopleFromInputs();appData.cast.push({name:name||'',who:who||''});renderPeopleRows();const ins=document.querySelectorAll('#pp-rows input');if(ins.length&&!name)ins[ins.length-2].focus();}
+function removePerson(i){syncPeopleFromInputs();appData.cast.splice(i,1);renderPeopleRows();}
+function savePeople(){
+  syncPeopleFromInputs();
+  appData.cast=appData.cast.filter(c=>(c.name||'').trim()||(c.who||'').trim()).map(c=>({name:c.name.trim(),who:c.who.trim()}));
+  appData.aboutMe={role:document.getElementById('am-role').value,roleOther:document.getElementById('am-role-other').value.trim(),kids:document.getElementById('am-kids').value.trim(),partner:document.getElementById('am-partner').value.trim(),extra:document.getElementById('am-extra').value.trim()};
+  saveState();toggleModal('people-modal',false);
+  toast('Saved. The AI will use this everywhere.','success');
+}
+function renderPpSuggestions(){
+  const box=document.getElementById('pp-suggest');
+  const have=new Set(appData.cast.map(c=>c.name.trim().toLowerCase()));
+  const list=ppSuggestions.filter(s=>!have.has((s.name||'').trim().toLowerCase()||'x'));
+  if(!ppSuggestions.length){box.innerHTML='';return;}
+  if(!list.length){box.innerHTML='<div class="dr-empty">All suggestions added. Nice.</div>';return;}
+  const qs=list.filter(s=>s.question);
+  box.innerHTML=`<div class="hist-h">Found in your notes${qs.length?` · ${qs.length} need your answer`:''}</div>`+list.map((s,i)=>`<div class="pp-sug ${s.question?'q':''}">
+    <div class="pp-sug-row"><div><b>${escHtml(s.name)}</b> <span class="hist-sub">${escHtml(s.kind||'')}${s.seen?' · '+escHtml(s.seen):''}</span></div></div>
+    ${s.question?`<div class="pp-q">❓ ${escHtml(s.question)}</div>`:''}
+    <div class="pp-sug-row"><input class="text-input" id="pps-${i}" value="${escHtml(s.guess||'')}" placeholder="${s.question?'Your answer…':'Who or what it is (optional)'}" style="font-family:'DM Sans',sans-serif;"><button class="btn btn-secondary btn-sm" onclick="acceptSuggestion(${i})">Add</button></div></div>`).join('');
+  box._list=list;
+}
+function acceptSuggestion(i){
+  const box=document.getElementById('pp-suggest');const s=box._list[i];if(!s)return;
+  const who=document.getElementById('pps-'+i).value.trim();
+  syncPeopleFromInputs();appData.cast.push({name:s.name,who});renderPeopleRows();renderPpSuggestions();
+}
+async function scanNames(){
+  if(!appData.keys.gemini){toast('Add your Gemini key in ⚙️ Settings first.','warn',4000);return;}
+  const parts=CHAPTER_DEFS.map(d=>appData.chapters[d.id]).filter(c=>c.text&&c.text.trim()).map(c=>`[${c.title}]\n${c.text}`);
+  if(!parts.length){toast('Write some notes first, then I can look for names.','warn');return;}
+  const btn=document.getElementById('pp-scan-btn');const lbl=btn.textContent;btn.disabled=true;btn.textContent='Reading your notes…';
+  const si=`You read a person's autobiography notes and list the named people and notable places so the author can confirm who they are. Return JSON only: {"items":[{"name":"","kind":"person|place","seen":"short context, which chapter","guess":"role stated in the text, or empty","question":"empty unless needs the author's input"}]}.
+Rules: Include first names, nicknames and named places. Fill "guess" ONLY from what the text states (e.g. "my sister"); otherwise leave it empty. Fill "question" when (a) the same name could refer to different people, (b) a role is unclear or contradictory, or (c) a place name looks like it may be misspelled. Write the question plainly, naming the chapters, e.g. "Liz appears as your sister in Chapter 1 and as Pete's partner in Chapter 6. Are these different people?". Never guess. Max 40 items, most important first.`;
+  try{
+    const r=await geminiFetch(appData.keys.gemini,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      contents:[{role:'user',parts:[{text:parts.join('\n\n---\n\n')}]}],
+      systemInstruction:{role:'model',parts:[{text:si}]},
+      generationConfig:{temperature:0.1,maxOutputTokens:4096,responseMimeType:'application/json',thinkingConfig:{thinkingBudget:0}}})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+    const j=await r.json();
+    const raw=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').replace(/```json|```/g,'').trim();
+    const data=JSON.parse(raw);
+    ppSuggestions=(data.items||[]).filter(x=>x&&x.name);
+    renderPpSuggestions();
+    if(!ppSuggestions.length)toast('No names found yet.','info');
+  }catch(e){toast(`Could not read your notes: ${e.message}`,'error',6000);}
+  finally{btn.disabled=false;btn.textContent=lbl;}
+}
+
+/* ══════════════════════════════════════════════════════
+   AI INTERVIEW — knows who you are, and lets you change the subject
+══════════════════════════════════════════════════════ */
+const SKIP_RE=/\b(move on|moving on|next topic|next question|skip (this|it|that|ahead)|something else|change (the )?(topic|subject)|different (topic|question|subject)|another (topic|question)|enough (of|about) (this|that)|(i|we)('ve| have)? ?(already )?(told|said|answered|covered|mentioned)|you('re| are) repeating|too repetitive|so repetitive|getting repetitive|let'?s (go|talk) (on )?(to )?(something|another|the next))\b/i;
+const SKIP_HINT='\n\n[Private instruction to the interviewer, not written by the author: they want to change the subject now. Reply with a few words of acknowledgement, no pushback, and do not ask anything more about the previous topic. Then ask ONE question about a different part of this chapter that has not come up yet.]';
+function buildInterviewSystem(){
+  const ch=appData.chapters[appData.activeEra];
+  const notes=(document.getElementById('journal-editor').value||'').trim();
+  const clipped=notes.length>4000?'…'+notes.slice(-4000):notes;
+  const ctx=authorContext();
+  const notesBlock=notes
+    ?`The person's own notes for this chapter so far (they may have kept writing since the conversation began, so treat this as the latest version):\n"""\n${clipped}\n"""\nRead the notes closely. Ask about what is missing or only hinted at: a specific person, place, moment, sensory detail, what they felt at the time, or why it still matters to them. Build on their actual words and refer to something specific they wrote. Do not ask about anything they have already covered in full.`
+    :`They have not written any notes yet. Start from the chapter theme.`;
+  return `You are a warm, perceptive biographer interviewing someone so they can write their life story as a letter to their children.
+Chapter: "${ch.title}"
+Chapter theme: "${ch.prompt}"
+
+${ctx?'About the author:\n'+ctx+'\n\n':''}${notesBlock}
+
+How to interview:
+- Ask exactly one question at a time, in 1-3 sentences, warm and conversational. Never summarize their notes back at length, never give advice, and never write the story for them.
+- The author is the one telling the story. When they say "my father", "my dad", "my mom" and so on, they mean THEIR OWN parent. Do not assume the author's own role or gender from those words, and do not ask about being a mother or father unless the author's details or notes say so.
+- Never ask about something the author has already answered in this conversation, and never ask the same thing twice in different words. Each question should open a new angle.
+- If the author says to move on, skip, change the subject, or says they already answered (or sounds impatient), accept it immediately and gracefully: a few words of acknowledgement, no argument, no "just one more thing" about the old topic. Switch to a different part of the chapter. You can circle back later only if they ask.
+- If they give a short answer, accept it. Not every memory needs to be explored deeply; it is fine to move around the chapter.`;
+}
+async function sendAiMessage(forceSkip){
+  const input=document.getElementById('ai-user-input');
+  let txt=input.value.trim();
+  if(forceSkip===true&&!txt)txt="Let's move on to something else.";
+  if(!txt)return;input.value='';
+  addBubble(txt,'user');
+  aiHistory.push({role:'user',content:txt,skip:forceSkip===true||SKIP_RE.test(txt)});
+  await callGroqChat();
+}
+function aiNextTopic(){sendAiMessage(true);}
 
 /* ══════════════════════════════════════════════════════
    AI INTERVIEW
@@ -1745,32 +2310,18 @@ function toggleAiPanel(){
   aiHistory=[];document.getElementById('ai-messages').innerHTML='';
   startAiInterview();
 }
-function closeAiPanel(){document.getElementById('ai-panel').classList.remove('open');document.getElementById('ai-interview-btn').classList.remove('active');}
-function buildInterviewSystem(){
-  const ch=appData.chapters[appData.activeEra];
-  const notes=(document.getElementById('journal-editor').value||'').trim();
-  const clipped=notes.length>4000?'…'+notes.slice(-4000):notes;
-  const notesBlock=notes
-    ?`The person's own notes for this chapter so far (they may have kept writing since the conversation began, so treat this as the latest version):\n"""\n${clipped}\n"""\nRead the notes closely. Ask about what is missing or only hinted at: a specific person, place, moment, sensory detail, what they felt at the time, or why it still matters to them. Build on their actual words and refer to something specific they wrote. Do not ask about anything they have already covered in full.`
-    :`They have not written any notes yet. Start from the chapter theme.`;
-  return `You are a warm, perceptive biographer helping someone write their life story as a letter to their children.\nChapter: "${ch.title}"\nChapter theme: "${ch.prompt}"\n\n${notesBlock}\n\nAsk exactly one question at a time, in 1-3 sentences, warm and conversational. Never summarize their notes back at length, never give advice, and never write the story for them.`;
-}
+function closeAiPanel(){const _p=document.getElementById('ai-panel');if(_p.classList.contains('is-expanded'))collapseAll();document.getElementById('ai-panel').classList.remove('open');document.getElementById('ai-interview-btn').classList.remove('active');}
 async function startAiInterview(){
   const hasNotes=!!document.getElementById('journal-editor').value.trim();
   aiHistory=[{role:'user',content:hasNotes?'Please begin the interview. Use my notes to ask your first question.':'Please open our conversation with a warm, personal question based on the chapter theme.'}];
-  await callGroqChat();
-}
-async function sendAiMessage(){
-  const input=document.getElementById('ai-user-input');
-  const txt=input.value.trim();if(!txt)return;input.value='';
-  addBubble(txt,'user');aiHistory.push({role:'user',content:txt});
   await callGroqChat();
 }
 async function callGroqChat(){
   const typing=addTyping();
   try{
     const sys=buildInterviewSystem(); /* rebuilt every turn so edits to the notes box are picked up */
-    const data=await groqChat(appData.keys.groq,[{role:'system',content:sys},...aiHistory],0.72,{max_tokens:220});const reply=data.choices[0].message.content.trim();
+    const msgs=aiHistory.map(m=>({role:m.role,content:m.skip?m.content+SKIP_HINT:m.content}));
+    const data=await groqChat(appData.keys.groq,[{role:'system',content:sys},...msgs],0.72,{max_tokens:220});const reply=data.choices[0].message.content.trim();
     typing.remove();addBubble(reply,'ai');aiHistory.push({role:'assistant',content:reply});
   }catch(e){typing.remove();addBubble('I had trouble connecting. Check your Groq key in Settings.','ai');}
 }
@@ -1790,7 +2341,7 @@ async function useAiConversation(){
   const btn=document.querySelector('.ai-use-btn');const label=btn?btn.textContent:'';
   aiUseBusy=true;if(btn){btn.disabled=true;btn.textContent='Weaving…';}
   try{
-    const sys='You turn interview answers into prose for a personal autobiography written as a letter to the author\'s children. Rewrite ONLY what the person said ("Me:") as 1-3 short paragraphs in first person, in their own voice and wording as much as possible. Use the interviewer\'s questions only to understand what each answer refers to. Do not add facts, names, places, or feelings that were not stated. Do not include the questions. Output only the paragraphs.';
+    const sys='You turn interview answers into prose for a personal autobiography written as a letter to the author\'s children. Rewrite ONLY what the person said ("Me:") as 1-3 short paragraphs in first person, in their own voice and wording as much as possible. Use the interviewer\'s questions only to understand what each answer refers to. Do not add facts, names, places, or feelings that were not stated. Do not add reflections, lessons, gratitude, or conclusions the person did not say. Do not include the questions. Output only the paragraphs.';
     const data=await groqChat(appData.keys.groq,[{role:'system',content:sys},{role:'user',content:transcript}],0.3,{max_tokens:700});
     const woven=data.choices[0].message.content.trim();
     append(woven||rawAnswers);
@@ -2103,7 +2654,8 @@ function saveApiKeys(){const _pg=appData.keys.groq,_pm=appData.keys.gemini;appDa
 function saveBookIdentity(){
   appData.bookTitle=document.getElementById('input-book-title').value.trim()||'A Letter to My Kids';
   appData.authorName=document.getElementById('input-author-name').value.trim();
-  saveState();toast('Book identity saved.','success');
+  appData.bookSubtitle=document.getElementById('input-book-subtitle').value.trim();
+  saveState();scheduleBookRefresh();toast('Book identity saved.','success');
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2137,20 +2689,21 @@ function handleChapterPhotoUpload(input){
     savePhotoStore();
     appData.chapters[chId].hasPhoto=true;
     saveState();
-    renderChapterPhotoStrip();
+    renderChapterPhotoStrip();scheduleBookRefresh();
     toast('Photo saved for this chapter ✓','success');
   };
   reader.readAsDataURL(file);
   input.value='';
 }
+function savePhotoCaption(v){const ch=appData.chapters[appData.activeEra];ch.photoCaption=v;saveState();scheduleBookRefresh();}
 async function removeChapterPhoto(){
-  if((await themedConfirm({icon:'🖼',title:'Remove this photo?',sub:"It will be removed from this chapter and the compiled book. If you haven't downloaded a photos backup, it can't be recovered.",ok:'Remove',danger:true}))!=='ok')return;
+  if((await themedConfirm({icon:'🖼',title:'Remove this photo?',sub:"It will be removed from this chapter and your book. If you haven't downloaded a photos backup, it can't be recovered.",ok:'Remove',danger:true}))!=='ok')return;
   const chId=appData.activeEra;
   delete photoStore[chId];
   savePhotoStore();
   appData.chapters[chId].hasPhoto=false;
   saveState();
-  renderChapterPhotoStrip();
+  renderChapterPhotoStrip();scheduleBookRefresh();
   toast('Photo removed.','info');
 }
 function renderChapterPhotoStrip(){
@@ -2163,13 +2716,15 @@ function renderChapterPhotoStrip(){
   if(hasPhoto){
     thumb.src=photoStore[appData.activeEra];
     thumbWrap.style.display='block';
-    label.innerHTML='<strong>Photo attached</strong> — will appear in compiled book after the first paragraph.';
+    label.innerHTML='<strong>Photo attached</strong> — appears in your book after the first paragraph.';
     removeBtn.style.display='inline-block';
+    const cap=document.getElementById('photo-caption');cap.style.display='block';cap.value=ch.photoCaption||'';
   }else{
     thumb.src='';
     thumbWrap.style.display='none';
-    label.innerHTML='<strong>Chapter Photo</strong> — Add a photo to appear in the compiled book after the first paragraph.';
+    label.innerHTML='<strong>Chapter Photo</strong> — Add a photo to appear in your book after the first paragraph.';
     removeBtn.style.display='none';
+    document.getElementById('photo-caption').style.display='none';
   }
 }
 async function testKeyConnection(t){
@@ -2268,6 +2823,7 @@ async function restoreMasterBackupFromFile(input){
   lpDrafts=rd;draftsWrite();
   loadStateFromStorage();
   loadActiveChapter(lpPickStartChapter());
+  refreshBook(false);
   updateSlipsUI();
   bkMeta.book={at:Date.now(),changes:0};bkSave();bkRefreshUI();
   toast('Book restored. If you have a photos backup, restore that next.','success',5000);
@@ -2296,7 +2852,6 @@ async function restorePhotosFromFile(input){
   toggleModal('settings-modal',false);
   reset();
 }
-function triggerPrint(){const vp=document.getElementById('production-book-viewport');if(!vp.querySelector('p,h2,h3')){toast('Compile the full book first, then print.','warn',4000);return;}window.print();}
 
 /* ══════════════════════════════════════════════════════
    PERSIST
@@ -2326,9 +2881,11 @@ function loadStateFromStorage(){
       if(ch.activeDraftSlot===undefined)ch.activeDraftSlot='a';
     });
   }}catch(e){}}
+  ensureAppFields();Object.values(appData.chapters).forEach(ensureChapterFields);
   document.getElementById('input-key-gemini').value=appData.keys.gemini||'';
   document.getElementById('input-key-groq').value=appData.keys.groq||'';
   renderModelPickers();
+  document.getElementById('input-book-subtitle').value=appData.bookSubtitle||'';
   document.getElementById('input-book-title').value=appData.bookTitle||'';
   document.getElementById('input-author-name').value=appData.authorName||'';
 }
@@ -2517,6 +3074,7 @@ function onBackPress(){
     else toggleModal(id,false);
     return;
   }
+  if(document.querySelector('.is-expanded')){collapseAll();return;}
   const panel=document.getElementById('ai-panel');
   if(panel&&panel.classList.contains('open')){closeAiPanel();return;}
   if(appData.audioState==='recording'||appData.audioState==='paused'){toast('Recording in progress — stop recording first.','warn');return;}
@@ -2604,6 +3162,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   updateSlipsUI();
   loadActiveChapter(lpPickStartChapter());
   renderSidebar();
+  refreshBook(false);
   checkOnboarding();
   initBackGuard();
   bkInitStorage();
