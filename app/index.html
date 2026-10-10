@@ -1016,15 +1016,15 @@ html,body{overscroll-behavior-y:contain;}
         <div style="display:flex;flex-direction:column;gap:10px;">
           <div class="field-group">
             <div class="field-label"><span>Book Title</span></div>
-            <input type="text" id="input-book-title" class="text-input" placeholder="A Letter to My Kids" style="font-family:'DM Sans',sans-serif;">
+            <input type="text" id="input-book-title" oninput="saveBookIdentity(true)" class="text-input" placeholder="A Letter to My Kids" style="font-family:'DM Sans',sans-serif;">
           </div>
           <div class="field-group">
             <div class="field-label"><span>Your Name (Author)</span></div>
-            <input type="text" id="input-author-name" class="text-input" placeholder="Your Name" style="font-family:'DM Sans',sans-serif;">
+            <input type="text" id="input-author-name" oninput="saveBookIdentity(true)" class="text-input" placeholder="Your Name" style="font-family:'DM Sans',sans-serif;">
           </div>
           <div class="field-group">
             <div class="field-label"><span>Subtitle (optional)</span></div>
-            <input type="text" id="input-book-subtitle" class="text-input" placeholder="e.g. Stories, lessons and love" style="font-family:'DM Sans',sans-serif;">
+            <input type="text" id="input-book-subtitle" oninput="saveBookIdentity(true)" class="text-input" placeholder="e.g. Stories, lessons and love" style="font-family:'DM Sans',sans-serif;">
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-secondary" style="padding:7px 14px;font-size:11px;" onclick="saveBookIdentity()">Save</button><button class="btn btn-secondary" style="padding:7px 14px;font-size:11px;" onclick="toggleModal('settings-modal',false);openPeople()">👥 About me, people &amp; places</button></div>
         </div>
@@ -2650,12 +2650,12 @@ async function geminiFetch(apiKey,init,_retried){
 }
 /*MODEL-PICKERS-END*/
 
-function saveApiKeys(){const _pg=appData.keys.groq,_pm=appData.keys.gemini;appData.keys.gemini=document.getElementById('input-key-gemini').value.trim();appData.keys.groq=document.getElementById('input-key-groq').value.trim();saveState();toast('Credentials saved.','success');toggleModal('settings-modal',false);handleKeysSaved(_pg,_pm);}
-function saveBookIdentity(){
+function saveApiKeys(){saveBookIdentity(true);const _pg=appData.keys.groq,_pm=appData.keys.gemini;appData.keys.gemini=document.getElementById('input-key-gemini').value.trim();appData.keys.groq=document.getElementById('input-key-groq').value.trim();saveState();toast('Credentials saved.','success');toggleModal('settings-modal',false);handleKeysSaved(_pg,_pm);}
+function saveBookIdentity(quiet){
   appData.bookTitle=document.getElementById('input-book-title').value.trim()||'A Letter to My Kids';
   appData.authorName=document.getElementById('input-author-name').value.trim();
   appData.bookSubtitle=document.getElementById('input-book-subtitle').value.trim();
-  saveState();scheduleBookRefresh();toast('Book identity saved.','success');
+  saveState();scheduleBookRefresh();if(quiet!==true)toast('Book identity saved.','success');
 }
 
 /* ══════════════════════════════════════════════════════
