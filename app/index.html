@@ -1618,8 +1618,8 @@ function wordCount(t){return t&&t.trim()?t.trim().split(/\s+/).length:0;}
 function chapterShortTitle(ch){return ch.title.replace(/^\d+\.\s*/,'');}
 const NUM_WORDS=['One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve'];
 const STYLE_INFO={
-  close:{label:'Close to my words',hint:'Light touch: fixes spelling and grammar, tidies paragraphs, and keeps your phrases, quotes and humor. Best when you like how you already say it.'},
-  polished:{label:'Polished',hint:'Smoother and more flowing, like an editor reworked it. Still not allowed to invent details, but it may reword more of what you wrote.'}
+  close:{label:'Close to my words',hint:'Fixes spelling, grammar and sentence structure, tidies the order and cuts repetition, while keeping your own words, quotes and humor. Reads like you on your best day.'},
+  polished:{label:'Polished',hint:'Reworked by an editor for flow and rhythm. Rewords, reorders and smooths transitions freely, but never invents details.'}
 };
 
 /* tiny, safe formatter: blank line = new paragraph, "> " = pull quote, *x* = italic */
@@ -1822,21 +1822,33 @@ function buildDraftPrompt(ch,style){
 - Separate paragraphs with a blank line. Output only the chapter text: no headings, no title, no preamble, no notes.
 - You may mark up to three standout lines of the author's own reflection or advice as pull quotes by starting the line with "> ". Use the author's own sentences (verbatim or nearly), never new ones.
 - Use *italics* very sparingly.`;
-  const faithful=`You are an editor helping someone turn their raw notes into one chapter of their autobiography, written as a letter to their children.
+  const faithful=`You are a skilled editor helping someone who is not a writer turn their raw, stream-of-consciousness notes into one chapter of their autobiography, written as a letter to their children. The author types memories the way most people talk: run-on sentences, missing punctuation, repeated words, notes in whatever order they came to mind. Your job is to make the result read like a good, warm, true memoir chapter that still sounds like this person. The author expects the finished chapter to be clearly better written than their notes.
 
-THE MOST IMPORTANT RULES (they override everything else):
-- Do NOT add any fact, name, place, number, event, object, feeling, lesson or scenery that is not in the notes. Do not guess. If something is unclear, keep the author's wording.
-- Use EVERY story and point in the notes. Do not drop anything. Do not impose a paragraph limit; a long set of notes should become a long chapter.
+FACTS (these rules override everything else):
+- Do NOT add any fact, event, number, object, feeling, lesson or scenery that is not in the notes. Do not invent details, dialogue or imagery. Do not guess what happened.
+- Use EVERY story and point in the notes. Do not drop anything. Do not impose a paragraph limit; long notes become a long chapter.
 - Anything the author put in quotation marks, and any quoted saying, creed, poem, verse or passage, must stay exactly word for word. If the notes include a long quoted passage, include ALL of it, unchanged, as a "> " pull quote block.
-- Names and relationships must follow the "people and places" list if one is provided.`;
+- Names and relationships must follow the "people and places" list if one is provided.
+
+SPELLING AND NAMES (fix these, do not leave typos in):
+- Correct all misspellings, typos, accidental repeated words (for example "in in"), missing apostrophes and wrong homophones (their/there, to/too).
+- If the author misspelled a real, well-known business, landmark, place or brand and you are confident which one they mean, use the correct spelling. If you are not confident, keep the author's spelling. Never change a family member's or friend's name unless the "people and places" list gives the correct spelling.
+- Where the author expresses doubt about a name ("probably butchering the name"), keep that doubt in the text, using the corrected spelling if you are confident of it.
+
+CRAFT (what a good editor does, in both styles):
+- Turn run-ons into well-built sentences. Combine choppy sentences, split overlong ones, and vary sentence length so it reads naturally aloud.
+- Group related memories into paragraphs that each have a clear focus. Move a stray sentence to where it belongs (for example, a comment about a place goes with that place), but keep every story intact.
+- Cut filler, false starts, and repeated openers (for example several sentences in a row beginning "Back then" or "I remember").
+- Keep the author's humor, asides and personality. A parenthetical joke stays a joke.
+- Do not dramatize. No purple prose, no clichés, no invented metaphors, and no tidy moral at the end unless the author wrote one.`;
   const closeStyle=`${faithful}
 
-STYLE: stay as close to the author's own words as possible. Make only light edits: fix spelling, grammar and punctuation, remove false starts and repetition, and arrange into clear paragraphs with a sensible order. Keep their phrases, humor, slang and sentence rhythm. Do not dramatize, embellish, or add metaphors. The result should sound like the author on their best day, not like a novelist.
+STYLE: STAY CLOSE TO MY WORDS. Keep the author's own vocabulary, phrases, slang and sentence rhythm wherever they work. Edit with a moderate hand: fix every error, repair sentence structure, tidy the order, and cut repetition, but do not swap in fancier words or rework sentences that already read well. The result should sound like the author on their best day, clearly better written than the notes but unmistakably them.
 
 ${common}`;
   const polishedStyle=`${faithful}
 
-STYLE: make it flow and read warmly, as a skilled editor would. You may reorder for clarity, smooth transitions, and reword for rhythm. But keep the author's plain, direct voice: no purple prose, no clichés, no invented imagery, no dramatic flourishes, and no tidy moral at the end unless the author wrote one.
+STYLE: POLISHED. Edit as a professional memoir editor would. Rework sentences freely for rhythm and flow, reorder within a chapter for the best narrative sequence, add smooth transitions between memories, and choose the more graceful phrase when the author's is clumsy. Open paragraphs with a clear sense of place or moment and end them cleanly. It should read noticeably smoother and more finished than the notes, and more polished than a light cleanup. But it must still be this person's plain, warm, direct voice and contain only what is in the notes: nothing invented, nothing exaggerated.
 
 ${common}`;
   return style==='polished'?polishedStyle:closeStyle;
@@ -1876,7 +1888,7 @@ async function writeDraft(slot){
       body:JSON.stringify({
         contents:[{role:'user',parts:[{text:userPrompt}]}],
         systemInstruction:{role:'model',parts:[{text:buildDraftPrompt(ch,style)}]},
-        generationConfig:{temperature:style==='polished'?0.5:0.2,maxOutputTokens:8192,thinkingConfig:{thinkingBudget:0}}
+        generationConfig:{temperature:style==='polished'?0.7:0.4,maxOutputTokens:8192,thinkingConfig:{thinkingBudget:0}}
       })
     });
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
@@ -3116,7 +3128,7 @@ window.addEventListener('beforeunload',e=>{
    PWA — service worker, update prompt, version stamp
    APP_VERSION must equal VERSION in sw.js (bump both on every release).
 ══════════════════════════════════════════════════════ */
-const APP_VERSION='1.3';
+const APP_VERSION='1.5';
 function paintVersionStamp(swVer){
   const el=document.getElementById('ver-stamp');if(!el)return;
   el.textContent='LifePage v'+APP_VERSION+(swVer&&swVer!==APP_VERSION?' · installed v'+swVer+' (update ready)':'');
