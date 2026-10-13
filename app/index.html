@@ -1843,12 +1843,22 @@ CRAFT (what a good editor does, in both styles):
 - Do not dramatize. No purple prose, no clichés, no invented metaphors, and no tidy moral at the end unless the author wrote one.`;
   const closeStyle=`${faithful}
 
-STYLE: STAY CLOSE TO MY WORDS. Keep the author's own vocabulary, phrases, slang and sentence rhythm wherever they work. Edit with a moderate hand: fix every error, repair sentence structure, tidy the order, and cut repetition, but do not swap in fancier words or rework sentences that already read well. The result should sound like the author on their best day, clearly better written than the notes but unmistakably them.
+STYLE: STAY CLOSE TO MY WORDS. Keep the author's own vocabulary, phrases, slang and sentence rhythm wherever they work. Edit with a firm hand on structure but a light hand on vocabulary: fix every error, rebuild awkward or run-on sentences, tidy the order, group related memories into paragraphs, and cut repetition, but keep the author's own words and do not swap in fancier ones. The result should sound like the author on their best day, clearly better written than the notes but unmistakably them.
 
 ${common}`;
   const polishedStyle=`${faithful}
 
-STYLE: POLISHED. Edit as a professional memoir editor would. Rework sentences freely for rhythm and flow, reorder within a chapter for the best narrative sequence, add smooth transitions between memories, and choose the more graceful phrase when the author's is clumsy. Open paragraphs with a clear sense of place or moment and end them cleanly. It should read noticeably smoother and more finished than the notes, and more polished than a light cleanup. But it must still be this person's plain, warm, direct voice and contain only what is in the notes: nothing invented, nothing exaggerated.
+STYLE: POLISHED. You are now acting as an expert ghostwriter, not a proofreader. The author wants a finished, publishable chapter that reads like a memoir written by a good storyteller, using only the author's own memories. Do NOT follow the order or sentence structure of the notes line by line. Rewrite the chapter.
+
+How to do it:
+1. Plan first. Identify the distinct memories, people, places and takeaways in the notes, then decide the best narrative arc (for example: setting the scene, then the people, then the moments that mattered, then what it meant). Each paragraph should cover one theme or memory, with every related detail gathered into it, wherever it appeared in the notes.
+2. Open with a strong first sentence that puts the reader in the time and place, using only facts from the notes. Do not open with "I grew up..." if a more engaging opening is available from the author's own material. End on the author's own strongest line or feeling, not an invented moral.
+3. Rewrite nearly every sentence. Merge short ones, break up long ones, vary rhythm, use active verbs, cut every filler word, and let each paragraph build momentum into the next with natural transitions. Very few sentences should survive unchanged from the notes.
+4. Keep the author's best lines. Vivid phrases, jokes and images that are genuinely theirs (for example a line like "a taste burned in my brain") are the voice of the chapter: keep them close to verbatim and build the surrounding sentences to showcase them.
+5. Be specific, not flowery. Prefer the concrete detail the author gave (names, foods, places, objects) over adjectives. Never add a detail they did not give.
+6. Keep the tone warm, grounded, direct and conversational: a person telling a story to their kids, not a novelist.
+
+When finished, check: Is every story from the notes present? Is anything invented? Would a reader who compares this to the notes see a clearly rewritten, better-organized, more engaging chapter? If not, revise.
 
 ${common}`;
   return style==='polished'?polishedStyle:closeStyle;
@@ -1888,7 +1898,7 @@ async function writeDraft(slot){
       body:JSON.stringify({
         contents:[{role:'user',parts:[{text:userPrompt}]}],
         systemInstruction:{role:'model',parts:[{text:buildDraftPrompt(ch,style)}]},
-        generationConfig:{temperature:style==='polished'?0.7:0.4,maxOutputTokens:8192,thinkingConfig:{thinkingBudget:0}}
+        generationConfig:{temperature:style==='polished'?0.6:0.4,maxOutputTokens:style==='polished'?16384:8192,thinkingConfig:{thinkingBudget:style==='polished'?2048:0}}
       })
     });
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
@@ -3128,7 +3138,7 @@ window.addEventListener('beforeunload',e=>{
    PWA — service worker, update prompt, version stamp
    APP_VERSION must equal VERSION in sw.js (bump both on every release).
 ══════════════════════════════════════════════════════ */
-const APP_VERSION='1.5';
+const APP_VERSION='1.6';
 function paintVersionStamp(swVer){
   const el=document.getElementById('ver-stamp');if(!el)return;
   el.textContent='LifePage v'+APP_VERSION+(swVer&&swVer!==APP_VERSION?' · installed v'+swVer+' (update ready)':'');

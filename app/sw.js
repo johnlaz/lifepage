@@ -5,7 +5,7 @@
    Bump VERSION on every release. The app's visible version stamp reads it back from here,
    so the two can never drift apart. */
 
-const VERSION = '1.5';
+const VERSION = '1.6';
 const CACHE_NAME = 'lifepage-app-v' + VERSION;
 const FONT_CACHE = 'lifepage-fonts-v1';
 
